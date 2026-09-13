@@ -1,0 +1,73 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+.Python
+.venv/
+venv/
+env/
+
+# Test, type-check and coverage caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+.coverage.*
+htmlcov/
+
+# Packaging and build output
+build/
+dist/
+*.egg-info/
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Research data and generated artifacts
+data/raw/*
+data/interim/*
+data/processed/*
+artifacts/*
+results/*
+logs/*
+checkpoints/*
+models/*
+
+# Keep provenance/configuration files trackable
+!data/raw/.gitkeep
+!data/interim/.gitkeep
+!data/processed/.gitkeep
+!artifacts/.gitkeep
+!results/.gitkeep
+!logs/.gitkeep
+!checkpoints/.gitkeep
+!models/.gitkeep
+
+# Model and experiment binaries
+*.ckpt
+*.onnx
+*.pt
+*.pth
+*.pkl
+*.joblib
+*.zip
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
