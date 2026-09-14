@@ -13,8 +13,9 @@ Faz 3'ün amacı, ileride kullanılacak sentetik ve gerçek-kaynaklı izlerin ne
 geldiğini, ne kadarının ölçülmüş veya üretilmiş olduğunu ve train/validation/test
 arasında bilgi sızıntısı olmadığını makinece kanıtlayan katmanı kurmaktı.
 
-Bu faz “dosyayı indirebildik” ile “bilimsel analize hazır” kavramlarını ayırır.
-Henüz hiçbir ham dataset analiz için hazır ilan edilmemiştir.
+Bu faz “dosyayı indirebildik” ile “bilimsel analize hazır” kavramlarını ayırdı.
+Faz kapanış anında hiçbir ham dataset hazır değildi; sonraki Faz 3A ediniminde
+BUPT artifact'ı sabitlendi ve doğrulandı. Güncel kanıt ayrı Faz 3A raporundadır.
 
 ## 2. Kontrol edilen girdiler
 
@@ -47,8 +48,8 @@ Katalog altı kaynak içerir:
 |---|---|---|
 | UCI MEC 859 | `catalogued` | CC BY 4.0; küçük ilk calibration kaynağı |
 | EUA | `catalogued` | MIT; commit SHA ile pinlenecek |
-| BUPT | `license_pending` | Public olmak lisans kanıtı sayılmadı |
-| NEP-small | `access_pending` | Başvuru + research-only + paylaşım yasağı |
+| BUPT | `schema_validated` (Faz 3A) | Yerel research-only kullanım; yeniden dağıtım yok |
+| NEP-small | `access_pending` | Talep 2026-09-14'te gönderildi; yanıt bekleniyor |
 | T-Drive | `catalogued` | Non-commercial; yeniden dağıtım yok |
 | Alibaba v2018 | `access_pending` | İkincil/OOD; MEC değil; yaklaşık 49 GB |
 
@@ -164,12 +165,14 @@ Son temiz sonuç:
 
 ## 6. Sınırlamalar ve dürüstlük sınırı
 
-- Bu faz veri yönetim sistemini tamamladı; ham datasetleri indirip bilimsel
-  olarak doğrulamadı.
-- Şu anda `schema_validated` statüsünde kaynak yoktur.
+- Bu fazın ilk kapanışı veri yönetim sistemini tamamladı; BUPT edinimi daha sonra
+  `PHASE_3A_BUPT_ACQUISITION.md` ile kanıtlandı.
+- Şu anda yalnız BUPT `schema_validated` statüsündedir; bu statü yalnız yerel,
+  ticari olmayan araştırma kullanımı içindir.
 - UCI/EUA kullanılmadan önce artifact indirimi, checksum ve ham şema doğrulaması
   gereklidir.
-- BUPT açık dataset lisansı çözülmeden ana benchmark'a giremez.
+- BUPT resmî research-use beyanı altında ana benchmark'a girebilir; ham veya
+  satır seviyesinde türetilmiş veri yeniden dağıtılamaz.
 - NEP-small erişim talebi kullanıcı/kurum tarafından tamamlanmalıdır; raw veri
   paylaşılamaz ve Git'e giremez.
 - T-Drive yalnız non-commercial kullanım ve no-redistribution koşuluyla adaydır.
@@ -179,9 +182,10 @@ Son temiz sonuç:
 - Semantik family split alanları Faz 4 corpus tipleri eklendiğinde aynı denetim
   yapısına bağlanacaktır.
 
-Bu nedenlerle genel Definition of Done içindeki “veri manifesti, lisans,
-checksum, alan kökeni ve sızıntısız split var” maddesi henüz kapatılmadı. Kod ve
-sözleşme hazırdır; gerçek artifact kanıtı henüz yoktur.
+Genel Definition of Done içindeki “veri manifesti, lisans, checksum, alan kökeni
+ve sızıntısız split var” maddesi henüz kapatılmadı. BUPT artifact kanıtı artık
+mevcuttur; ancak final hibrit benchmark'ın UCI/EUA/NEP katmanları ve gerçek split
+artifact'ı henüz üretilmedi.
 
 ## 7. Faz kabul kontrolü
 
@@ -207,7 +211,6 @@ sırası:
 6. schema validity, F1, critical recall, calibration, abstention ve latency/VRAM
    kapılarını validation üzerinde değerlendirmek.
 
-Ancak gerçek veri katmanı için paralel açık işler unutulmayacaktır: UCI/EUA ilk
-güvenli indirme adaylarıdır; BUPT lisans ve NEP erişim çözülmeden kullanıma hazır
-işaretlenmeyecektir.
-
+Gerçek veri katmanı için paralel açık işler unutulmayacaktır: BUPT yerel
+research-only kullanıma açılmıştır; UCI/EUA edinimi ve NEP erişim yanıtı hâlâ
+beklemektedir.

@@ -1,0 +1,52 @@
+{
+  "profile_version": "1.0.0",
+  "profiled_on": "2026-09-14",
+  "source_id": "bupt_edge_computing_dataset",
+  "source_commit": "04e664fab9cdb2a58d04ebc615cd74405e6062e2",
+  "archive": {
+    "filename": "Edge-Computing-Dataset-04e664fab9cdb2a58d04ebc615cd74405e6062e2.zip",
+    "size_bytes": 28964429,
+    "sha256": "5d89bd853a5300207892dad38070957b935a95ea02bfe1ec063e0c4829e21822",
+    "zip_entry_count": 102,
+    "uncompressed_size_bytes": 133919441
+  },
+  "raw_layout": {
+    "csv_files": 93,
+    "has_header_row": false,
+    "encoding": "UTF-8",
+    "strict_decode_failure_files": 0,
+    "replacement_character_count": 3759,
+    "total_rows": 482687,
+    "rows_by_city": {
+      "beijing": 96650,
+      "guangzhou": 311942,
+      "shanghai": 74095
+    }
+  },
+  "safe_prefix_validation": {
+    "policy": "Parse the stable first 18 comma-separated fields and discard the unquoted free-text tail.",
+    "accepted_rows": 476419,
+    "rejected_rows": 6268,
+    "accepted_ratio": 0.98701436,
+    "field_violation_counts_non_exclusive": {
+      "invalid_start_time": 6258,
+      "invalid_end_time": 6258,
+      "invalid_destination_ip": 10,
+      "invalid_source_ip": 1
+    },
+    "parser_rejection_counts_fail_fast": {
+      "start_time must be an ISO timestamp": 6258,
+      "destination_ip must be an IP address": 9,
+      "source_ip must be an IP address": 1
+    }
+  },
+  "privacy_policy": {
+    "raw_identifiers_retained_in_processed_data": false,
+    "raw_ips_retained_in_processed_data": false,
+    "raw_urls_retained_in_processed_data": false,
+    "raw_user_agents_retained_in_processed_data": false,
+    "entity_ids": "project-local keyed HMAC-SHA256",
+    "raw_archive_committed_to_git": false
+  },
+  "interpretation": "The source is usable for local non-commercial thesis training after deterministic rejection and pseudonymization. Rejected rows must never be silently repaired, and all experiment reports must disclose the rejection count and research-only/no-redistribution policy."
+}

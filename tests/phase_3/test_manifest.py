@@ -23,6 +23,7 @@ from task_offloading.data import (
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_PATH = ROOT / "configs" / "data_sources.v1.json"
 SCHEMA_PATH = ROOT / "schemas" / "dataset_manifest.schema.json"
+BUPT_PROFILE_PATH = ROOT / "configs" / "data_profiles" / "bupt_04e664f.json"
 
 
 def manifest() -> dict[str, object]:
@@ -53,12 +54,41 @@ def test_every_column_has_exactly_one_frozen_provenance_value() -> None:
             assert column["provenance"] in allowed
 
 
-def test_accessibility_is_not_misrepresented_as_license_permission() -> None:
+def test_bupt_research_statement_is_scoped_without_redistribution() -> None:
     values = manifest()
     bupt = source_by_id(values, "bupt_edge_computing_dataset")
     assert bupt["access_status"] == "public"
-    assert bupt["dataset_status"] == "license_pending"
-    assert not source_is_analysis_ready(bupt)
+    assert bupt["dataset_status"] == "schema_validated"
+    license_info = bupt["license"]
+    assert license_info["usage_scope"] == "research_only"  # type: ignore[index]
+    assert license_info["redistribution_allowed"] is False  # type: ignore[index]
+    assert source_is_analysis_ready(bupt)
+
+
+def test_bupt_manifest_and_non_sensitive_profile_are_aligned() -> None:
+    values = manifest()
+    bupt = source_by_id(values, "bupt_edge_computing_dataset")
+    with BUPT_PROFILE_PATH.open(encoding="utf-8") as handle:
+        profile = json.load(handle)
+
+    artifact = bupt["artifacts"][0]  # type: ignore[index]
+    assert profile["source_commit"] in bupt["version"]
+    assert profile["archive"]["filename"] == artifact["filename"]
+    assert profile["archive"]["size_bytes"] == artifact["size_bytes"]
+    assert profile["archive"]["sha256"] == artifact["checksum"]["value"]
+    validation = profile["safe_prefix_validation"]
+    assert validation["accepted_rows"] + validation["rejected_rows"] == 482_687
+    privacy = profile["privacy_policy"]
+    assert not any(
+        privacy[field]
+        for field in (
+            "raw_identifiers_retained_in_processed_data",
+            "raw_ips_retained_in_processed_data",
+            "raw_urls_retained_in_processed_data",
+            "raw_user_agents_retained_in_processed_data",
+            "raw_archive_committed_to_git",
+        )
+    )
 
 
 def test_downloaded_source_is_not_automatically_analysis_ready() -> None:
@@ -207,6 +237,7 @@ def test_mutable_reference_cannot_be_claimed_immutable() -> None:
 def test_license_status_fields_must_be_consistent() -> None:
     values = manifest()
     bupt = source_by_id(values, "bupt_edge_computing_dataset")
+    bupt["dataset_status"] = "license_pending"
     license_info = bupt["license"]
     assert isinstance(license_info, dict)
     license_info["verification_status"] = "verified"

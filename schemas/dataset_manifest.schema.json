@@ -170,7 +170,9 @@
         "official_url": { "type": "string", "format": "uri" },
         "citation_url": { "type": ["string", "null"], "format": "uri" },
         "version": { "type": "string", "minLength": 1 },
-        "version_kind": { "enum": ["doi", "release", "dated_snapshot", "mutable_ref"] },
+        "version_kind": {
+          "enum": ["doi", "release", "dated_snapshot", "git_commit", "mutable_ref"]
+        },
         "immutable_version": { "type": "boolean" },
         "access_status": { "enum": ["public", "request_required", "survey_required", "unavailable"] },
         "dataset_status": {

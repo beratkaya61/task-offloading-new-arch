@@ -1,5 +1,10 @@
 """Data provenance, normalization, checksum, and split contracts."""
 
+from task_offloading.data.bupt import (
+    BuptParseError,
+    BuptTraceRecord,
+    parse_bupt_line,
+)
 from task_offloading.data.manifest import (
     assert_status_transition,
     checksum_matches,
@@ -32,6 +37,8 @@ from task_offloading.data.types import (
 
 __all__ = [
     "BenchmarkKind",
+    "BuptParseError",
+    "BuptTraceRecord",
     "DataSample",
     "DataSplit",
     "LeakageReport",
@@ -49,6 +56,7 @@ __all__ = [
     "content_sha256",
     "group_holdout_split",
     "load_and_validate_manifest",
+    "parse_bupt_line",
     "sha256_file",
     "source_is_analysis_ready",
     "validate_manifest_semantics",

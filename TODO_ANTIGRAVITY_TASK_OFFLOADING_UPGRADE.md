@@ -167,7 +167,9 @@ Eski repo doğrudan taşınmayacaktır. Fizik hataları regresyon testine, eski 
 - Semantik schema: `schemas/semantic_requirements.schema.json`.
 - Ground truth protokolü: 20 pilot + 240 ana Türkçe görev, iki gerçek insan, tam çift-kör etiketleme ve adjudication.
 - Trace kaynakları doğal ortak olay gibi birleştirilmeyecek; final benchmark `trace-driven-hybrid` diye adlandırılacak.
-- BUPT lisans doğrulamasına, NEP-small erişim başvurusuna bağlıdır; UCI/EUA doğrulanmış başlangıç kaynaklarıdır.
+- BUPT yalnız resmî research-use beyanı ve no-redistribution sınırıyla yerel
+  deneylere açılır; NEP-small erişim başvurusuna bağlıdır. UCI/EUA açık başlangıç
+  kaynaklarıdır.
 - Qwen3-4B/Qwen3-8B nihai seçimi Faz 4 validation kapılarında yapılacaktır.
 - Fiziksel testbed çekirdek Definition of Done koşulu değil, isteğe bağlı ek doğrulamadır.
 - Faz 1 kanıtı: `phase_reports/PHASE_1_RESEARCH_CONTRACT.md`, 16/16 test geçti.
@@ -216,11 +218,30 @@ Eski repo doğrudan taşınmayacaktır. Fizik hataları regresyon testine, eski 
   denetlenir; normalizer yalnız train split'ine fit edilir.
 - `synthetic_v1` ile `trace_driven_hybrid_v1` ayrı benchmark'lardır. Hibrit ad,
   farklı kaynakların doğal olarak ortak ölçülmüş olaylar olduğu iddiasını taşımaz.
-- UCI MEC ve EUA başlangıç adayıdır; BUPT lisans, NEP-small erişim koşulu
-  çözülmeden kullanılmaz. T-Drive ve Alibaba yalnız açık kısıtlarıyla ikincil
-  adaydır.
+- UCI MEC ve EUA başlangıç adayıdır. BUPT sabit commit ve research-only sınırıyla
+  yerel kullanıma açılmıştır; NEP-small erişim yanıtı beklenir. T-Drive ve
+  Alibaba yalnız açık kısıtlarıyla ikincil adaydır.
 - Faz 3 yazılım/sözleşme kapsamı 61 Faz 3 testiyle tamamlandı; tüm 111 test,
-  Ruff ve strict mypy geçti, toplam branch coverage yüzde 91'dir. Henüz hiçbir
-  ham kaynak indirilmediği veya `schema_validated` olmadığı için genel
-  Definition of Done içindeki veri manifesti maddesi açık kalır.
+  Ruff ve strict mypy geçti, toplam branch coverage yüzde 91'dir. Faz 3'ün ilk
+  kapanışında ham kaynak yoktu; aşağıdaki Faz 3A kararıyla BUPT sonradan
+  `schema_validated` oldu. Final hibrit veri/split artifact'ı tamamlanmadığı için
+  genel Definition of Done içindeki veri manifesti maddesi açık kalır.
 - Faz 3 kanıtı `phase_reports/PHASE_3_DATA_PROVENANCE_AND_SPLITS.md` içindedir.
+
+## 12. Faz 3A BUPT edinim kararları
+
+- NEP-small talebi 2026-09-14'te gönderildi; 2026-09-21 ilk takip tarihidir.
+- BUPT kaynak commit'i `04e664fab9cdb2a58d04ebc615cd74405e6062e2`
+  olarak sabitlendi ve ham ZIP yalnız `data/raw/` altında tutulur.
+- Yerel SHA-256
+  `5d89bd853a5300207892dad38070957b935a95ea02bfe1ec063e0c4829e21822`
+  olarak doğrulandı; ham artifact Git'e girmez.
+- Resmî research-use beyanı yerel, ticari olmayan tez kullanımı için dayanak;
+  ham ve satır seviyesinde türetilmiş verinin yeniden dağıtımı yasak kabul edilir.
+- 482.687 satırın 476.419'u (%98,70) güvenli prefix şemasını geçti; 6.268 bozuk
+  satır onarılmadan deterministik reddedilir.
+- Ham URL, IP, User-Agent ve cihaz kimliği modele girmez. Cihaz/istasyon
+  kimlikleri proje-yerel anahtarlı HMAC-SHA256 ile pseudonymize edilir.
+- Profil `configs/data_profiles/bupt_04e664f.json`, erişim takibi
+  `docs/DATA_ACCESS_REQUESTS.md`, kanıt raporu
+  `phase_reports/PHASE_3A_BUPT_ACQUISITION.md` içindedir.

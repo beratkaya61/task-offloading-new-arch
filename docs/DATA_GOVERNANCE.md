@@ -62,8 +62,8 @@ indirildikten sonra aynı değer yerelde üretilmeden `verified` olmaz.
 |---|---|---|---|
 | UCI 859 | Ölçülmüş edge turnaround kalibrasyonu | `catalogued` | Dosya henüz indirilip hash/şema doğrulanmadı |
 | EUA | Avustralya kullanıcı/edge konumu | `catalogued` | Mutable `master`, commit SHA ve artifact hash gerekli |
-| BUPT | Oturum, byte, RAT, hücre, servis metadata | `license_pending` | Public repo var ama açık dataset lisansı yok |
-| NEP-small | Edge CPU/bant/RTT/kapasite replay | `access_pending` | Başvuru, research-only ve offline paylaşım yasağı |
+| BUPT | Oturum, byte, RAT, hücre, servis metadata | `schema_validated` | Yerel research-only; ham/türev satır dağıtımı yok |
+| NEP-small | Edge CPU/bant/RTT/kapasite replay | `access_pending` | Talep 2026-09-14'te gönderildi; yanıt bekleniyor |
 | T-Drive | Mobility stress | `catalogued` | Non-commercial ve yeniden dağıtım yasaklı |
 | Alibaba 2018 | İkincil cluster/OOD stresi | `access_pending` | Survey/erişim ve lisans kapsamı; MEC değil |
 
@@ -73,9 +73,16 @@ UCI 859 resmî sayfası 4.000 ölçüm ve CC BY 4.0 bildirir:
 EUA resmî reposu gerçek dünya kaynaklı Avustralya konumlarını ve MIT lisansını
 gösterir: <https://github.com/PhuLai/eua-dataset>
 
-BUPT resmî reposu 480 binden fazla mobil kayıt ve 22 alan tarif eder, fakat
-2026-09-14 denetiminde açık lisans bulunmadı:
+BUPT resmî reposu 480 binden fazla mobil kayıt ve 22 alan tarif eder. Sabit README
+veriyi Edge Computing araştırmaları için herkese açık yayımladığını ve ilgili
+makaleye atıf istediğini belirtir. Genel yeniden dağıtım izni bulunmadığı için
+proje bunu yalnız yerel research-only kullanım olarak yorumlar:
 <https://github.com/BuptMecMigration/Edge-Computing-Dataset>
+
+2026-09-14'te commit `04e664f...` indirildi. Yerel SHA-256 doğrulaması ve ham
+şema profili `configs/data_profiles/bupt_04e664f.json` içinde kayıtlıdır. 482.687
+satırın 476.419'u güvenli ilk 18 alanı geçti; kalan 6.268 satır deterministik
+olarak reddedilir. Ham URL/IP/User-Agent/kimlik değerleri işlenmiş kayda girmez.
 
 NEP-small resmî açıklaması 14 edge site, Haziran 2020, beş dakikalık kayıtları;
 yalnız araştırma kullanımını ve offline paylaşım yasağını bildirir:
@@ -166,4 +173,3 @@ katmanına bağlı olduğunu ayrıca gösterecektir.
 8. Önce split üret; sonra normalizer'ı yalnız train üzerinde fit et.
 9. Split planı, normalizer istatistikleri, kaynak checksum ve kod commit'ini
    birlikte deney artifact'ına yaz.
-

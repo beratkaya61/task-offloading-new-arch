@@ -63,6 +63,15 @@ Bu dosya günlük ilerleme listesidir. Bilimsel kurallar için `TODO_ANTIGRAVITY
 - [ ] Seçilen LLM/prompt/parser/cache sürümünü dondur.
 - [ ] Önceden tanımlı kalite kapısını geçir ve Faz 4 raporunu yaz.
 
+## Paralel gerçek veri edinimi
+
+- [x] BUPT commit'ini sabitle, indir, SHA-256 ve ZIP bütünlüğünü doğrula.
+- [x] BUPT için privacy-minimum safe-prefix ayrıştırıcısı ve veri profili üret.
+- [x] NEP-small erişim talebini gönder: 2026-09-14; yanıt bekleniyor.
+- [ ] NEP-small yanıtını 2026-09-21'de kontrol et; gerekirse takip e-postası gönder.
+- [ ] UCI MEC 859 artifact'ını indirip checksum/şema doğrula.
+- [ ] EUA reposunu commit SHA ile sabitleyip checksum/şema doğrula.
+
 ## Faz 5 — Baselines ve oracle
 
 - [ ] Always-local/edge/cloud, random ve valid-random.
@@ -123,3 +132,4 @@ Bu faz çekirdek tez kabul koşulu değildir. Yapılmazsa sonuçlar sentetik ve 
 **Faz 4:** Önce 20 görevlik pilot semantik corpus ve iki bağımsız gerçek insan
 etiketleme/adjudication akışını tamamla; sonra rule, TF-IDF/logreg, küçük encoder
 ve zero/few-shot LLM baseline'larını aynı dondurulmuş test kümesinde karşılaştır.
+Gerçek veri edinimi yukarıdaki ayrı kontrol listesiyle paralel yürütülür.

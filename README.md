@@ -11,19 +11,23 @@ Başlangıç belgeleri:
 - [Faz 2 simülasyon çekirdeği sözleşmesi](docs/SIMULATION_CORE.md)
 - [Faz 2 kanıt raporu](phase_reports/PHASE_2_DETERMINISTIC_SIMULATION_CORE.md)
 - [Veri yönetişimi ve split sözleşmesi](docs/DATA_GOVERNANCE.md)
+- [Veri erişim talebi takibi](docs/DATA_ACCESS_REQUESTS.md)
 - [Faz 3 kanıt raporu](phase_reports/PHASE_3_DATA_PROVENANCE_AND_SPLITS.md)
+- [Faz 3A BUPT edinim raporu](phase_reports/PHASE_3A_BUPT_ACQUISITION.md)
 - [Hesaplama donanımı envanteri](docs/COMPUTE_INVENTORY.md)
 - [Faz bazlı görev listesi](task.md)
 - [Bilimsel ve mimari sözleşme](TODO_ANTIGRAVITY_TASK_OFFLOADING_UPGRADE.md)
 
-Mevcut durum: Faz 0–3 tamamlandı. Son doğrulamada 111/111 test, Ruff ve strict
+Mevcut durum: Faz 0–3 tamamlandı. Son doğrulamada 124/124 test, Ruff ve strict
 mypy geçti; toplam branch coverage yüzde 91'dir. Gymnasium ile event replay aynı
 fizik çekirdeğini kullanır ve parity testi geçmiştir. Faz 3'te veri manifesti,
 alan kökeni sözlüğü, checksum/statü kapıları, train-only normalizer ve sızıntı
-denetimli split sistemi kuruldu. Bu ifade veri altyapısının hazır olduğunu anlatır;
-henüz hiçbir gerçek veri kaynağı indirilmiş veya `schema_validated` statüsüne
-ulaşmış değildir. Sıradaki tek iş Faz 4 semantik benchmark'tır. Eski kaynak kod
-taşınmamıştır.
+denetimli split sistemi kuruldu. BUPT'nin commit ile sabitlenmiş 482.687 satırlık
+ham artifact'ı yerelde edinildi; checksum, şema profili ve mahremiyet-minimum
+adaptörü doğrulandı. Ham artifact Git tarafından yok sayılır ve yalnız
+pseudonymized/türetilmiş alanlar eğitime açılır. UCI/EUA henüz indirilmedi;
+NEP-small erişim talebi 2026-09-14 tarihinde gönderildi ve yanıt bekleniyor.
+Sıradaki ana iş Faz 4 semantik benchmark'tır. Eski kaynak kod taşınmamıştır.
 
 Kurulum ve bütün testler:
 

@@ -151,29 +151,29 @@
       "title": "BUPT Edge Computing Dataset",
       "role": "Mobile session arrivals, traffic volumes, cell transitions, RAT and service metadata",
       "official_url": "https://github.com/BuptMecMigration/Edge-Computing-Dataset",
-      "citation_url": "https://doi.org/10.1109/JIOT.2022.3172755",
-      "version": "master; no release or immutable pin recorded",
-      "version_kind": "mutable_ref",
-      "immutable_version": false,
+      "citation_url": "https://doi.org/10.1109/JIOT.2022.3176631",
+      "version": "git commit 04e664fab9cdb2a58d04ebc615cd74405e6062e2",
+      "version_kind": "git_commit",
+      "immutable_version": true,
       "access_status": "public",
-      "dataset_status": "license_pending",
+      "dataset_status": "schema_validated",
       "license": {
-        "identifier": "NOASSERTION",
-        "verification_status": "pending",
-        "usage_scope": "unknown",
-        "redistribution_allowed": null,
-        "evidence_url": null,
-        "notes": "No explicit dataset license was visible in the official repository on 2026-09-14. Public access is not treated as redistribution permission."
+        "identifier": "LicenseRef-BUPT-Public-Research-Statement",
+        "verification_status": "verified",
+        "usage_scope": "research_only",
+        "redistribution_allowed": false,
+        "evidence_url": "https://github.com/BuptMecMigration/Edge-Computing-Dataset/blob/04e664fab9cdb2a58d04ebc615cd74405e6062e2/README.MD",
+        "notes": "The pinned README states that the ISP dataset is publicly released for Edge Computing research and requests citation of Liu, Li and Wang (IEEE IoT Journal, 2022). No general redistribution license is present, so this project conservatively permits only local non-commercial thesis research and forbids raw/derived-row redistribution. Written clarification remains desirable but is not an analysis gate under this policy."
       },
       "artifacts": [
         {
           "artifact_id": "bupt_data_snapshot",
-          "filename": "Edge-Computing-Dataset-Data.snapshot",
-          "size_bytes": null,
+          "filename": "Edge-Computing-Dataset-04e664fab9cdb2a58d04ebc615cd74405e6062e2.zip",
+          "size_bytes": 28964429,
           "checksum": {
             "algorithm": "sha256",
-            "value": null,
-            "verification": "missing"
+            "value": "5d89bd853a5300207892dad38070957b935a95ea02bfe1ec063e0c4829e21822",
+            "verification": "verified"
           }
         }
       ],
@@ -184,7 +184,7 @@
           "unit": null,
           "provenance": "observed",
           "source_fields": ["Phone Number"],
-          "transform": "salted project-local rehash before processed storage",
+          "transform": "project-local keyed HMAC-SHA256 before processed storage",
           "nullable": false
         },
         {
@@ -201,8 +201,8 @@
           "description": "Mobile network session start time",
           "unit": "ISO-8601 datetime",
           "provenance": "observed",
-          "source_fields": ["Start Time", "Date"],
-          "transform": "parse with documented timezone retained separately",
+          "source_fields": ["Start Time", "source filename date"],
+          "transform": "parse headerless positional field 8; retain source-local time semantics and filename date",
           "nullable": false
         },
         {
@@ -229,12 +229,12 @@
           "unit": null,
           "provenance": "derived",
           "source_fields": ["URL", "Destination Port", "Content-Type"],
-          "transform": "documented deterministic categorizer; raw URLs never enter the LLM corpus",
+          "transform": "documented deterministic categorizer using privacy-safe metadata only; raw URLs, IPs and user agents never enter the LLM corpus",
           "nullable": true
         }
       ],
       "raw_data_committed_to_git": false,
-      "notes": "Useful source, but blocked from benchmark use until license scope and immutable revision are recorded."
+      "notes": "Locally acquired and validated on 2026-09-14. The archive contains 93 headerless CSV files and 482687 rows. A deterministic safe-prefix policy accepts 476419 rows (98.70%) and rejects 6268 malformed rows. Only pseudonymized/derived fields may enter training; the raw archive stays outside Git."
     },
     {
       "id": "edge_workloads_traces_nep_small",
