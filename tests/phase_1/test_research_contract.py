@@ -8,7 +8,6 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError
 
-
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMA_PATH = ROOT / "schemas" / "semantic_requirements.schema.json"
 CONTRACT_PATH = ROOT / "configs" / "research_contract.json"

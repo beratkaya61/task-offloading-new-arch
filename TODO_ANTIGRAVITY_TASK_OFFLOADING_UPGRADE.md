@@ -144,7 +144,7 @@ Kutunun işaretlenmesi akademik iddia değildir; rapordaki kanıt akademik iddia
 - [ ] Tez sorusu ve hipotezleri dondurulmuş.
 - [ ] Semantik ground truth iki etiketçi ve anlaşma analiziyle mevcut.
 - [ ] LLM semantik çıkarıcı bağımsız benchmark’ta ölçülmüş ve cache’lenmiş.
-- [ ] Tek fizik çekirdeği oracle/parity/invariant testlerini geçiyor.
+- [x] Tek fizik çekirdeği oracle/parity/invariant testlerini geçiyor.
 - [ ] Veri manifesti, lisans, checksum, alan kökeni ve sızıntısız split var.
 - [ ] Güçlü sabit/sezgisel/oracle baselines tamam.
 - [ ] Semantiksiz/rule/ML/LLM/human-oracle politika karşılaştırmaları tamam.
@@ -171,3 +171,28 @@ Eski repo doğrudan taşınmayacaktır. Fizik hataları regresyon testine, eski 
 - Qwen3-4B/Qwen3-8B nihai seçimi Faz 4 validation kapılarında yapılacaktır.
 - Fiziksel testbed çekirdek Definition of Done koşulu değil, isteğe bağlı ek doğrulamadır.
 - Faz 1 kanıtı: `phase_reports/PHASE_1_RESEARCH_CONTRACT.md`, 16/16 test geçti.
+
+## 10. Faz 2 dondurulan kararları
+
+- `src/task_offloading/sim/core.py::transition` kanal sonucu, gecikme, FCFS
+  kuyruk, cihaz enerjisi, failure, constraint ve reward hesabının tek kaynağıdır.
+- Domain nesneleri immutable ve SI birimleri alan adlarında açıktır; belirsiz
+  fizik tuple'ları kullanılmaz.
+- Bütün rastgelelik core dışında önceden örneklenmiş `ExogenousEvent` olarak
+  verilir; adlandırılmış NumPy `SeedSequence` akışları çağrı sırasından bağımsızdır.
+- Gymnasium ve event replay adaptörleri aynı geçiş fonksiyonunu çağırır; parity
+  testi transition kayıtlarının ve final state'in birebir eşitliğini doğrular.
+- Bilinen unavailability ve açık execution policy action mask kaynağıdır;
+  gelecekteki failure maskeye sızmaz, unknown semantik hard mask üretmez.
+- Mask-ablation eylem görünürlüğünü değiştirir; fiziksel failure ve hard
+  constraint cezasını silmez.
+- Reward Faz 1'de dondurulan negatif normalize bileşen toplamıdır; queue wait
+  latency içindedir ve ikinci kez cezalandırılmaz.
+- 34 Faz 2 testi ile unit/property/invariant/oracle/determinism/mask/parity/API
+  kanıtları geçti; tüm 50 test, Ruff ve strict mypy temizdir; branch coverage
+  yüzde 88'dir.
+- Fizik denklemleri ve sınırlar `docs/SIMULATION_CORE.md`, faz kanıtı
+  `phase_reports/PHASE_2_DETERMINISTIC_SIMULATION_CORE.md` içindedir.
+- NVIDIA Quadro RTX 4000 (8 GB GDDR6) ikinci makine bilgisi Faz 4 planlama
+  girdisi olarak `docs/COMPUTE_INVENTORY.md` içinde kaydedildi; model seçimi
+  henüz yapılmadı.

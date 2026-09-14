@@ -1,2 +1,4 @@
-# Phase 1: JSON Schema validation. Later phases append their own pinned ranges.
+# Runtime and scientific-core dependencies.
+gymnasium>=1.1,<2
 jsonschema>=4.23,<5
+numpy>=2.0,<3

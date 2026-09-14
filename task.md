@@ -35,13 +35,13 @@ Bu dosya günlük ilerleme listesidir. Bilimsel kurallar için `TODO_ANTIGRAVITY
 
 ## Faz 2 — Deterministik simülasyon çekirdeği
 
-- [ ] Paketleme, minimal bağımlılıklar, lint/type/test araçlarını kur.
-- [ ] Birimli domain tiplerini oluştur.
-- [ ] Kanal, gecikme, kuyruk, enerji ve başarısızlık modellerini tek çekirdekte yaz.
-- [ ] Gymnasium adaptörü ile event adaptörünü aynı çekirdeğe bağla.
-- [ ] Seed/RNG sözleşmesini uygula.
-- [ ] Unit, property/invariant, oracle ve parity testlerini geçir.
-- [ ] Faz 2 raporunu yaz.
+- [x] Paketleme, minimal bağımlılıklar, lint/type/test araçlarını kur.
+- [x] Birimli domain tiplerini oluştur.
+- [x] Kanal, gecikme, kuyruk, enerji ve başarısızlık modellerini tek çekirdekte yaz.
+- [x] Gymnasium adaptörü ile event adaptörünü aynı çekirdeğe bağla.
+- [x] Seed/RNG sözleşmesini uygula.
+- [x] Unit, property/invariant, oracle ve parity testlerini geçir: 34/34 Faz 2 testi geçti.
+- [x] Faz 2 raporunu yaz.
 
 ## Faz 3 — Veri kökeni ve split sistemi
 
@@ -120,4 +120,5 @@ Bu faz çekirdek tez kabul koşulu değildir. Yapılmazsa sonuçlar sentetik ve 
 
 ## Sıradaki tek iş
 
-**Faz 2:** Deterministik simülasyon çekirdeği. Önce paket/domain tipleri; sonra tek fizik geçişi ve invariant/oracle/parity testleri.
+**Faz 3:** Veri manifest/provenance sözleşmesi; ardından training-only normalizer,
+kronolojik/entity/application holdout split'leri ve leakage testleri.
