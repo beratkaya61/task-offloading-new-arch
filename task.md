@@ -23,14 +23,15 @@ Bu dosya günlük ilerleme listesidir. Bilimsel kurallar için `TODO_ANTIGRAVITY
 
 ## Faz 1 — Araştırma sözleşmesi
 
-- [ ] Tez başlığını ve tek ana araştırma sorusunu dondur.
-- [ ] Sistem sınırını yaz: tek/çok cihaz, edge sayısı, cloud, zaman modeli.
-- [ ] MDP/POMDP tanımını yaz: durum, eylem, geçiş, ödül, horizon.
-- [ ] Birim ve sembol tablosu oluştur.
-- [ ] Semantik JSON Schema ve bilinmeyen/abstention politikasını oluştur.
-- [ ] İnsan annotasyon kılavuzu ve anlaşmazlık çözümünü yaz.
-- [ ] H1–H4 hipotezlerini, ana metrikleri ve istatistik planını önceden kaydet.
-- [ ] Faz 1 testlerini/şema doğrulamasını çalıştır ve raporla.
+- [x] Tez başlığını ve tek ana araştırma sorusunu dondur.
+- [x] Sistem sınırını yaz: tek/çok cihaz, edge sayısı, cloud, zaman modeli.
+- [x] MDP/POMDP tanımını yaz: durum, eylem, geçiş, ödül, horizon.
+- [x] Birim ve sembol tablosu oluştur.
+- [x] Semantik JSON Schema ve bilinmeyen/abstention politikasını oluştur.
+- [x] İnsan annotasyon kılavuzu ve anlaşmazlık çözümünü yaz.
+- [x] H1–H4 hipotezlerini, ana metrikleri ve istatistik planını önceden kaydet.
+- [x] Trace-driven-hybrid veri rolleri, model seçim kapısı ve testbed sınırını dondur.
+- [x] Faz 1 testlerini/şema doğrulamasını çalıştır ve raporla: 16/16 geçti.
 
 ## Faz 2 — Deterministik simülasyon çekirdeği
 
@@ -98,7 +99,9 @@ Bu dosya günlük ilerleme listesidir. Bilimsel kurallar için `TODO_ANTIGRAVITY
 - [ ] Gerçek resource allocation gerekiyorsa inner solver/hibrit eylem.
 - [ ] Her özellik için ayrı ablation ve Faz 8 raporu.
 
-## Faz 9 — Küçük testbed
+## Faz 9 — İsteğe bağlı küçük testbed/emulation
+
+Bu faz çekirdek tez kabul koşulu değildir. Yapılmazsa sonuçlar sentetik ve trace-driven-hybrid simülasyon olarak sınırlandırılır.
 
 - [ ] Donanım ve ağ envanteri.
 - [ ] Ortak zamanlı görev-niyet-sistem-sonuç telemetrisi.
@@ -117,5 +120,4 @@ Bu dosya günlük ilerleme listesidir. Bilimsel kurallar için `TODO_ANTIGRAVITY
 
 ## Sıradaki tek iş
 
-**Faz 1:** Araştırma sözleşmesi, MDP ve semantik JSON Schema. Kod mimarisi ancak bunlar netleşince başlatılacak.
-
+**Faz 2:** Deterministik simülasyon çekirdeği. Önce paket/domain tipleri; sonra tek fizik geçişi ve invariant/oracle/parity testleri.

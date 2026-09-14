@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "sem-tr-0002",
+  "language": "tr",
+  "domain": {
+    "value": null,
+    "status": "not_stated",
+    "evidence": [],
+    "confidence": 0.9
+  },
+  "latency": {
+    "class": null,
+    "max_ms": null,
+    "status": "not_stated",
+    "evidence": [],
+    "confidence": 0.9
+  },
+  "privacy": {
+    "data_class": null,
+    "status": "not_stated",
+    "evidence": [],
+    "confidence": 0.9
+  },
+  "execution_policy": {
+    "device": "unknown",
+    "edge": "unknown",
+    "cloud": "unknown",
+    "status": "not_stated",
+    "evidence": [],
+    "confidence": 0.9
+  },
+  "reliability": {
+    "tier": null,
+    "min_success_probability": null,
+    "status": "not_stated",
+    "evidence": [],
+    "confidence": 0.9
+  },
+  "accuracy": {
+    "tier": null,
+    "min_score": null,
+    "metric": null,
+    "status": "not_stated",
+    "evidence": [],
+    "confidence": 0.9
+  },
+  "energy_priority": {
+    "value": null,
+    "status": "not_stated",
+    "evidence": [],
+    "confidence": 0.9
+  },
+  "divisibility": {
+    "value": null,
+    "status": "not_stated",
+    "evidence": [],
+    "confidence": 0.9
+  },
+  "abstained_fields": [
+    "domain",
+    "latency",
+    "privacy",
+    "execution_policy",
+    "reliability",
+    "accuracy",
+    "energy_priority",
+    "divisibility"
+  ],
+  "overall_confidence": 0.9
+}

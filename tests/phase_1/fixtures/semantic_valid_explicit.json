@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0.0",
+  "task_id": "sem-tr-0001",
+  "language": "tr",
+  "domain": {
+    "value": "industrial",
+    "status": "explicit",
+    "evidence": [
+      "fabrika kalite kontrol kamerası"
+    ],
+    "confidence": 0.9
+  },
+  "latency": {
+    "class": "real_time",
+    "max_ms": 100,
+    "status": "explicit",
+    "evidence": [
+      "100 ms içinde"
+    ],
+    "confidence": 0.9
+  },
+  "privacy": {
+    "data_class": "restricted",
+    "status": "explicit",
+    "evidence": [
+      "ticari sır niteliğindeki görüntü"
+    ],
+    "confidence": 0.9
+  },
+  "execution_policy": {
+    "device": "allowed",
+    "edge": "allowed",
+    "cloud": "forbidden",
+    "status": "explicit",
+    "evidence": [
+      "cihazda veya tesis içindeki edge sunucusunda işlenmeli; cloud'a gönderilmemeli"
+    ],
+    "confidence": 0.9
+  },
+  "reliability": {
+    "tier": "high",
+    "min_success_probability": 0.99,
+    "status": "explicit",
+    "evidence": [
+      "en az yüzde 99 başarı"
+    ],
+    "confidence": 0.9
+  },
+  "accuracy": {
+    "tier": "high",
+    "min_score": 0.95,
+    "metric": "F1",
+    "status": "explicit",
+    "evidence": [
+      "F1 skoru en az 0.95"
+    ],
+    "confidence": 0.9
+  },
+  "energy_priority": {
+    "value": "high",
+    "status": "explicit",
+    "evidence": [
+      "pil tüketimi öncelikle azaltılmalı"
+    ],
+    "confidence": 0.9
+  },
+  "divisibility": {
+    "value": "indivisible",
+    "status": "explicit",
+    "evidence": [
+      "görüntü tek parça olarak işlenmeli"
+    ],
+    "confidence": 0.9
+  },
+  "abstained_fields": [],
+  "overall_confidence": 0.9
+}

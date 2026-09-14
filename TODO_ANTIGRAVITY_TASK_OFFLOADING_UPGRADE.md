@@ -150,7 +150,7 @@ Kutunun işaretlenmesi akademik iddia değildir; rapordaki kanıt akademik iddia
 - [ ] Semantiksiz/rule/ML/LLM/human-oracle politika karşılaştırmaları tamam.
 - [ ] En az 5 seed, %95 CI, planlı test ve effect size mevcut.
 - [ ] p95/p99, DMR, enerji, constraint, fairness, overhead ve collapse raporlu.
-- [ ] Sentetik, hibrit trace ve küçük testbed sonuçlarının sınırları ayrı yazılmış.
+- [ ] Sentetik ve hibrit trace sonuçlarının sınırları ayrı yazılmış; testbed yapılırsa ayrı ek doğrulama olarak raporlanmış.
 - [ ] GNN/partial/resource allocation iddiaları yalnız gerçekten uygulanmışsa başlıkta.
 - [ ] Bütün deneyler tek komut/config ve sürümlü manifestlerle yeniden üretilebilir.
 - [ ] Negative results ve threats to validity tezde açıkça bulunuyor.
@@ -159,3 +159,15 @@ Kutunun işaretlenmesi akademik iddia değildir; rapordaki kanıt akademik iddia
 
 Eski repo doğrudan taşınmayacaktır. Fizik hataları regresyon testine, eski veri üretim sorunları leakage/provenance testine, çökmüş politikalar collapse testine dönüştürülecektir. Yeni kod başlamadan önce Faz 1 araştırma sözleşmesi tamamlanmalıdır.
 
+## 9. Faz 1 dondurulan kararları
+
+- Araştırma sözleşmesi: `docs/RESEARCH_CONTRACT.md` ve `configs/research_contract.json`.
+- İlk sistem: 20 cihaz, 3 edge, 1 cloud; olay indeksli 512 karar.
+- İlk eylem uzayı: `local / edge_0 / edge_1 / edge_2 / cloud`.
+- Semantik schema: `schemas/semantic_requirements.schema.json`.
+- Ground truth protokolü: 20 pilot + 240 ana Türkçe görev, iki gerçek insan, tam çift-kör etiketleme ve adjudication.
+- Trace kaynakları doğal ortak olay gibi birleştirilmeyecek; final benchmark `trace-driven-hybrid` diye adlandırılacak.
+- BUPT lisans doğrulamasına, NEP-small erişim başvurusuna bağlıdır; UCI/EUA doğrulanmış başlangıç kaynaklarıdır.
+- Qwen3-4B/Qwen3-8B nihai seçimi Faz 4 validation kapılarında yapılacaktır.
+- Fiziksel testbed çekirdek Definition of Done koşulu değil, isteğe bağlı ek doğrulamadır.
+- Faz 1 kanıtı: `phase_reports/PHASE_1_RESEARCH_CONTRACT.md`, 16/16 test geçti.

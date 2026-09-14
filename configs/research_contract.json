@@ -1,0 +1,260 @@
+{
+  "contract_version": "1.0.0",
+  "status": "frozen_for_phase_2",
+  "title": {
+    "tr": "İz Güdümlü MEC Sistemlerinde İnsan Doğrulamalı LLM Semantik Gereksinimleriyle Derin Pekiştirmeli Öğrenme Tabanlı Görev Aktarımı",
+    "en": "Deep Reinforcement Learning-Based Task Offloading with Human-Validated LLM Semantic Requirements in Trace-Driven MEC Systems"
+  },
+  "research_question": "Ağ durumunu ve doğru eylemi görmeyen, bağımsız insan ground truth'una göre doğrulanıp dondurulan bir LLM semantik gereksinim çıkarıcısı; aynı MEC fiziği, görevler ve dışsal olaylar altında semantiksiz ve LLM'siz semantik taban çizgilerine göre kısıt ihlallerini azaltıp görülmemiş koşullara genellemeyi iyileştiriyor mu?",
+  "decision_model": {
+    "kind": "event_indexed_finite_horizon_mdp",
+    "decision_epoch": "one decision per task arrival",
+    "service_completion": "asynchronous completions are processed before the next arrival",
+    "base_topology": {
+      "devices": 20,
+      "edge_servers": 3,
+      "cloud_regions": 1
+    },
+    "episode_decisions": 512,
+    "action_space": [
+      "local",
+      "edge_0",
+      "edge_1",
+      "edge_2",
+      "cloud"
+    ],
+    "initial_scope": {
+      "binary_offloading_only": true,
+      "partial_offloading": false,
+      "resource_allocation_action": false,
+      "fixed_edge_count": true,
+      "centralized_policy": true
+    },
+    "observable_state_groups": [
+      "task_physics",
+      "cached_semantic_requirements",
+      "semantic_unknown_and_confidence_masks",
+      "current_device_state",
+      "candidate_link_metrics",
+      "edge_queue_and_capacity",
+      "cloud_backhaul_and_capacity",
+      "availability_and_failure_flags",
+      "time_context",
+      "previous_action_if_switching_cost_is_enabled"
+    ],
+    "action_mask_sources": [
+      "explicit_execution_policy",
+      "target_unavailability",
+      "physically_impossible_admission"
+    ],
+    "unknown_semantics_create_hard_mask": false
+  },
+  "semantic_isolation": {
+    "llm_inputs": [
+      "task_text",
+      "user_policy_text"
+    ],
+    "llm_forbidden_inputs": [
+      "network_state",
+      "link_metrics",
+      "server_load",
+      "queue_state",
+      "candidate_action",
+      "oracle_action",
+      "reward",
+      "outcome"
+    ],
+    "llm_output_schema": "schemas/semantic_requirements.schema.json",
+    "live_llm_calls_during_rl": false,
+    "cache_before_rl": true,
+    "reward_for_llm_agreement": false,
+    "unknown_policy": "preserve_null_and_abstain; never invent an unstated constraint"
+  },
+  "reward": {
+    "definition": "negative_normalized_cost",
+    "formula": "-(1*latency_norm + 1*energy_norm + 5*deadline_miss + 5*soft_constraint_violation + 10*failure_or_drop + 20*hard_constraint_violation)",
+    "weights": {
+      "latency_norm": 1.0,
+      "energy_norm": 1.0,
+      "deadline_miss": 5.0,
+      "soft_constraint_violation": 5.0,
+      "failure_or_drop": 10.0,
+      "hard_constraint_violation": 20.0
+    },
+    "normalization_fit": "training_split_only",
+    "latency_includes_queue_wait": true,
+    "separate_queue_double_penalty": false,
+    "llm_agreement_component": false,
+    "sensitivity_multipliers": [
+      0.5,
+      1.0,
+      2.0
+    ]
+  },
+  "annotation": {
+    "pilot_unique_items": 20,
+    "main_unique_items": 240,
+    "independent_human_annotators": 2,
+    "both_annotate_every_main_item": true,
+    "blind_independent_pass": true,
+    "model_suggestions_visible": false,
+    "hidden_repeat_fraction": 0.05,
+    "adjudication": "consensus_after_raw_annotations_are_locked",
+    "raw_annotations_immutable": true,
+    "minimum_field_kappa": 0.7,
+    "target_field_kappa": 0.8,
+    "unknown_and_ambiguous_are_valid_labels": true,
+    "annotator_claim": "two actual humans; no simulated identities"
+  },
+  "semantic_corpus": {
+    "languages": [
+      "tr"
+    ],
+    "target_language_balance": {
+      "tr": 240
+    },
+    "origins": [
+      "standard_derived",
+      "trace_conditioned",
+      "human_authored",
+      "llm_paraphrased",
+      "adversarial"
+    ],
+    "gold_source": "two_human_adjudicated",
+    "generation_model_may_define_gold": false,
+    "split_ratio": {
+      "train": 0.6,
+      "validation": 0.2,
+      "test": 0.2
+    },
+    "split_group_keys": [
+      "scenario_family_id",
+      "paraphrase_family_id",
+      "source_entity_id"
+    ],
+    "test_labels_locked_before_model_selection": true
+  },
+  "data_strategy": {
+    "benchmark_name": "trace_driven_hybrid",
+    "fully_real_claim_allowed": false,
+    "row_index_join_across_unrelated_sources": false,
+    "field_provenance_values": [
+      "observed",
+      "measured",
+      "derived",
+      "matched",
+      "generated",
+      "human_labeled",
+      "simulated"
+    ],
+    "raw_data_committed_to_git": false,
+    "sources": [
+      {
+        "id": "bupt_edge_computing_dataset",
+        "role": "mobile session arrivals, uplink/downlink bytes, RAT, cell transitions and service metadata",
+        "status": "license_pending",
+        "raw_redistribution": false,
+        "url": "https://github.com/BuptMecMigration/Edge-Computing-Dataset"
+      },
+      {
+        "id": "edge_workloads_traces_nep_small",
+        "role": "edge VM CPU, bandwidth, site RTT and physical capacity replay",
+        "status": "access_request_required",
+        "raw_redistribution": false,
+        "url": "https://github.com/xumengwei/EdgeWorkloadsTraces"
+      },
+      {
+        "id": "uci_mec_execution_times_859",
+        "role": "measured image-recognition turnaround calibration on four heterogeneous servers",
+        "status": "license_verified_cc_by_4_0",
+        "raw_redistribution": true,
+        "url": "https://archive.ics.uci.edu/dataset/859/image+recognition+task+execution+times+in+mobile+edge+computing"
+      },
+      {
+        "id": "eua_dataset",
+        "role": "real-world-derived user and edge location scenarios in Australia",
+        "status": "license_verified_mit",
+        "raw_redistribution": true,
+        "url": "https://github.com/PhuLai/eua-dataset"
+      },
+      {
+        "id": "tdrive_or_didi_gaia",
+        "role": "continuous mobility stress scenario",
+        "status": "choose_one_after_access_and_license_audit",
+        "raw_redistribution": false,
+        "url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/User_guide_T-drive.pdf"
+      },
+      {
+        "id": "alibaba_cluster_trace_v2018",
+        "role": "non-MEC production-cluster load and distribution-shift stress test",
+        "status": "secondary_only",
+        "raw_redistribution": false,
+        "url": "https://github.com/alibaba/clusterdata/tree/master/cluster-trace-v2018"
+      }
+    ]
+  },
+  "model_selection": {
+    "primary_candidates": [
+      "Qwen/Qwen3-4B",
+      "Qwen/Qwen3-8B"
+    ],
+    "final_model_frozen_in_phase": 4,
+    "selection_set": "validation_only",
+    "selection_rule": "choose the smallest reproducible model that passes all semantic quality gates",
+    "required_artifacts": [
+      "model_revision",
+      "tokenizer_revision",
+      "quantization_config",
+      "prompt_hash",
+      "parser_hash",
+      "generation_config",
+      "raw_output_cache",
+      "cache_checksums"
+    ]
+  },
+  "hypotheses": {
+    "H1": "LLM-derived semantics reduce the primary constraint-violation rate relative to semantics-free PPO under paired evaluation events.",
+    "H2": "The frozen LLM extractor outperforms rule-based and small supervised semantic baselines on unseen scenario and paraphrase families.",
+    "H3": "Any policy gain remains after removing LLM-agreement rewards and is accompanied by counterfactual semantic action sensitivity without single-action collapse.",
+    "H4": "The direction of the primary effect is consistent between validated synthetic and trace-driven-hybrid evaluations."
+  },
+  "evaluation": {
+    "primary_system_metric": "total_constraint_violation_rate",
+    "secondary_system_metrics": [
+      "success_rate",
+      "deadline_miss_ratio",
+      "latency_p95_s",
+      "latency_p99_s",
+      "energy_per_success_j",
+      "throughput_tasks_per_s",
+      "drop_rate",
+      "queue_wait_p95_s",
+      "user_success_fairness",
+      "server_load_fairness"
+    ],
+    "semantic_quality_gates": {
+      "schema_validity_min": 0.99,
+      "macro_f1_min": 0.8,
+      "critical_privacy_recall_min": 0.95,
+      "critical_latency_recall_min": 0.9
+    },
+    "training_seeds_minimum": 5,
+    "training_seeds_preferred": 10,
+    "confidence_interval": 0.95,
+    "paired_primary_test": "paired_wilcoxon_on_seed_level_metrics",
+    "multiple_comparison_correction": "holm",
+    "effect_size_required": true,
+    "collapse_alarm_single_action_fraction": 0.9
+  },
+  "testbed": {
+    "required_for_core_claim": false,
+    "status": "optional_extension",
+    "allowed_claim_without_testbed": "validated synthetic and trace-driven-hybrid simulation",
+    "forbidden_claim_without_testbed": "real MEC deployment validation"
+  },
+  "change_control": {
+    "test_set_must_not_drive_changes": true,
+    "post_freeze_change_requires_amendment": true,
+    "amendment_requires_reason_and_impact": true
+  }
+}

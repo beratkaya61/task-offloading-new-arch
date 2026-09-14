@@ -1,0 +1,2 @@
+# Phase 1: JSON Schema validation. Later phases append their own pinned ranges.
+jsonschema>=4.23,<5

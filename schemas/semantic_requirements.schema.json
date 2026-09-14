@@ -1,0 +1,805 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://task-offloading-new-arch.local/schemas/semantic-requirements-v1.json",
+  "title": "Semantic task requirements v1",
+  "description": "Action-free requirements extracted only from task and user-policy text.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "task_id",
+    "language",
+    "domain",
+    "latency",
+    "privacy",
+    "execution_policy",
+    "reliability",
+    "accuracy",
+    "energy_priority",
+    "divisibility",
+    "abstained_fields",
+    "overall_confidence"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "task_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{2,127}$"
+    },
+    "language": {
+      "enum": [
+        "tr",
+        "en"
+      ]
+    },
+    "domain": {
+      "$ref": "#/$defs/domain_label"
+    },
+    "latency": {
+      "$ref": "#/$defs/latency_label"
+    },
+    "privacy": {
+      "$ref": "#/$defs/privacy_label"
+    },
+    "execution_policy": {
+      "$ref": "#/$defs/execution_policy_label"
+    },
+    "reliability": {
+      "$ref": "#/$defs/reliability_label"
+    },
+    "accuracy": {
+      "$ref": "#/$defs/accuracy_label"
+    },
+    "energy_priority": {
+      "$ref": "#/$defs/energy_label"
+    },
+    "divisibility": {
+      "$ref": "#/$defs/divisibility_label"
+    },
+    "abstained_fields": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "domain",
+          "latency",
+          "privacy",
+          "execution_policy",
+          "reliability",
+          "accuracy",
+          "energy_priority",
+          "divisibility"
+        ]
+      }
+    },
+    "overall_confidence": {
+      "$ref": "#/$defs/confidence"
+    }
+  },
+  "$defs": {
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "evidence": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      }
+    },
+    "standard_status": {
+      "enum": [
+        "explicit",
+        "not_stated",
+        "ambiguous"
+      ]
+    },
+    "domain_label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "status",
+        "evidence",
+        "confidence"
+      ],
+      "properties": {
+        "value": {
+          "enum": [
+            "healthcare",
+            "industrial",
+            "transportation",
+            "public_safety",
+            "smart_city",
+            "agriculture",
+            "consumer",
+            "other",
+            null
+          ]
+        },
+        "status": {
+          "$ref": "#/$defs/standard_status"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/$defs/standard_status_invariants"
+        }
+      ]
+    },
+    "latency_label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "class",
+        "max_ms",
+        "status",
+        "evidence",
+        "confidence"
+      ],
+      "properties": {
+        "class": {
+          "enum": [
+            "relaxed",
+            "interactive",
+            "real_time",
+            "hard_real_time",
+            null
+          ]
+        },
+        "max_ms": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0,
+          "maximum": 3600000
+        },
+        "status": {
+          "$ref": "#/$defs/standard_status"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "explicit"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "class": {
+                "enum": [
+                  "relaxed",
+                  "interactive",
+                  "real_time",
+                  "hard_real_time"
+                ]
+              },
+              "evidence": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "not_stated",
+                  "ambiguous"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "class": {
+                "type": "null"
+              },
+              "max_ms": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/evidence_status_invariants"
+        }
+      ]
+    },
+    "privacy_label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "data_class",
+        "status",
+        "evidence",
+        "confidence"
+      ],
+      "properties": {
+        "data_class": {
+          "enum": [
+            "public",
+            "internal",
+            "sensitive",
+            "restricted",
+            null
+          ]
+        },
+        "status": {
+          "$ref": "#/$defs/standard_status"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/$defs/standard_status_invariants"
+        }
+      ]
+    },
+    "execution_policy_label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "device",
+        "edge",
+        "cloud",
+        "status",
+        "evidence",
+        "confidence"
+      ],
+      "properties": {
+        "device": {
+          "$ref": "#/$defs/tier_permission"
+        },
+        "edge": {
+          "$ref": "#/$defs/tier_permission"
+        },
+        "cloud": {
+          "$ref": "#/$defs/tier_permission"
+        },
+        "status": {
+          "enum": [
+            "explicit",
+            "partial",
+            "not_stated",
+            "ambiguous"
+          ]
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "explicit"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "device": {
+                "enum": [
+                  "allowed",
+                  "forbidden"
+                ]
+              },
+              "edge": {
+                "enum": [
+                  "allowed",
+                  "forbidden"
+                ]
+              },
+              "cloud": {
+                "enum": [
+                  "allowed",
+                  "forbidden"
+                ]
+              },
+              "evidence": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "partial"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "minItems": 1
+              }
+            },
+            "anyOf": [
+              {
+                "properties": {
+                  "device": {
+                    "enum": [
+                      "allowed",
+                      "forbidden"
+                    ]
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "edge": {
+                    "enum": [
+                      "allowed",
+                      "forbidden"
+                    ]
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "cloud": {
+                    "enum": [
+                      "allowed",
+                      "forbidden"
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "not_stated",
+                  "ambiguous"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "device": {
+                "const": "unknown"
+              },
+              "edge": {
+                "const": "unknown"
+              },
+              "cloud": {
+                "const": "unknown"
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/evidence_status_invariants"
+        }
+      ]
+    },
+    "reliability_label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tier",
+        "min_success_probability",
+        "status",
+        "evidence",
+        "confidence"
+      ],
+      "properties": {
+        "tier": {
+          "enum": [
+            "best_effort",
+            "standard",
+            "high",
+            "mission_critical",
+            null
+          ]
+        },
+        "min_success_probability": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "status": {
+          "$ref": "#/$defs/standard_status"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "explicit"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "tier": {
+                "enum": [
+                  "best_effort",
+                  "standard",
+                  "high",
+                  "mission_critical"
+                ]
+              },
+              "evidence": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "not_stated",
+                  "ambiguous"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "tier": {
+                "type": "null"
+              },
+              "min_success_probability": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/evidence_status_invariants"
+        }
+      ]
+    },
+    "accuracy_label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tier",
+        "min_score",
+        "metric",
+        "status",
+        "evidence",
+        "confidence"
+      ],
+      "properties": {
+        "tier": {
+          "enum": [
+            "relaxed",
+            "standard",
+            "high",
+            "critical",
+            null
+          ]
+        },
+        "min_score": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "metric": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "status": {
+          "$ref": "#/$defs/standard_status"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "explicit"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "tier": {
+                "enum": [
+                  "relaxed",
+                  "standard",
+                  "high",
+                  "critical"
+                ]
+              },
+              "evidence": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "not_stated",
+                  "ambiguous"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "tier": {
+                "type": "null"
+              },
+              "min_score": {
+                "type": "null"
+              },
+              "metric": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/evidence_status_invariants"
+        }
+      ]
+    },
+    "energy_label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "status",
+        "evidence",
+        "confidence"
+      ],
+      "properties": {
+        "value": {
+          "enum": [
+            "low",
+            "balanced",
+            "high",
+            null
+          ]
+        },
+        "status": {
+          "$ref": "#/$defs/standard_status"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/$defs/standard_status_invariants"
+        }
+      ]
+    },
+    "divisibility_label": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "status",
+        "evidence",
+        "confidence"
+      ],
+      "properties": {
+        "value": {
+          "enum": [
+            "divisible",
+            "indivisible",
+            null
+          ]
+        },
+        "status": {
+          "$ref": "#/$defs/standard_status"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "confidence": {
+          "$ref": "#/$defs/confidence"
+        }
+      },
+      "allOf": [
+        {
+          "$ref": "#/$defs/standard_status_invariants"
+        }
+      ]
+    },
+    "tier_permission": {
+      "enum": [
+        "allowed",
+        "forbidden",
+        "unknown"
+      ]
+    },
+    "standard_status_invariants": {
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "explicit"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "not": {
+                  "type": "null"
+                }
+              },
+              "evidence": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "not_stated",
+                  "ambiguous"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/evidence_status_invariants"
+        }
+      ]
+    },
+    "evidence_status_invariants": {
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "not_stated"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "ambiguous"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
