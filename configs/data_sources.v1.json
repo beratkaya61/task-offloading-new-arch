@@ -1,0 +1,485 @@
+{
+  "manifest_version": "1.0.0",
+  "as_of_date": "2026-09-14",
+  "provenance_vocabulary": [
+    "observed",
+    "measured",
+    "derived",
+    "matched",
+    "generated",
+    "human_labeled",
+    "simulated"
+  ],
+  "sources": [
+    {
+      "id": "uci_mec_execution_times_859",
+      "title": "Image Recognition Task Execution Times in Mobile Edge Computing",
+      "role": "Measured turnaround-time calibration for heterogeneous edge servers",
+      "official_url": "https://archive.ics.uci.edu/dataset/859/image+recognition+task+execution+times+in+mobile+edge+computing",
+      "citation_url": "https://doi.org/10.24432/C5N617",
+      "version": "DOI 10.24432/C5N617; donated 2023-08-14",
+      "version_kind": "doi",
+      "immutable_version": true,
+      "access_status": "public",
+      "dataset_status": "catalogued",
+      "license": {
+        "identifier": "CC-BY-4.0",
+        "verification_status": "verified",
+        "usage_scope": "attribution",
+        "redistribution_allowed": true,
+        "evidence_url": "https://archive.ics.uci.edu/dataset/859/image+recognition+task+execution+times+in+mobile+edge+computing",
+        "notes": "UCI page reports 4000 sequential measurements and CC BY 4.0."
+      },
+      "artifacts": [
+        {
+          "artifact_id": "tat_description_zip",
+          "filename": "TATDescriptionDataset.zip",
+          "size_bytes": null,
+          "checksum": {
+            "algorithm": "sha256",
+            "value": null,
+            "verification": "missing"
+          }
+        }
+      ],
+      "columns": [
+        {
+          "name": "event_time",
+          "description": "Timestamp recorded for the execution observation",
+          "unit": "ISO-8601 datetime",
+          "provenance": "observed",
+          "source_fields": ["Time"],
+          "transform": "parse source timestamp without random shuffling",
+          "nullable": false
+        },
+        {
+          "name": "turnaround_time_s",
+          "description": "Measured send-to-result turnaround time",
+          "unit": "s",
+          "provenance": "measured",
+          "source_fields": ["Turnaround Time"],
+          "transform": "coerce to finite positive seconds",
+          "nullable": false
+        },
+        {
+          "name": "edge_server_id",
+          "description": "One of the four heterogeneous measured servers",
+          "unit": null,
+          "provenance": "derived",
+          "source_fields": ["source filename"],
+          "transform": "map documented server file to immutable server identifier",
+          "nullable": false
+        }
+      ],
+      "raw_data_committed_to_git": false,
+      "notes": "Download and local checksum verification are still required."
+    },
+    {
+      "id": "eua_dataset",
+      "title": "EUA Datasets",
+      "role": "Real-world-derived Australian user and edge-server locations",
+      "official_url": "https://github.com/PhuLai/eua-dataset",
+      "citation_url": "https://github.com/PhuLai/eua-dataset#dataset-citation",
+      "version": "master; immutable commit pin pending acquisition",
+      "version_kind": "mutable_ref",
+      "immutable_version": false,
+      "access_status": "public",
+      "dataset_status": "catalogued",
+      "license": {
+        "identifier": "MIT",
+        "verification_status": "verified",
+        "usage_scope": "repository_license",
+        "redistribution_allowed": true,
+        "evidence_url": "https://github.com/PhuLai/eua-dataset/blob/master/LICENSE",
+        "notes": "Repository is MIT licensed; upstream ACMA/IP geolocation acknowledgements remain attributable."
+      },
+      "artifacts": [
+        {
+          "artifact_id": "eua_git_snapshot",
+          "filename": "eua-dataset.git-snapshot",
+          "size_bytes": null,
+          "checksum": {
+            "algorithm": "sha256",
+            "value": null,
+            "verification": "missing"
+          }
+        }
+      ],
+      "columns": [
+        {
+          "name": "source_entity_id",
+          "description": "Stable source row/entity identifier",
+          "unit": null,
+          "provenance": "derived",
+          "source_fields": ["source file", "row index"],
+          "transform": "hash immutable source path and original row key",
+          "nullable": false
+        },
+        {
+          "name": "latitude_deg",
+          "description": "Latitude supplied by the EUA dataset",
+          "unit": "degree",
+          "provenance": "observed",
+          "source_fields": ["latitude"],
+          "transform": null,
+          "nullable": false
+        },
+        {
+          "name": "longitude_deg",
+          "description": "Longitude supplied by the EUA dataset",
+          "unit": "degree",
+          "provenance": "observed",
+          "source_fields": ["longitude"],
+          "transform": null,
+          "nullable": false
+        },
+        {
+          "name": "entity_kind",
+          "description": "User or edge-server role from source folder",
+          "unit": null,
+          "provenance": "derived",
+          "source_fields": ["users/ or edge-servers/ path"],
+          "transform": "map source folder to user or edge_server",
+          "nullable": false
+        }
+      ],
+      "raw_data_committed_to_git": false,
+      "notes": "Pin a commit SHA before any benchmark uses this source."
+    },
+    {
+      "id": "bupt_edge_computing_dataset",
+      "title": "BUPT Edge Computing Dataset",
+      "role": "Mobile session arrivals, traffic volumes, cell transitions, RAT and service metadata",
+      "official_url": "https://github.com/BuptMecMigration/Edge-Computing-Dataset",
+      "citation_url": "https://doi.org/10.1109/JIOT.2022.3172755",
+      "version": "master; no release or immutable pin recorded",
+      "version_kind": "mutable_ref",
+      "immutable_version": false,
+      "access_status": "public",
+      "dataset_status": "license_pending",
+      "license": {
+        "identifier": "NOASSERTION",
+        "verification_status": "pending",
+        "usage_scope": "unknown",
+        "redistribution_allowed": null,
+        "evidence_url": null,
+        "notes": "No explicit dataset license was visible in the official repository on 2026-09-14. Public access is not treated as redistribution permission."
+      },
+      "artifacts": [
+        {
+          "artifact_id": "bupt_data_snapshot",
+          "filename": "Edge-Computing-Dataset-Data.snapshot",
+          "size_bytes": null,
+          "checksum": {
+            "algorithm": "sha256",
+            "value": null,
+            "verification": "missing"
+          }
+        }
+      ],
+      "columns": [
+        {
+          "name": "device_id",
+          "description": "Privacy-processed mobile subscriber identifier",
+          "unit": null,
+          "provenance": "observed",
+          "source_fields": ["Phone Number"],
+          "transform": "salted project-local rehash before processed storage",
+          "nullable": false
+        },
+        {
+          "name": "station_id",
+          "description": "Cell identity formed from location area and cell codes",
+          "unit": null,
+          "provenance": "derived",
+          "source_fields": ["Location Area Code(LAC)", "Cell Identity(CI)"],
+          "transform": "concatenate canonical LAC and CI",
+          "nullable": false
+        },
+        {
+          "name": "arrival_time",
+          "description": "Mobile network session start time",
+          "unit": "ISO-8601 datetime",
+          "provenance": "observed",
+          "source_fields": ["Start Time", "Date"],
+          "transform": "parse with documented timezone retained separately",
+          "nullable": false
+        },
+        {
+          "name": "input_bits",
+          "description": "Uplink traffic converted from source bytes",
+          "unit": "bit",
+          "provenance": "derived",
+          "source_fields": ["Uplink traffic"],
+          "transform": "bytes * 8",
+          "nullable": false
+        },
+        {
+          "name": "output_bits",
+          "description": "Downlink traffic converted from source bytes",
+          "unit": "bit",
+          "provenance": "derived",
+          "source_fields": ["Downlink traffic"],
+          "transform": "bytes * 8",
+          "nullable": false
+        },
+        {
+          "name": "application_id",
+          "description": "Service family derived from privacy-safe protocol metadata",
+          "unit": null,
+          "provenance": "derived",
+          "source_fields": ["URL", "Destination Port", "Content-Type"],
+          "transform": "documented deterministic categorizer; raw URLs never enter the LLM corpus",
+          "nullable": true
+        }
+      ],
+      "raw_data_committed_to_git": false,
+      "notes": "Useful source, but blocked from benchmark use until license scope and immutable revision are recorded."
+    },
+    {
+      "id": "edge_workloads_traces_nep_small",
+      "title": "EdgeWorkloadsTraces NEP-small",
+      "role": "Edge VM CPU, bandwidth, site RTT, VM metadata and physical capacity replay",
+      "official_url": "https://github.com/xumengwei/EdgeWorkloadsTraces",
+      "citation_url": "https://arxiv.org/abs/2103.10320",
+      "version": "NEP-small, June 2020, five-minute granularity",
+      "version_kind": "dated_snapshot",
+      "immutable_version": true,
+      "access_status": "request_required",
+      "dataset_status": "access_pending",
+      "license": {
+        "identifier": "LicenseRef-NEP-Research-Only-No-Offline-Sharing",
+        "verification_status": "verified",
+        "usage_scope": "research_only",
+        "redistribution_allowed": false,
+        "evidence_url": "https://github.com/xumengwei/EdgeWorkloadsTraces#statement",
+        "notes": "Official statement limits use to research and prohibits offline sharing."
+      },
+      "artifacts": [
+        {
+          "artifact_id": "nep_small_bundle",
+          "filename": "NEP-small-requested-bundle",
+          "size_bytes": null,
+          "checksum": {
+            "algorithm": "sha256",
+            "value": null,
+            "verification": "missing"
+          }
+        }
+      ],
+      "columns": [
+        {
+          "name": "report_time_s",
+          "description": "Unix observation timestamp",
+          "unit": "s since Unix epoch",
+          "provenance": "observed",
+          "source_fields": ["report_ts"],
+          "transform": null,
+          "nullable": false
+        },
+        {
+          "name": "station_id",
+          "description": "Anonymized edge site identifier",
+          "unit": null,
+          "provenance": "observed",
+          "source_fields": ["site_id"],
+          "transform": null,
+          "nullable": false
+        },
+        {
+          "name": "cpu_utilization",
+          "description": "VM CPU utilization fraction",
+          "unit": "ratio [0,1]",
+          "provenance": "measured",
+          "source_fields": ["cpu_rate"],
+          "transform": "validate documented fraction range",
+          "nullable": false
+        },
+        {
+          "name": "bandwidth_bps",
+          "description": "VM public/private uplink/downlink bandwidth usage",
+          "unit": "bit/s",
+          "provenance": "measured",
+          "source_fields": ["bw"],
+          "transform": "retain direction and network-scope dimensions",
+          "nullable": false
+        },
+        {
+          "name": "site_rtt_s",
+          "description": "Round-trip time between edge sites",
+          "unit": "s",
+          "provenance": "measured",
+          "source_fields": ["SITE_RTT.csv"],
+          "transform": "convert documented source unit to seconds after inspection",
+          "nullable": true
+        }
+      ],
+      "raw_data_committed_to_git": false,
+      "notes": "Request approval and local checksum are required; raw files must never be committed or redistributed."
+    },
+    {
+      "id": "tdrive_mobility",
+      "title": "T-Drive Taxi Trajectories",
+      "role": "Continuous mobility stress scenario, conditional candidate",
+      "official_url": "https://www.microsoft.com/en-us/research/publication/t-drive-trajectory-data-sample/",
+      "citation_url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/User_guide_T-drive.pdf",
+      "version": "MSR user guide v1.0; August 2011 sample",
+      "version_kind": "release",
+      "immutable_version": true,
+      "access_status": "public",
+      "dataset_status": "catalogued",
+      "license": {
+        "identifier": "LicenseRef-Microsoft-Research-License-TDrive",
+        "verification_status": "verified",
+        "usage_scope": "noncommercial_research",
+        "redistribution_allowed": false,
+        "evidence_url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/User_guide_T-drive.pdf",
+        "notes": "Non-commercial use is permitted; dataset and derivative redistribution are prohibited by the supplied agreement."
+      },
+      "artifacts": [
+        {
+          "artifact_id": "tdrive_trajectory_sample",
+          "filename": "release-taxi-traces.zip",
+          "size_bytes": null,
+          "checksum": {
+            "algorithm": "sha256",
+            "value": null,
+            "verification": "missing"
+          }
+        }
+      ],
+      "columns": [
+        {
+          "name": "device_id",
+          "description": "Taxi identifier used only as a mobility entity",
+          "unit": null,
+          "provenance": "observed",
+          "source_fields": ["taxi id"],
+          "transform": "project-local rehash",
+          "nullable": false
+        },
+        {
+          "name": "event_time",
+          "description": "GPS sample timestamp",
+          "unit": "ISO-8601 datetime",
+          "provenance": "observed",
+          "source_fields": ["date time"],
+          "transform": "parse without shuffling",
+          "nullable": false
+        },
+        {
+          "name": "longitude_deg",
+          "description": "Recorded longitude",
+          "unit": "degree",
+          "provenance": "measured",
+          "source_fields": ["longitude"],
+          "transform": null,
+          "nullable": false
+        },
+        {
+          "name": "latitude_deg",
+          "description": "Recorded latitude",
+          "unit": "degree",
+          "provenance": "measured",
+          "source_fields": ["latitude"],
+          "transform": null,
+          "nullable": false
+        }
+      ],
+      "raw_data_committed_to_git": false,
+      "notes": "Use only if selected over alternative mobility sources and keep raw/derived trajectory data outside Git."
+    },
+    {
+      "id": "alibaba_cluster_trace_v2018",
+      "title": "Alibaba Cluster Trace v2018",
+      "role": "Secondary non-MEC cluster-load and distribution-shift stress test",
+      "official_url": "https://github.com/alibaba/clusterdata/tree/master/cluster-trace-v2018",
+      "citation_url": "https://github.com/alibaba/clusterdata/blob/master/cluster-trace-v2018/trace_2018.md",
+      "version": "cluster-trace-v2018; 8-day production trace",
+      "version_kind": "release",
+      "immutable_version": true,
+      "access_status": "survey_required",
+      "dataset_status": "access_pending",
+      "license": {
+        "identifier": "NOASSERTION",
+        "verification_status": "pending",
+        "usage_scope": "unknown",
+        "redistribution_allowed": null,
+        "evidence_url": "https://github.com/alibaba/clusterdata",
+        "notes": "Repository encourages research use, but no explicit reusable dataset license was verified; it remains secondary-only."
+      },
+      "artifacts": [
+        {
+          "artifact_id": "alibaba_clusterdata_v2018_tar_gz",
+          "filename": "alibaba_clusterdata_v2018.tar.gz",
+          "size_bytes": null,
+          "checksum": {
+            "algorithm": "sha256",
+            "value": "ccb3dc93786507dd42eed29ef62c82220d07f877f269e5fad39f31bf75134ed1",
+            "verification": "published"
+          }
+        }
+      ],
+      "columns": [
+        {
+          "name": "event_time_s",
+          "description": "Seconds since the beginning of the eight-day trace",
+          "unit": "s",
+          "provenance": "observed",
+          "source_fields": ["time_stamp", "start_time", "end_time"],
+          "transform": "retain source-relative time origin",
+          "nullable": false
+        },
+        {
+          "name": "source_entity_id",
+          "description": "Machine, container, job, task or instance identifier",
+          "unit": null,
+          "provenance": "observed",
+          "source_fields": ["machine_id", "container_id", "job_name", "task_name", "instance_name"],
+          "transform": "retain entity type namespace",
+          "nullable": false
+        },
+        {
+          "name": "cpu_utilization",
+          "description": "Production-cluster CPU usage",
+          "unit": "source-normalized ratio",
+          "provenance": "measured",
+          "source_fields": ["cpu_util_percent"],
+          "transform": "validate documented sentinel values before scaling",
+          "nullable": true
+        }
+      ],
+      "raw_data_committed_to_git": false,
+      "notes": "Approximately 49 GB compressed; not an MEC trace and never a primary real-world claim source."
+    }
+  ],
+  "benchmarks": [
+    {
+      "id": "synthetic_v1",
+      "kind": "synthetic",
+      "source_ids": [],
+      "field_provenance": ["generated", "simulated"],
+      "claim_limit": "Validated synthetic simulation only; no real-world or trace-driven claim."
+    },
+    {
+      "id": "trace_driven_hybrid_v1",
+      "kind": "trace_driven_hybrid",
+      "source_ids": [
+        "uci_mec_execution_times_859",
+        "eua_dataset",
+        "bupt_edge_computing_dataset",
+        "edge_workloads_traces_nep_small",
+        "tdrive_mobility"
+      ],
+      "field_provenance": [
+        "observed",
+        "measured",
+        "derived",
+        "matched",
+        "generated",
+        "simulated"
+      ],
+      "claim_limit": "Trace-driven-hybrid simulation; unrelated source rows are matched scenarios, never claimed as the same measured event."
+    }
+  ]
+}

@@ -10,14 +10,19 @@ Başlangıç belgeleri:
 - [Faz 1 kanıt raporu](phase_reports/PHASE_1_RESEARCH_CONTRACT.md)
 - [Faz 2 simülasyon çekirdeği sözleşmesi](docs/SIMULATION_CORE.md)
 - [Faz 2 kanıt raporu](phase_reports/PHASE_2_DETERMINISTIC_SIMULATION_CORE.md)
+- [Veri yönetişimi ve split sözleşmesi](docs/DATA_GOVERNANCE.md)
+- [Faz 3 kanıt raporu](phase_reports/PHASE_3_DATA_PROVENANCE_AND_SPLITS.md)
 - [Hesaplama donanımı envanteri](docs/COMPUTE_INVENTORY.md)
 - [Faz bazlı görev listesi](task.md)
 - [Bilimsel ve mimari sözleşme](TODO_ANTIGRAVITY_TASK_OFFLOADING_UPGRADE.md)
 
-Mevcut durum: Faz 0, Faz 1 ve Faz 2 tamamlandı. Son doğrulamada 50/50 test
-(16 Faz 1 + 34 Faz 2), Ruff ve strict mypy geçti; branch coverage yüzde 88'dir.
-Gymnasium ile event replay aynı fizik çekirdeğini kullanır ve parity testi
-geçmiştir. Sıradaki tek iş Faz 3 veri kökeni ve split sistemidir. Eski kaynak kod
+Mevcut durum: Faz 0–3 tamamlandı. Son doğrulamada 111/111 test, Ruff ve strict
+mypy geçti; toplam branch coverage yüzde 91'dir. Gymnasium ile event replay aynı
+fizik çekirdeğini kullanır ve parity testi geçmiştir. Faz 3'te veri manifesti,
+alan kökeni sözlüğü, checksum/statü kapıları, train-only normalizer ve sızıntı
+denetimli split sistemi kuruldu. Bu ifade veri altyapısının hazır olduğunu anlatır;
+henüz hiçbir gerçek veri kaynağı indirilmiş veya `schema_validated` statüsüne
+ulaşmış değildir. Sıradaki tek iş Faz 4 semantik benchmark'tır. Eski kaynak kod
 taşınmamıştır.
 
 Kurulum ve bütün testler:

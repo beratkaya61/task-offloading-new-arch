@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/task-offloading/dataset-manifest.schema.json",
+  "title": "Task Offloading Dataset Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manifest_version",
+    "as_of_date",
+    "provenance_vocabulary",
+    "sources",
+    "benchmarks"
+  ],
+  "properties": {
+    "manifest_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "as_of_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "provenance_vocabulary": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 7,
+      "items": { "$ref": "#/$defs/provenance" }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/source" }
+    },
+    "benchmarks": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "$ref": "#/$defs/benchmark" }
+    }
+  },
+  "$defs": {
+    "provenance": {
+      "enum": [
+        "observed",
+        "measured",
+        "derived",
+        "matched",
+        "generated",
+        "human_labeled",
+        "simulated"
+      ]
+    },
+    "checksum": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "value", "verification"],
+      "properties": {
+        "algorithm": { "const": "sha256" },
+        "value": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          ]
+        },
+        "verification": {
+          "enum": ["missing", "published", "verified", "mismatch"]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "verification": { "enum": ["published", "verified", "mismatch"] } },
+            "required": ["verification"]
+          },
+          "then": {
+            "properties": { "value": { "type": "string" } }
+          }
+        }
+      ]
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "filename", "size_bytes", "checksum"],
+      "properties": {
+        "artifact_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_.-]+$" },
+        "filename": { "type": "string", "minLength": 1 },
+        "size_bytes": { "type": ["integer", "null"], "minimum": 0 },
+        "checksum": { "$ref": "#/$defs/checksum" }
+      }
+    },
+    "license": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identifier",
+        "verification_status",
+        "usage_scope",
+        "redistribution_allowed",
+        "evidence_url",
+        "notes"
+      ],
+      "properties": {
+        "identifier": { "type": "string", "minLength": 1 },
+        "verification_status": { "enum": ["verified", "pending", "unknown"] },
+        "usage_scope": {
+          "enum": [
+            "attribution",
+            "repository_license",
+            "research_only",
+            "noncommercial_research",
+            "unknown"
+          ]
+        },
+        "redistribution_allowed": { "type": ["boolean", "null"] },
+        "evidence_url": { "type": ["string", "null"], "format": "uri" },
+        "notes": { "type": "string" }
+      }
+    },
+    "column": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "description",
+        "unit",
+        "provenance",
+        "source_fields",
+        "transform",
+        "nullable"
+      ],
+      "properties": {
+        "name": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "description": { "type": "string", "minLength": 1 },
+        "unit": { "type": ["string", "null"] },
+        "provenance": { "$ref": "#/$defs/provenance" },
+        "source_fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "transform": { "type": ["string", "null"] },
+        "nullable": { "type": "boolean" }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "role",
+        "official_url",
+        "citation_url",
+        "version",
+        "version_kind",
+        "immutable_version",
+        "access_status",
+        "dataset_status",
+        "license",
+        "artifacts",
+        "columns",
+        "raw_data_committed_to_git",
+        "notes"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_]+$" },
+        "title": { "type": "string", "minLength": 1 },
+        "role": { "type": "string", "minLength": 1 },
+        "official_url": { "type": "string", "format": "uri" },
+        "citation_url": { "type": ["string", "null"], "format": "uri" },
+        "version": { "type": "string", "minLength": 1 },
+        "version_kind": { "enum": ["doi", "release", "dated_snapshot", "mutable_ref"] },
+        "immutable_version": { "type": "boolean" },
+        "access_status": { "enum": ["public", "request_required", "survey_required", "unavailable"] },
+        "dataset_status": {
+          "enum": [
+            "catalogued",
+            "license_pending",
+            "access_pending",
+            "downloaded",
+            "checksum_verified",
+            "schema_validated",
+            "rejected"
+          ]
+        },
+        "license": { "$ref": "#/$defs/license" },
+        "artifacts": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/artifact" }
+        },
+        "columns": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/column" }
+        },
+        "raw_data_committed_to_git": { "const": false },
+        "notes": { "type": "string" }
+      }
+    },
+    "benchmark": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "source_ids", "field_provenance", "claim_limit"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_]+$" },
+        "kind": { "enum": ["synthetic", "trace_driven_hybrid"] },
+        "source_ids": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "field_provenance": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/provenance" },
+          "uniqueItems": true
+        },
+        "claim_limit": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

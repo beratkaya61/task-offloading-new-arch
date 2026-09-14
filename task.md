@@ -45,13 +45,13 @@ Bu dosya günlük ilerleme listesidir. Bilimsel kurallar için `TODO_ANTIGRAVITY
 
 ## Faz 3 — Veri kökeni ve split sistemi
 
-- [ ] Veri manifest şeması: URL, sürüm, lisans, checksum, statü.
-- [ ] Her kolon için observed/measured/derived/matched/generated/labeled etiketi.
-- [ ] Train-only normalizer.
-- [ ] Kronolojik, cihaz/istasyon ve uygulama holdout split’leri.
-- [ ] Duplicate ve leakage testleri.
-- [ ] Sentetik ve trace-driven-hybrid benchmark’ları ayrı adlandır.
-- [ ] Faz 3 raporunu yaz.
+- [x] Veri manifest şeması: URL, sürüm, lisans, checksum, statü.
+- [x] Her kolon için observed/measured/derived/matched/generated/labeled etiketi.
+- [x] Train-only normalizer.
+- [x] Kronolojik, cihaz/istasyon ve uygulama holdout split’leri.
+- [x] Duplicate ve leakage testleri.
+- [x] Sentetik ve trace-driven-hybrid benchmark’ları ayrı adlandır.
+- [x] Faz 3 raporunu yaz.
 
 ## Faz 4 — Semantik benchmark
 
@@ -120,5 +120,6 @@ Bu faz çekirdek tez kabul koşulu değildir. Yapılmazsa sonuçlar sentetik ve 
 
 ## Sıradaki tek iş
 
-**Faz 3:** Veri manifest/provenance sözleşmesi; ardından training-only normalizer,
-kronolojik/entity/application holdout split'leri ve leakage testleri.
+**Faz 4:** Önce 20 görevlik pilot semantik corpus ve iki bağımsız gerçek insan
+etiketleme/adjudication akışını tamamla; sonra rule, TF-IDF/logreg, küçük encoder
+ve zero/few-shot LLM baseline'larını aynı dondurulmuş test kümesinde karşılaştır.

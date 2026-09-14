@@ -196,3 +196,31 @@ Eski repo doğrudan taşınmayacaktır. Fizik hataları regresyon testine, eski 
 - NVIDIA Quadro RTX 4000 (8 GB GDDR6) ikinci makine bilgisi Faz 4 planlama
   girdisi olarak `docs/COMPUTE_INVENTORY.md` içinde kaydedildi; model seçimi
   henüz yapılmadı.
+
+## 11. Faz 3 dondurulan kararları
+
+- Manifest sözleşmesi `schemas/dataset_manifest.schema.json`, kaynak kataloğu
+  `configs/data_sources.v1.json` ve kullanım kuralları `docs/DATA_GOVERNANCE.md`
+  içindedir.
+- Alan kökeni sözlüğü tam olarak `observed / measured / derived / matched /
+  generated / human_labeled / simulated` değerlerinden oluşur; her kullanılan
+  kolon bu değerlerden biriyle işaretlenir.
+- `downloaded` analize hazır demek değildir. Bir kaynağın analize açılması için
+  immutable sürüm, doğrulanmış lisans, yerel SHA-256 kanıtı ve
+  `schema_validated` statüsü birlikte gerekir.
+- Kaynak yaşam döngüsü katalog/lisans/erişim bekleme durumlarından `downloaded`,
+  `checksum_verified`, `schema_validated` veya `rejected` durumlarına kontrollü
+  geçer; ileri statü yerel kanıt olmadan ilan edilemez.
+- Split stratejileri kronolojik, cihaz, istasyon ve uygulama holdout'tur.
+  Duplicate içerik hash'i, entity kesişimi, kronoloji ve örnek bütünlüğü ayrı
+  denetlenir; normalizer yalnız train split'ine fit edilir.
+- `synthetic_v1` ile `trace_driven_hybrid_v1` ayrı benchmark'lardır. Hibrit ad,
+  farklı kaynakların doğal olarak ortak ölçülmüş olaylar olduğu iddiasını taşımaz.
+- UCI MEC ve EUA başlangıç adayıdır; BUPT lisans, NEP-small erişim koşulu
+  çözülmeden kullanılmaz. T-Drive ve Alibaba yalnız açık kısıtlarıyla ikincil
+  adaydır.
+- Faz 3 yazılım/sözleşme kapsamı 61 Faz 3 testiyle tamamlandı; tüm 111 test,
+  Ruff ve strict mypy geçti, toplam branch coverage yüzde 91'dir. Henüz hiçbir
+  ham kaynak indirilmediği veya `schema_validated` olmadığı için genel
+  Definition of Done içindeki veri manifesti maddesi açık kalır.
+- Faz 3 kanıtı `phase_reports/PHASE_3_DATA_PROVENANCE_AND_SPLITS.md` içindedir.
