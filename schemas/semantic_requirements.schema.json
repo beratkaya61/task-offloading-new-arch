@@ -266,7 +266,56 @@
       },
       "allOf": [
         {
-          "$ref": "#/$defs/standard_status_invariants"
+          "if": {
+            "properties": {
+              "status": {
+                "const": "explicit"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "data_class": {
+                "enum": [
+                  "public",
+                  "internal",
+                  "sensitive",
+                  "restricted"
+                ]
+              },
+              "evidence": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "not_stated",
+                  "ambiguous"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "data_class": {
+                "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/evidence_status_invariants"
         }
       ]
     },

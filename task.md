@@ -67,10 +67,12 @@ Bu dosya günlük ilerleme listesidir. Bilimsel kurallar için `TODO_ANTIGRAVITY
 
 - [x] BUPT commit'ini sabitle, indir, SHA-256 ve ZIP bütünlüğünü doğrula.
 - [x] BUPT için privacy-minimum safe-prefix ayrıştırıcısı ve veri profili üret.
-- [x] NEP-small erişim talebini gönder: 2026-09-14; yanıt bekleniyor.
-- [ ] NEP-small yanıtını 2026-09-21'de kontrol et; gerekirse takip e-postası gönder.
-- [ ] UCI MEC 859 artifact'ını indirip checksum/şema doğrula.
-- [ ] EUA reposunu commit SHA ile sabitleyip checksum/şema doğrula.
+- [x] NEP erişim talebini gönder: 2026-09-14.
+- [x] NEP-large/full erişimini al, artifact kimliğini ve SHA-256'yı doğrula: 2026-09-18.
+- [x] NEP-large/full için tam üye CRC taramasını tamamla.
+- [ ] NEP-large/full için tam satır-şema/range profilini tamamla.
+- [x] UCI MEC 859 artifact'ını indirip checksum/şema doğrula.
+- [x] EUA reposunu commit SHA ile sabitleyip checksum/şema doğrula.
 
 ## Faz 5 — Baselines ve oracle
 

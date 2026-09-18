@@ -56,14 +56,14 @@ için immutable sürüm, doğrulanmış lisans ve her artifact için yerelde do�
 SHA-256 gerekir. Resmî sayfada yazan checksum `published` statüsündedir; dosya
 indirildikten sonra aynı değer yerelde üretilmeden `verified` olmaz.
 
-## 4. Kaynakların 2026-09-14 durumu
+## 4. Kaynakların 2026-09-18 durumu
 
-| Kaynak | Rol | Durum | Neden hazır değil? |
+| Kaynak | Rol | Durum | Doğrulama notu |
 |---|---|---|---|
-| UCI 859 | Ölçülmüş edge turnaround kalibrasyonu | `catalogued` | Dosya henüz indirilip hash/şema doğrulanmadı |
-| EUA | Avustralya kullanıcı/edge konumu | `catalogued` | Mutable `master`, commit SHA ve artifact hash gerekli |
+| UCI 859 | Ölçülmüş edge turnaround kalibrasyonu | `schema_validated` | 4.000 satır ve nested ZIP doğrulandı |
+| EUA | Avustralya kullanıcı/edge konumu | `schema_validated` | Commit-sabit ZIP ve seçilen 100.310 koordinat satırı doğrulandı |
 | BUPT | Oturum, byte, RAT, hücre, servis metadata | `schema_validated` | Yerel research-only; ham/türev satır dağıtımı yok |
-| NEP-small | Edge CPU/bant/RTT/kapasite replay | `access_pending` | Talep 2026-09-14'te gönderildi; yanıt bekleniyor |
+| NEP-large/full | Edge CPU/bant/RTT/kapasite replay | `checksum_verified` | Erişim alındı; raw paylaşılmaz, tam satır profili bekleniyor |
 | T-Drive | Mobility stress | `catalogued` | Non-commercial ve yeniden dağıtım yasaklı |
 | Alibaba 2018 | İkincil cluster/OOD stresi | `access_pending` | Survey/erişim ve lisans kapsamı; MEC değil |
 
@@ -84,8 +84,10 @@ proje bunu yalnız yerel research-only kullanım olarak yorumlar:
 satırın 476.419'u güvenli ilk 18 alanı geçti; kalan 6.268 satır deterministik
 olarak reddedilir. Ham URL/IP/User-Agent/kimlik değerleri işlenmiş kayda girmez.
 
-NEP-small resmî açıklaması 14 edge site, Haziran 2020, beş dakikalık kayıtları;
-yalnız araştırma kullanımını ve offline paylaşım yasağını bildirir:
+NEP-large resmî açıklaması 139 edge site, Haziran 2020, beş dakikalık kayıtları;
+ayrıca üç aylık saatlik bant genişliği izini içerir. Yerelde alınan full artifact
+bu kimliği VM/site sayısı ve `VM_BW_THREE_MONTHS.csv` üyesiyle doğrular. Resmî
+depo yalnız araştırma kullanımını ve offline paylaşım yasağını bildirir:
 <https://github.com/xumengwei/EdgeWorkloadsTraces>
 
 T-Drive sample 10.357 taksinin bir haftalık izidir ve MSR lisansı
@@ -165,7 +167,8 @@ katmanına bağlı olduğunu ayrıca gösterecektir.
 
 1. Lisans ve erişim koşulunu yeniden kontrol et.
 2. Mutable Git kaynağını commit SHA ile dondur.
-3. Dosyayı yalnız `data/raw/` altına indir; Git'e ekleme.
+3. Dosyayı repo dışındaki yapılandırılmış ham veri köküne indir; bu makinedeki
+   kök `D:\task_offloading_datasets` dizinidir. Git'e ekleme.
 4. Boyut ve SHA-256 hesapla, manifestteki yayımlanmış değer varsa karşılaştır.
 5. Ham kolon, tip, birim, eksik ve sentinel değerlerini doğrula.
 6. Statüyü kapıları atlamadan ilerlet.

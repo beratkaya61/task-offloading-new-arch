@@ -1,6 +1,6 @@
 {
   "manifest_version": "1.0.0",
-  "as_of_date": "2026-09-14",
+  "as_of_date": "2026-09-18",
   "provenance_vocabulary": [
     "observed",
     "measured",
@@ -21,7 +21,7 @@
       "version_kind": "doi",
       "immutable_version": true,
       "access_status": "public",
-      "dataset_status": "catalogued",
+      "dataset_status": "schema_validated",
       "license": {
         "identifier": "CC-BY-4.0",
         "verification_status": "verified",
@@ -34,11 +34,11 @@
         {
           "artifact_id": "tat_description_zip",
           "filename": "TATDescriptionDataset.zip",
-          "size_bytes": null,
+          "size_bytes": 80831,
           "checksum": {
             "algorithm": "sha256",
-            "value": null,
-            "verification": "missing"
+            "value": "23716d6985bdcf24c74b9c8f0d8887bbcb56a110796af78a0778e30f08628527",
+            "verification": "verified"
           }
         }
       ],
@@ -57,7 +57,7 @@
           "description": "Measured send-to-result turnaround time",
           "unit": "s",
           "provenance": "measured",
-          "source_fields": ["Turnaround Time"],
+          "source_fields": ["Execution Time"],
           "transform": "coerce to finite positive seconds",
           "nullable": false
         },
@@ -72,7 +72,7 @@
         }
       ],
       "raw_data_committed_to_git": false,
-      "notes": "Download and local checksum verification are still required."
+      "notes": "Downloaded and schema-validated on 2026-09-18. The outer ZIP contains one nested ZIP; four CSV files each contain 1000 positive turnaround-time measurements. The source timestamps have no timezone and are retained as source-local naive datetimes."
     },
     {
       "id": "eua_dataset",
@@ -80,11 +80,11 @@
       "role": "Real-world-derived Australian user and edge-server locations",
       "official_url": "https://github.com/PhuLai/eua-dataset",
       "citation_url": "https://github.com/PhuLai/eua-dataset#dataset-citation",
-      "version": "master; immutable commit pin pending acquisition",
-      "version_kind": "mutable_ref",
-      "immutable_version": false,
+      "version": "git commit 61238e00a6f01019c8a6ba1619675337a879a3d4",
+      "version_kind": "git_commit",
+      "immutable_version": true,
       "access_status": "public",
-      "dataset_status": "catalogued",
+      "dataset_status": "schema_validated",
       "license": {
         "identifier": "MIT",
         "verification_status": "verified",
@@ -96,23 +96,23 @@
       "artifacts": [
         {
           "artifact_id": "eua_git_snapshot",
-          "filename": "eua-dataset.git-snapshot",
-          "size_bytes": null,
+          "filename": "eua-dataset-61238e00a6f01019c8a6ba1619675337a879a3d4.zip",
+          "size_bytes": 34008830,
           "checksum": {
             "algorithm": "sha256",
-            "value": null,
-            "verification": "missing"
+            "value": "22c07483de496358988275e2b59f4808a49db7dd8469122809e544b197fd8b72",
+            "verification": "verified"
           }
         }
       ],
       "columns": [
         {
           "name": "source_entity_id",
-          "description": "Stable source row/entity identifier",
+          "description": "Stable identifier derived from the immutable member path and row number",
           "unit": null,
           "provenance": "derived",
           "source_fields": ["source file", "row index"],
-          "transform": "hash immutable source path and original row key",
+          "transform": "SHA-256 of immutable source member path and original row number",
           "nullable": false
         },
         {
@@ -144,7 +144,7 @@
         }
       ],
       "raw_data_committed_to_git": false,
-      "notes": "Pin a commit SHA before any benchmark uses this source."
+      "notes": "Commit-pinned snapshot downloaded and selected schemas validated on 2026-09-18. The privacy-minimum adapter uses site.csv and users-aus.csv coordinates only, derives IDs from source path/row, and discards raw IP, site name, postcode and administrative metadata. Generated user files and HTML maps are not used in the core benchmark."
     },
     {
       "id": "bupt_edge_computing_dataset",
@@ -237,33 +237,33 @@
       "notes": "Locally acquired and validated on 2026-09-14. The archive contains 93 headerless CSV files and 482687 rows. A deterministic safe-prefix policy accepts 476419 rows (98.70%) and rejects 6268 malformed rows. Only pseudonymized/derived fields may enter training; the raw archive stays outside Git."
     },
     {
-      "id": "edge_workloads_traces_nep_small",
-      "title": "EdgeWorkloadsTraces NEP-small",
+      "id": "edge_workloads_traces_nep_large",
+      "title": "EdgeWorkloadsTraces NEP-large / Full Trace",
       "role": "Edge VM CPU, bandwidth, site RTT, VM metadata and physical capacity replay",
       "official_url": "https://github.com/xumengwei/EdgeWorkloadsTraces",
-      "citation_url": "https://arxiv.org/abs/2103.10320",
-      "version": "NEP-small, June 2020, five-minute granularity",
+      "citation_url": "https://arxiv.org/abs/2109.03395",
+      "version": "NEP-large Full_trace archive received 2026-09-18; June 2020 five-minute traces plus three-month hourly bandwidth",
       "version_kind": "dated_snapshot",
       "immutable_version": true,
       "access_status": "request_required",
-      "dataset_status": "access_pending",
+      "dataset_status": "checksum_verified",
       "license": {
         "identifier": "LicenseRef-NEP-Research-Only-No-Offline-Sharing",
         "verification_status": "verified",
         "usage_scope": "research_only",
         "redistribution_allowed": false,
         "evidence_url": "https://github.com/xumengwei/EdgeWorkloadsTraces#statement",
-        "notes": "Official statement limits use to research and prohibits offline sharing."
+        "notes": "Official statement limits use to research and prohibits offline sharing. The user reports that requested access was granted before the Full_trace archive was obtained; private correspondence is not stored in Git."
       },
       "artifacts": [
         {
-          "artifact_id": "nep_small_bundle",
-          "filename": "NEP-small-requested-bundle",
-          "size_bytes": null,
+          "artifact_id": "nep_large_full_trace_7z",
+          "filename": "Full_trace.7z",
+          "size_bytes": 5885170081,
           "checksum": {
             "algorithm": "sha256",
-            "value": null,
-            "verification": "missing"
+            "value": "ff80a07e25f8055fed1a64439194a47721d9bc2330c79c9a8201649072852816",
+            "verification": "verified"
           }
         }
       ],
@@ -312,10 +312,37 @@
           "source_fields": ["SITE_RTT.csv"],
           "transform": "convert documented source unit to seconds after inspection",
           "nullable": true
+        },
+        {
+          "name": "pm_cpu_cores",
+          "description": "Physical machine CPU capacity",
+          "unit": "logical core",
+          "provenance": "observed",
+          "source_fields": ["PM.csv cores"],
+          "transform": "validate as a positive integer",
+          "nullable": false
+        },
+        {
+          "name": "pm_memory_mb",
+          "description": "Physical machine memory capacity",
+          "unit": "MB",
+          "provenance": "observed",
+          "source_fields": ["PM.csv memory"],
+          "transform": "validate as a positive integer",
+          "nullable": false
+        },
+        {
+          "name": "pm_storage_mb",
+          "description": "Physical machine storage capacity",
+          "unit": "MB",
+          "provenance": "observed",
+          "source_fields": ["PM.csv storage"],
+          "transform": "validate as a positive integer",
+          "nullable": false
         }
       ],
       "raw_data_committed_to_git": false,
-      "notes": "Request approval and local checksum are required; raw files must never be committed or redistributed."
+      "notes": "Access received and archive SHA-256 verified on 2026-09-18. Header probes identify 7410 VMs across 139 VM sites and confirm the NEP-large/full layout. Full row-level schema profiling remains required before dataset_status can advance to schema_validated. Raw files must never be committed or redistributed."
     },
     {
       "id": "tdrive_mobility",
@@ -468,8 +495,7 @@
         "uci_mec_execution_times_859",
         "eua_dataset",
         "bupt_edge_computing_dataset",
-        "edge_workloads_traces_nep_small",
-        "tdrive_mobility"
+        "edge_workloads_traces_nep_large"
       ],
       "field_provenance": [
         "observed",

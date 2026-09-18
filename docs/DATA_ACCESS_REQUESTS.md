@@ -4,23 +4,28 @@ Bu belge erişim gerektiren veri kaynaklarının unutulmaması için tutulur. Ha
 veri, başvuru formu yanıtları, kişisel bilgiler veya erişim bağlantıları Git'e
 eklenmez.
 
-## NEP-small
+## NEP-large / Full Trace
 
 - Talep tarihi: **2026-09-14**
 - Talebi gönderen: proje sahibi
-- Durum: **yanıt bekleniyor** (`access_pending`)
+- Erişim/alım tarihi: **2026-09-18**
+- Durum: **erişim alındı, SHA-256 doğrulandı** (`checksum_verified`)
 - Resmî başvuru: <https://forms.gle/j3QDp9qtCVyrcTwm9>
 - Resmî iletişim: `mwx@bupt.edu.cn`
-- İlk takip tarihi: **2026-09-21**
-- İkinci takip tarihi: **2026-09-28**
-- Kullanım kararı: erişim verilirse CPU, bant genişliği, site RTT ve kapasite
-  katmanlarında ana `trace-driven-hybrid` kaynağı olarak kullanılacak.
+- Artifact: `Full_trace.7z`, **5.885.170.081 byte**
+- SHA-256:
+  `ff80a07e25f8055fed1a64439194a47721d9bc2330c79c9a8201649072852816`
+- Kimlik: **NEP-large/full**; 7.410 VM ve 139 VM sitesi, ayrıca üç aylık
+  bant genişliği dosyası.
+- Kullanım kararı: CPU, bant genişliği, site RTT ve kapasite katmanlarında ana
+  `trace-driven-hybrid` kaynağı olarak kullanılacak.
 - Saklama kuralı: yalnız yerel araştırma kullanımı; ham dosya Git'e veya başka
   kişilere gönderilmeyecek.
 
-Yanıt gelirse tarih, erişim koşulu ve sağlanan artifact adı/checksum manifestte
-kaydedilir. 2026-09-21'e kadar yanıt gelmezse resmî iletişim adresine kısa ve
-nazik bir takip e-postası gönderilir.
+Erişim izninin özel yazışması Git'e konmaz. Kullanıcının izin aldığı beyanı,
+resmî research-only/offline paylaşım yasağı ve yerel artifact kanıtı ayrı
+alanlarda tutulur. Tam CRC taraması geçmiştir; satır düzeyi şema/range profili
+bitmeden kaynak `schema_validated` sayılmaz.
 
 ## BUPT Edge Computing Dataset
 

@@ -218,14 +218,14 @@ observed, measured, derived, matched,
 generated, human_labeled, simulated
 ```
 
-### Planlanan kaynaklar
+### Kaynak planı ve güncel statü
 
-| Kaynak | Rol | Başlangıç statüsü |
+| Kaynak | Rol | 2026-09-18 statüsü |
 |---|---|---|
-| BUPT Edge Computing Dataset | Mobil oturum gelişleri, byte, RAT, hücre geçişi, hizmet metadata | Lisans bekliyor |
-| EdgeWorkloadsTraces NEP-small | Edge VM CPU/bant genişliği, site RTT ve kapasite | Erişim başvurusu gerekli |
-| UCI MEC Execution Times 859 | Dört cihazda ölçülmüş image-recognition turnaround | CC BY 4.0 doğrulandı |
-| EUA | Kullanıcı ve edge coğrafi konum senaryosu | MIT doğrulandı |
+| BUPT Edge Computing Dataset | Mobil oturum gelişleri, byte, RAT, hücre geçişi, hizmet metadata | `schema_validated`; research-only, raw paylaşılmaz |
+| EdgeWorkloadsTraces NEP-large/full | Edge VM CPU/bant genişliği, site RTT ve kapasite | `checksum_verified`; full satır profili bekleniyor |
+| UCI MEC Execution Times 859 | Dört cihazda ölçülmüş image-recognition turnaround | `schema_validated`; CC BY 4.0 |
+| EUA | Kullanıcı ve edge coğrafi konum senaryosu | `schema_validated`; commit-sabit, MIT |
 | T-Drive veya DiDi GAIA | Sürekli mobilite stres deneyi | Bir kaynak erişim/lisans denetiminden sonra seçilecek |
 | Alibaba v2018 | Cloud/cluster yükü ve OOD stres deneyi | İkincil kaynak |
 

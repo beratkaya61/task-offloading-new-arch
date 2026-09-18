@@ -168,8 +168,8 @@ Eski repo doğrudan taşınmayacaktır. Fizik hataları regresyon testine, eski 
 - Ground truth protokolü: 20 pilot + 240 ana Türkçe görev, iki gerçek insan, tam çift-kör etiketleme ve adjudication.
 - Trace kaynakları doğal ortak olay gibi birleştirilmeyecek; final benchmark `trace-driven-hybrid` diye adlandırılacak.
 - BUPT yalnız resmî research-use beyanı ve no-redistribution sınırıyla yerel
-  deneylere açılır; NEP-small erişim başvurusuna bağlıdır. UCI/EUA açık başlangıç
-  kaynaklarıdır.
+  deneylere açılır. İlk kararda erişime bağlı olan NEP daha sonra NEP-large/full
+  olarak alınmıştır; UCI/EUA açık kaynaklardır.
 - Qwen3-4B/Qwen3-8B nihai seçimi Faz 4 validation kapılarında yapılacaktır.
 - Fiziksel testbed çekirdek Definition of Done koşulu değil, isteğe bağlı ek doğrulamadır.
 - Faz 1 kanıtı: `phase_reports/PHASE_1_RESEARCH_CONTRACT.md`, 16/16 test geçti.
@@ -218,8 +218,8 @@ Eski repo doğrudan taşınmayacaktır. Fizik hataları regresyon testine, eski 
   denetlenir; normalizer yalnız train split'ine fit edilir.
 - `synthetic_v1` ile `trace_driven_hybrid_v1` ayrı benchmark'lardır. Hibrit ad,
   farklı kaynakların doğal olarak ortak ölçülmüş olaylar olduğu iddiasını taşımaz.
-- UCI MEC ve EUA başlangıç adayıdır. BUPT sabit commit ve research-only sınırıyla
-  yerel kullanıma açılmıştır; NEP-small erişim yanıtı beklenir. T-Drive ve
+- UCI MEC, EUA ve BUPT doğrulanmış kaynaklardır. NEP-large/full erişimi alınmış,
+  checksum/CRC doğrulanmış fakat tam satır profili beklemektedir. T-Drive ve
   Alibaba yalnız açık kısıtlarıyla ikincil adaydır.
 - Faz 3 yazılım/sözleşme kapsamı 61 Faz 3 testiyle tamamlandı; tüm 111 test,
   Ruff ve strict mypy geçti, toplam branch coverage yüzde 91'dir. Faz 3'ün ilk
@@ -230,9 +230,10 @@ Eski repo doğrudan taşınmayacaktır. Fizik hataları regresyon testine, eski 
 
 ## 12. Faz 3A BUPT edinim kararları
 
-- NEP-small talebi 2026-09-14'te gönderildi; 2026-09-21 ilk takip tarihidir.
+- NEP talebi 2026-09-14'te gönderildi ve NEP-large/full erişimi 2026-09-18'de
+  alındı.
 - BUPT kaynak commit'i `04e664fab9cdb2a58d04ebc615cd74405e6062e2`
-  olarak sabitlendi ve ham ZIP yalnız `data/raw/` altında tutulur.
+  olarak sabitlendi; ham ZIP repo dışındaki merkezi veri kökünde tutulur.
 - Yerel SHA-256
   `5d89bd853a5300207892dad38070957b935a95ea02bfe1ec063e0c4829e21822`
   olarak doğrulandı; ham artifact Git'e girmez.
@@ -245,3 +246,21 @@ Eski repo doğrudan taşınmayacaktır. Fizik hataları regresyon testine, eski 
 - Profil `configs/data_profiles/bupt_04e664f.json`, erişim takibi
   `docs/DATA_ACCESS_REQUESTS.md`, kanıt raporu
   `phase_reports/PHASE_3A_BUPT_ACQUISITION.md` içindedir.
+
+## 13. Faz 3B NEP-large/full edinim kararları
+
+- 2026-09-14'te NEP için gönderilen erişim talebinin ardından proje sahibi
+  2026-09-18'de erişim iznini ve `Full_trace.7z` artifact'ını aldı.
+- Dosya adı “BUPT” klasöründe olsa da artifact, altı CSV üyesi, 7.410 VM,
+  139 VM sitesi ve `VM_BW_THREE_MONTHS.csv` varlığıyla BUPT mobil izi değil,
+  **EdgeWorkloadsTraces NEP-large/full** olarak tanımlandı.
+- 5.885.170.081 byte arşivin yerel SHA-256 değeri
+  `ff80a07e25f8055fed1a64439194a47721d9bc2330c79c9a8201649072852816`
+  olarak doğrulandı. Raw artifact ve erişim yazışmaları Git'e girmez.
+- Resmî research-only ve offline paylaşmama koşulu değişmez. Erişim alınmış
+  olması yeniden dağıtım izni anlamına gelmez.
+- NEP-large/full; CPU, bant genişliği, site RTT ve PM/VM kapasite replay'i için
+  ana gerçek iz kaynağıdır. BUPT mobil iziyle satır numarasına göre birleştirilmez;
+  yalnız açık zaman-penceresi/eşleme kurallarıyla hibrit senaryo kurulur.
+- SHA-256 ve tam üye CRC taraması geçmiştir. Satır düzeyi şema/range profili
+  bitmeden kaynak `schema_validated` ilan edilmez.

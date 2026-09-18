@@ -1,0 +1,37 @@
+{
+  "manifest_version": "1.0.0",
+  "created_on": "2026-09-14",
+  "corpus_version": "pilot-1.0.0",
+  "protocol_version": "1.0.0",
+  "annotation_schema_version": "1.0.0",
+  "task_count": 20,
+  "gold_status": "not_collected",
+  "human_annotators_required": 2,
+  "design_metadata_is_gold": false,
+  "corpus": {
+    "path": "data/semantic_benchmark/pilot/tasks.v1.jsonl",
+    "sha256": "e33810820c09445401f476d14d543ecfdc9e71e40d5940cd62bcf82f2bf8354b"
+  },
+  "packets": {
+    "annotator_a": {
+      "path": "data/semantic_benchmark/pilot/packets/annotator_a.v1.jsonl",
+      "seed": 41041,
+      "sha256": "0617a302fc4db124794bd003767994011d12f239454dcd03b9896424b2b2f095"
+    },
+    "annotator_b": {
+      "path": "data/semantic_benchmark/pilot/packets/annotator_b.v1.jsonl",
+      "seed": 92093,
+      "sha256": "873da5d81c1536f91372fec770271dedf2be764d47440b5ee80d9b670fa45ec8"
+    }
+  },
+  "hidden_from_annotators": [
+    "provenance",
+    "grouping",
+    "design_strata",
+    "LLM output",
+    "other annotator output",
+    "network/server state",
+    "oracle action",
+    "split membership"
+  ]
+}

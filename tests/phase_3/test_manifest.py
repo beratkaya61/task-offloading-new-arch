@@ -24,6 +24,11 @@ ROOT = Path(__file__).resolve().parents[2]
 MANIFEST_PATH = ROOT / "configs" / "data_sources.v1.json"
 SCHEMA_PATH = ROOT / "schemas" / "dataset_manifest.schema.json"
 BUPT_PROFILE_PATH = ROOT / "configs" / "data_profiles" / "bupt_04e664f.json"
+NEP_PROFILE_PATH = (
+    ROOT / "configs" / "data_profiles" / "nep_large_full_trace_ff80a07e.json"
+)
+UCI_PROFILE_PATH = ROOT / "configs" / "data_profiles" / "uci_mec_859_23716d69.json"
+EUA_PROFILE_PATH = ROOT / "configs" / "data_profiles" / "eua_61238e00_22c07483.json"
 
 
 def manifest() -> dict[str, object]:
@@ -91,6 +96,48 @@ def test_bupt_manifest_and_non_sensitive_profile_are_aligned() -> None:
     )
 
 
+def test_nep_large_manifest_and_non_sensitive_profile_are_aligned() -> None:
+    values = manifest()
+    nep = source_by_id(values, "edge_workloads_traces_nep_large")
+    with NEP_PROFILE_PATH.open(encoding="utf-8") as handle:
+        profile = json.load(handle)
+
+    artifact = nep["artifacts"][0]  # type: ignore[index]
+    assert nep["dataset_status"] == "checksum_verified"
+    assert nep["citation_url"] == "https://arxiv.org/abs/2109.03395"
+    assert artifact["filename"] == profile["archive"]["filename"]
+    assert artifact["size_bytes"] == profile["archive"]["size_bytes"]
+    assert artifact["checksum"]["value"] == profile["archive"]["sha256"]
+    assert artifact["checksum"]["verification"] == "verified"
+    assert profile["small_table_profile"]["vm_site_count"] == 139
+    assert profile["access"]["offline_sharing_allowed"] is False
+    privacy = profile["privacy_and_git_policy"]
+    assert not privacy["raw_archive_committed"]
+    assert not privacy["raw_rows_committed"]
+    assert not privacy["raw_identifiers_committed"]
+    assert not source_is_analysis_ready(nep)
+
+
+def test_uci_and_eua_are_analysis_ready_with_matching_profiles() -> None:
+    values = manifest()
+    cases = (
+        ("uci_mec_execution_times_859", UCI_PROFILE_PATH),
+        ("eua_dataset", EUA_PROFILE_PATH),
+    )
+    for source_id, profile_path in cases:
+        source = source_by_id(values, source_id)
+        with profile_path.open(encoding="utf-8") as handle:
+            profile = json.load(handle)
+        artifact = source["artifacts"][0]  # type: ignore[index]
+        assert source["dataset_status"] == "schema_validated"
+        assert artifact["filename"] == profile["archive"]["filename"]
+        assert artifact["size_bytes"] == profile["archive"]["size_bytes"]
+        assert artifact["checksum"]["value"] == profile["archive"]["sha256"]
+        assert artifact["checksum"]["verification"] == "verified"
+        assert profile["raw_archive_committed_to_git"] is False
+        assert source_is_analysis_ready(source)
+
+
 def test_downloaded_source_is_not_automatically_analysis_ready() -> None:
     values = manifest()
     uci = copy.deepcopy(source_by_id(values, "uci_mec_execution_times_859"))
@@ -101,7 +148,9 @@ def test_downloaded_source_is_not_automatically_analysis_ready() -> None:
 def test_schema_validated_claim_requires_complete_evidence() -> None:
     values = manifest()
     uci = copy.deepcopy(source_by_id(values, "uci_mec_execution_times_859"))
-    uci["dataset_status"] = "schema_validated"
+    artifact = uci["artifacts"][0]
+    artifact["checksum"]["value"] = None
+    artifact["checksum"]["verification"] = "missing"
     with pytest.raises(ValueError, match="evidence"):
         validate_manifest_semantics(
             {
@@ -229,6 +278,7 @@ def test_duplicate_source_identifier_is_rejected() -> None:
 def test_mutable_reference_cannot_be_claimed_immutable() -> None:
     values = manifest()
     eua = source_by_id(values, "eua_dataset")
+    eua["version_kind"] = "mutable_ref"
     eua["immutable_version"] = True
     with pytest.raises(ValueError, match="mutable ref immutable"):
         validate_manifest_semantics(values)

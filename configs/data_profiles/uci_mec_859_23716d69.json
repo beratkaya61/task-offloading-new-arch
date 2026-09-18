@@ -1,0 +1,55 @@
+{
+  "profile_version": "1.0.0",
+  "profiled_on": "2026-09-18",
+  "source_id": "uci_mec_execution_times_859",
+  "archive": {
+    "filename": "TATDescriptionDataset.zip",
+    "size_bytes": 80831,
+    "sha256": "23716d6985bdcf24c74b9c8f0d8887bbcb56a110796af78a0778e30f08628527",
+    "outer_crc_valid": true,
+    "unsafe_member_count": 0,
+    "nested_member": "TATDescriptionDataset.zip",
+    "nested_size_bytes": 80911,
+    "nested_crc32": "486af8a8",
+    "nested_crc_valid": true
+  },
+  "selected_files": {
+    "TATDescriptionDataset/MacBookPro1.csv": {
+      "server_id": "macbook_pro_1",
+      "rows": 1000,
+      "turnaround_s_min": 0.09291887283325195,
+      "turnaround_s_mean": 0.10815345335006714,
+      "turnaround_s_max": 0.2263927459716797
+    },
+    "TATDescriptionDataset/MacBookPro2.csv": {
+      "server_id": "macbook_pro_2",
+      "rows": 1000,
+      "turnaround_s_min": 0.26859307289123535,
+      "turnaround_s_mean": 0.34829165410995483,
+      "turnaround_s_max": 1.6071553230285645
+    },
+    "TATDescriptionDataset/RasberryPi.csv": {
+      "server_id": "raspberry_pi_4b",
+      "rows": 1000,
+      "turnaround_s_min": 0.8511631488800049,
+      "turnaround_s_mean": 1.0169308009147644,
+      "turnaround_s_max": 3.167850971221924
+    },
+    "TATDescriptionDataset/VM.csv": {
+      "server_id": "ubuntu_virtualbox_vm",
+      "rows": 1000,
+      "turnaround_s_min": 0.16689109802246094,
+      "turnaround_s_mean": 0.42681368184089663,
+      "turnaround_s_max": 20.789386987686157
+    }
+  },
+  "total_rows": 4000,
+  "source_local_time_range": [
+    "2020-11-26T13:05:57",
+    "2020-11-26T17:03:12"
+  ],
+  "missing_rows": 0,
+  "invalid_rows": 0,
+  "interpretation": "Measured turnaround includes transfer, execution and result return after connection establishment; it is not a pure CPU service time.",
+  "raw_archive_committed_to_git": false
+}

@@ -5,6 +5,12 @@ from task_offloading.data.bupt import (
     BuptTraceRecord,
     parse_bupt_line,
 )
+from task_offloading.data.eua import (
+    EuaEntityKind,
+    EuaLocationRecord,
+    EuaParseError,
+    iter_eua_archive,
+)
 from task_offloading.data.manifest import (
     assert_status_transition,
     checksum_matches,
@@ -34,6 +40,11 @@ from task_offloading.data.types import (
     SplitPlan,
     SplitStrategy,
 )
+from task_offloading.data.uci_mec import (
+    UciMecExecutionRecord,
+    UciMecParseError,
+    iter_uci_mec_archive,
+)
 
 __all__ = [
     "BenchmarkKind",
@@ -41,6 +52,9 @@ __all__ = [
     "BuptTraceRecord",
     "DataSample",
     "DataSplit",
+    "EuaEntityKind",
+    "EuaLocationRecord",
+    "EuaParseError",
     "LeakageReport",
     "ProvenanceKind",
     "SplitAssignment",
@@ -48,6 +62,8 @@ __all__ = [
     "SplitStrategy",
     "StandardizationStats",
     "TrainOnlyStandardizer",
+    "UciMecExecutionRecord",
+    "UciMecParseError",
     "assert_no_leakage",
     "assert_status_transition",
     "audit_split",
@@ -55,6 +71,8 @@ __all__ = [
     "chronological_split",
     "content_sha256",
     "group_holdout_split",
+    "iter_eua_archive",
+    "iter_uci_mec_archive",
     "load_and_validate_manifest",
     "parse_bupt_line",
     "sha256_file",

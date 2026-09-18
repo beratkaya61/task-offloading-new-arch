@@ -1,0 +1,55 @@
+{
+  "profile_version": "1.0.0",
+  "profiled_on": "2026-09-18",
+  "source_id": "eua_dataset",
+  "source_commit": "61238e00a6f01019c8a6ba1619675337a879a3d4",
+  "archive": {
+    "filename": "eua-dataset-61238e00a6f01019c8a6ba1619675337a879a3d4.zip",
+    "size_bytes": 34008830,
+    "uncompressed_size_bytes": 74726582,
+    "sha256": "22c07483de496358988275e2b59f4808a49db7dd8469122809e544b197fd8b72",
+    "entry_count": 21,
+    "file_count": 16,
+    "crc_valid": true,
+    "unsafe_member_count": 0
+  },
+  "selected_files": {
+    "edge-servers/site.csv": {
+      "role": "observed edge-server candidate coordinates",
+      "rows": 95562,
+      "unique_coordinate_pairs": 95536,
+      "latitude_range_deg": [-68.618216, -7.800003],
+      "longitude_range_deg": [62.818431, 167.985161]
+    },
+    "users/users-aus.csv": {
+      "role": "observed geolocated user candidate coordinates",
+      "rows": 4748,
+      "unique_coordinate_pairs": 4748,
+      "latitude_range_deg": [-43.3142, -10.5808],
+      "longitude_range_deg": [113.6594, 153.6021]
+    }
+  },
+  "selection_policy": {
+    "selected_entity_fields": ["latitude", "longitude", "entity_kind"],
+    "source_entity_id": "SHA-256(source member path + row number)",
+    "discarded_fields": [
+      "raw IP",
+      "site identifier",
+      "site name",
+      "postcode",
+      "city/state/country text",
+      "licensing metadata"
+    ],
+    "generated_user_files_used": false,
+    "html_maps_used": false,
+    "continental_bbox_filter_applied": false
+  },
+  "geography_note": "The edge-site source includes Australian external territories and Antarctic facilities; these are valid source rows, not silently removed. A geographic scenario filter must be explicit and fit without test leakage.",
+  "invalid_selected_rows": 0,
+  "privacy": {
+    "raw_ip_retained": false,
+    "raw_names_retained": false,
+    "row_level_output_committed": false
+  },
+  "raw_archive_committed_to_git": false
+}

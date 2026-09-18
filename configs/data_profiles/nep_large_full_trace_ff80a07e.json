@@ -1,0 +1,101 @@
+{
+  "profile_version": "1.0.0",
+  "profiled_on": "2026-09-18",
+  "source_id": "edge_workloads_traces_nep_large",
+  "dataset_identity": {
+    "name": "EdgeWorkloadsTraces NEP-large / Full Trace",
+    "identity_basis": [
+      "VM.csv contains 7410 unique VMs across 139 sites",
+      "archive contains the NEP-large-only VM_BW_THREE_MONTHS.csv member",
+      "member names and headers match the official EdgeWorkloadsTraces description"
+    ],
+    "official_repository": "https://github.com/xumengwei/EdgeWorkloadsTraces",
+    "paper": "https://arxiv.org/abs/2109.03395"
+  },
+  "access": {
+    "access_received_user_reported": true,
+    "received_on": "2026-09-18",
+    "usage_scope": "research_only",
+    "offline_sharing_allowed": false,
+    "private_permission_evidence_committed": false
+  },
+  "archive": {
+    "filename": "Full_trace.7z",
+    "local_storage": "external_untracked",
+    "format": "7z",
+    "compression": ["LZMA2"],
+    "solid": false,
+    "blocks": 6,
+    "size_bytes": 5885170081,
+    "uncompressed_size_bytes": 63231423873,
+    "sha256": "ff80a07e25f8055fed1a64439194a47721d9bc2330c79c9a8201649072852816",
+    "entry_count": 7,
+    "file_count": 6
+  },
+  "members": [
+    {
+      "path": "Full_trace/PM.csv",
+      "compressed_size_bytes": 45022,
+      "uncompressed_size_bytes": 153167,
+      "crc32": "2fcdccee",
+      "header": ["pm_name", "site_id", "cores", "memory", "storage"]
+    },
+    {
+      "path": "Full_trace/SITE_RTT.csv",
+      "compressed_size_bytes": 3078444834,
+      "uncompressed_size_bytes": 36820005748,
+      "crc32": "7e3c61e1",
+      "header": ["", "from_site_id", "to_site_id", "rtt", "loss", "type", "biz_ts", "biz_time", "create_time"]
+    },
+    {
+      "path": "Full_trace/VM.csv",
+      "compressed_size_bytes": 216065,
+      "uncompressed_size_bytes": 1418045,
+      "crc32": "99e9cb0e",
+      "header": ["vm_id", "uid", "pm_name", "site_id", "status", "image_id", "cores", "memory", "storage", "os_type", "os_name", "start_time", "end_time"]
+    },
+    {
+      "path": "Full_trace/VM_BANDWIDTH.csv",
+      "compressed_size_bytes": 1369646513,
+      "uncompressed_size_bytes": 6521205631,
+      "crc32": "469ed283",
+      "header": ["vm_id", "site_id", "pub_down_flow", "pub_up_flow", "pub_down_bw", "pub_up_bw", "pri_down_flow", "pri_up_flow", "pri_down_bw", "pri_up_bw", "report_ts"]
+    },
+    {
+      "path": "Full_trace/VM_BW_THREE_MONTHS.csv",
+      "compressed_size_bytes": 267351388,
+      "uncompressed_size_bytes": 1646605073,
+      "crc32": "6716c125",
+      "header": ["vm_id", "report_time", "pub_down_bw", "pub_up_bw", "pri_down_bw", "pri_up_bw"]
+    },
+    {
+      "path": "Full_trace/VM_CPU.csv",
+      "compressed_size_bytes": 1169465907,
+      "uncompressed_size_bytes": 18242036209,
+      "crc32": "d78cd797",
+      "header": ["vm_id", "site_id", "cpu_rate", "report_ts"]
+    }
+  ],
+  "small_table_profile": {
+    "pm_rows": 2242,
+    "unique_pm_ids": 2242,
+    "pm_site_count": 149,
+    "vm_rows": 7410,
+    "unique_vm_ids": 7410,
+    "vm_site_count": 139
+  },
+  "validation": {
+    "archive_sha256_verified": true,
+    "member_headers_probed": true,
+    "small_tables_parsed": true,
+    "full_member_crc_validation": "passed",
+    "full_member_crc_validation_elapsed_s": 894.646,
+    "full_row_schema_validation": "pending"
+  },
+  "privacy_and_git_policy": {
+    "raw_archive_committed": false,
+    "raw_rows_committed": false,
+    "raw_identifiers_committed": false,
+    "profile_contains_aggregates_and_schema_only": true
+  }
+}

@@ -157,9 +157,9 @@
         "url": "https://github.com/BuptMecMigration/Edge-Computing-Dataset"
       },
       {
-        "id": "edge_workloads_traces_nep_small",
+        "id": "edge_workloads_traces_nep_large",
         "role": "edge VM CPU, bandwidth, site RTT and physical capacity replay",
-        "status": "access_request_required",
+        "status": "access_received_checksum_verified_schema_profile_pending",
         "raw_redistribution": false,
         "url": "https://github.com/xumengwei/EdgeWorkloadsTraces"
       },

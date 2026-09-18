@@ -1,0 +1,50 @@
+{
+  "profile_version": "1.0.0",
+  "profile_id": "bupt_04e664f_workload_quantiles_v1",
+  "derived_on": "2026-09-14",
+  "source_id": "bupt_edge_computing_dataset",
+  "source_commit": "04e664fab9cdb2a58d04ebc615cd74405e6062e2",
+  "source_archive_sha256": "5d89bd853a5300207892dad38070957b935a95ea02bfe1ec063e0c4829e21822",
+  "accepted_records": 476419,
+  "rejected_records": 6268,
+  "method": {
+    "parser": "task_offloading.data.bupt.parse_bupt_line",
+    "quantile_implementation": "numpy.quantile",
+    "numpy_version": "2.4.6",
+    "quantile_method": "linear",
+    "row_level_values_retained": false
+  },
+  "quantiles": {
+    "duration_s": {
+      "p10": 0.0,
+      "p25": 0.0,
+      "p50": 1.0,
+      "p75": 9.0,
+      "p90": 34.0,
+      "p95": 82.0
+    },
+    "input_bits": {
+      "p10": 480.0,
+      "p25": 1152.0,
+      "p50": 4088.0,
+      "p75": 9296.0,
+      "p90": 20600.0,
+      "p95": 36464.0
+    },
+    "output_bits": {
+      "p10": 0.0,
+      "p25": 320.0,
+      "p50": 2880.0,
+      "p75": 11408.0,
+      "p90": 56104.0,
+      "p95": 156608.8
+    }
+  },
+  "privacy": {
+    "aggregate_only": true,
+    "raw_identifiers_included": false,
+    "raw_network_fields_included": false,
+    "safe_for_git": true
+  },
+  "interpretation": "These distribution summaries may condition synthetic workload magnitudes. They do not supply semantic labels, deadlines, privacy classes, execution policies, or gold annotations."
+}

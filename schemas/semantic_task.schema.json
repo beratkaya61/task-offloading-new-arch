@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://task-offloading-new-arch.local/schemas/semantic-task-v1.json",
+  "title": "Semantic benchmark task v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "corpus_version",
+    "task_id",
+    "language",
+    "task_text",
+    "user_policy_text",
+    "provenance",
+    "grouping",
+    "design_strata"
+  ],
+  "properties": {
+    "corpus_version": {"const": "pilot-1.0.0"},
+    "task_id": {"type": "string", "pattern": "^pilot_tr_[0-9]{3}$"},
+    "language": {"const": "tr"},
+    "task_text": {"type": "string", "minLength": 20, "maxLength": 1500},
+    "user_policy_text": {
+      "type": ["string", "null"],
+      "minLength": 5,
+      "maxLength": 750
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origin",
+        "generation_method",
+        "source_reference_ids",
+        "trace_conditioning",
+        "human_text_review"
+      ],
+      "properties": {
+        "origin": {
+          "enum": [
+            "standard_derived",
+            "trace_conditioned",
+            "llm_assisted_synthetic",
+            "adversarial"
+          ]
+        },
+        "generation_method": {"const": "llm_assisted_manual_design"},
+        "source_reference_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 3}
+        },
+        "trace_conditioning": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["profile_id", "aggregate_fields"],
+              "properties": {
+                "profile_id": {"type": "string", "minLength": 3},
+                "aggregate_fields": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {"type": "string", "minLength": 3}
+                }
+              }
+            }
+          ]
+        },
+        "human_text_review": {"enum": ["pending", "approved", "rejected"]}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"origin": {"const": "trace_conditioned"}},
+            "required": ["origin"]
+          },
+          "then": {"properties": {"trace_conditioning": {"type": "object"}}},
+          "else": {"properties": {"trace_conditioning": {"type": "null"}}}
+        }
+      ]
+    },
+    "grouping": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scenario_family_id",
+        "template_family_id",
+        "paraphrase_family_id",
+        "source_entity_id"
+      ],
+      "properties": {
+        "scenario_family_id": {"type": "string", "pattern": "^sf_[0-9]{3}$"},
+        "template_family_id": {"type": "string", "pattern": "^tf_[0-9]{3}$"},
+        "paraphrase_family_id": {"type": "string", "pattern": "^pf_[0-9]{3}$"},
+        "source_entity_id": {"type": ["string", "null"], "minLength": 3}
+      }
+    },
+    "design_strata": {
+      "description": "Authoring audit metadata; never shown to annotators and never treated as gold.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scenario_domain", "semantic_phenomena"],
+      "properties": {
+        "scenario_domain": {
+          "enum": [
+            "healthcare",
+            "industrial",
+            "transportation",
+            "public_safety",
+            "smart_city",
+            "agriculture",
+            "consumer",
+            "other"
+          ]
+        },
+        "semantic_phenomena": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "ambiguity",
+              "explicit_accuracy",
+              "explicit_divisibility",
+              "explicit_energy",
+              "explicit_execution_policy",
+              "explicit_latency",
+              "explicit_privacy",
+              "explicit_reliability",
+              "missing_information",
+              "negation",
+              "numeric_threshold",
+              "qualitative_requirement"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

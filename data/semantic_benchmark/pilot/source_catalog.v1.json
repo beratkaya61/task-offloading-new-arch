@@ -1,0 +1,19 @@
+{
+  "catalog_version": "1.0.0",
+  "scope": "Pilot authoring provenance only; sources never define gold labels.",
+  "sources": [
+    {
+      "id": "etsi_mec_overview",
+      "title": "ETSI Multi-access Edge Computing overview",
+      "url": "https://www.etsi.org/technologies/multi-access-edge-computing",
+      "use": "High-level MEC scenario inspiration; no source text copied verbatim."
+    },
+    {
+      "id": "bupt_edge_computing_dataset",
+      "title": "BUPT Edge Computing Dataset",
+      "url": "https://github.com/BuptMecMigration/Edge-Computing-Dataset",
+      "use": "Only privacy-safe aggregate workload quantiles condition selected synthetic payload magnitudes.",
+      "local_profile": "configs/data_profiles/bupt_04e664f_workload_quantiles.json"
+    }
+  ]
+}
