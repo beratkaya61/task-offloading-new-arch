@@ -208,6 +208,22 @@ Metni üreten şablon/model gold etiketi belirlemez. Gold yalnızca iki insanın
 5. Değişen alanlar için pilot yeniden uygulanır.
 6. Pilot örnekleri ana test setine girmez.
 
+### 8.1 Pilot diagnostic üçüncü annotator — 2026-09-28 eki
+
+Birincil ve önceden tanımlı anlaşma çifti `annotator_a` ile `annotator_b` olarak
+değişmeden kalır. İlk A/B pilotunda görülen anlaşmazlıkların, konu deneyimi düşük
+bir annotatorın bilgi kaçırmasından mı yoksa kılavuz/metin belirsizliğinden mi
+kaynaklandığını ayırmak için üçüncü bir gerçek kişi `annotator_c` kimliğiyle
+yalnız pilot tanısı amacıyla eklenebilir.
+
+- C de A ve B gibi yalnız kendi kör paketini görür.
+- C, A/B cevaplarını, anlaşmazlık listesini ve tasarım metadata'sını görmez.
+- C sonucu birincil A–B Cohen's kappa hesabına katılmaz.
+- C cevabı otomatik çoğunluk oyu veya adjudicated gold sayılmaz.
+- A/B/C üçlü örüntüsü yalnız kılavuz, arayüz ve eğitim ihtiyacını teşhis eder.
+- Ana 240 görev için dondurulmuş iki-insan protokolü değişmez; farklı bir karar
+  ancak ana veri toplamadan önce açık amendment ile alınabilir.
+
 Ana annotasyon başladıktan sonra etiket tanımları değiştirilmez. Zorunlu değişiklik olursa ilgili alan bütün 240 örnekte yeniden etiketlenir ve amendment kaydı tutulur.
 
 ## 9. Ana annotasyon

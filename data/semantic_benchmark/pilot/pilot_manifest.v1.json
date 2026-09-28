@@ -7,10 +7,18 @@
   "task_count": 20,
   "gold_status": "not_collected",
   "human_annotators_required": 2,
+  "primary_annotators": [
+    "annotator_a",
+    "annotator_b"
+  ],
+  "diagnostic_annotators": [
+    "annotator_c"
+  ],
+  "diagnostic_policy": "blind pilot-only interpretation; excluded from primary A/B kappa and never used as automatic majority-vote gold",
   "design_metadata_is_gold": false,
   "corpus": {
     "path": "data/semantic_benchmark/pilot/tasks.v1.jsonl",
-    "sha256": "e33810820c09445401f476d14d543ecfdc9e71e40d5940cd62bcf82f2bf8354b"
+    "sha256": "3e8988b31d6473df61a39888030809278f02ddf94282176fb1217fc690df2af3"
   },
   "packets": {
     "annotator_a": {
@@ -22,6 +30,11 @@
       "path": "data/semantic_benchmark/pilot/packets/annotator_b.v1.jsonl",
       "seed": 92093,
       "sha256": "873da5d81c1536f91372fec770271dedf2be764d47440b5ee80d9b670fa45ec8"
+    },
+    "annotator_c": {
+      "path": "data/semantic_benchmark/pilot/packets/annotator_c.v1.jsonl",
+      "seed": 63127,
+      "sha256": "2f39a4e7cd42fd7e654898738c451d1d8ce541f933dd638c3be440e921e1dc99"
     }
   },
   "hidden_from_annotators": [

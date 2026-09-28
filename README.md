@@ -34,6 +34,34 @@ repo dışında `D:\task_offloading_datasets` altında tutulur; Git'e yalnız k�
 şema/checksum/profil kanıtları girer.
 Sıradaki ana iş Faz 4 semantik benchmark'tır. Eski kaynak kod taşınmamıştır.
 
+## Faz 4 pilot etiketleme akışı
+
+Pilot formlar ancak `tasks.v1.jsonl` içindeki 20 metnin tamamı gerçek bir insan
+tarafından gözden geçirilip `human_text_review=approved` olduktan sonra üretilir.
+Her annotator yalnız kendi kör ve çevrimdışı HTML formunu kullanır:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\prepare_pilot_annotation.py --annotator annotator_a
+.\.venv\Scripts\python.exe scripts\prepare_pilot_annotation.py --annotator annotator_b
+.\.venv\Scripts\python.exe scripts\prepare_pilot_annotation.py --annotator annotator_c
+```
+
+`annotator_a` ve `annotator_b` birincil anlaşma çiftidir. İsteğe bağlı
+`annotator_c`, yalnız kör pilot tanısı içindir; A/B kappa hesabına veya gold'a
+otomatik çoğunluk oyu olarak katılmaz.
+
+Formlar Git tarafından yok sayılan `artifacts/semantic_annotation/` dizinine
+yazılır. Tamamlanan JSONL dosyası gold veya kilitli ham etiket sayılmadan önce
+doğrulanır:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\validate_pilot_submission.py --annotator annotator_a --submission <annotator_a.jsonl>
+```
+
+Doğrulama; 20 görevin eksiksizliğini, kör paket kimliğini, JSON şemasını,
+abstention tutarlılığını ve evidence alıntılarının görünen metinde birebir
+bulunmasını denetler. Form ağ isteği yapmaz ve LLM çıktısı göstermez.
+
 Kurulum ve bütün testler:
 
 ```powershell

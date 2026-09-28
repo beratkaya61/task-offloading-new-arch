@@ -8,6 +8,7 @@ from typing import Any
 
 from task_offloading.data import sha256_file
 from task_offloading.semantic import (
+    audit_annotation_release,
     audit_corpus,
     build_blind_packet,
     load_jsonl,
@@ -21,7 +22,11 @@ TASKS_PATH = PILOT_DIR / "tasks.v1.jsonl"
 SCHEMA_PATH = ROOT / "schemas" / "semantic_task.schema.json"
 PACKET_DIR = PILOT_DIR / "packets"
 MANIFEST_PATH = PILOT_DIR / "pilot_manifest.v1.json"
-SEEDS = {"annotator_a": 41041, "annotator_b": 92093}
+SEEDS = {
+    "annotator_a": 41041,
+    "annotator_b": 92093,
+    "annotator_c": 63127,
+}
 
 
 def _load_json(path: Path) -> dict[str, Any]:
@@ -39,6 +44,13 @@ def main() -> None:
     if not audit.is_valid:
         raise ValueError("pilot corpus audit failed:\n- " + "\n- ".join(audit.issues))
 
+    release = audit_annotation_release(corpus)
+    if not release.is_ready:
+        raise ValueError(
+            "pilot annotation release blocked:\n- "
+            + "\n- ".join(release.issues)
+        )
+
     packets: dict[str, tuple[dict[str, Any], ...]] = {}
     packet_paths: dict[str, Path] = {}
     for annotator_id, seed in SEEDS.items():
@@ -55,7 +67,7 @@ def main() -> None:
         annotator_id: tuple(str(row["task_id"]) for row in packet)
         for annotator_id, packet in packets.items()
     }
-    if orders["annotator_a"] == orders["annotator_b"]:
+    if len(set(orders.values())) != len(orders):
         raise ValueError("annotator packets must use different presentation orders")
 
     manifest = {
@@ -67,6 +79,12 @@ def main() -> None:
         "task_count": len(corpus),
         "gold_status": "not_collected",
         "human_annotators_required": 2,
+        "primary_annotators": ["annotator_a", "annotator_b"],
+        "diagnostic_annotators": ["annotator_c"],
+        "diagnostic_policy": (
+            "blind pilot-only interpretation; excluded from primary A/B kappa "
+            "and never used as automatic majority-vote gold"
+        ),
         "design_metadata_is_gold": False,
         "corpus": {
             "path": TASKS_PATH.relative_to(ROOT).as_posix(),

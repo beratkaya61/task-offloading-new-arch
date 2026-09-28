@@ -14,12 +14,14 @@ from jsonschema.exceptions import ValidationError
 
 from task_offloading.semantic import (
     ANNOTATION_FIELDS,
+    audit_annotation_release,
     audit_corpus,
     audit_submission,
     build_blind_packet,
     corpus_task_sha256,
     load_jsonl,
     packet_issues,
+    render_annotation_form,
     write_jsonl,
 )
 
@@ -116,21 +118,35 @@ def test_pilot_corpus_passes_schema_balance_and_privacy_gates(
 def test_design_metadata_is_not_present_in_blind_packets(
     corpus: tuple[dict[str, Any], ...]
 ) -> None:
-    packet_a = load_jsonl(PILOT / "packets" / "annotator_a.v1.jsonl")
-    packet_b = load_jsonl(PILOT / "packets" / "annotator_b.v1.jsonl")
-    assert not packet_issues(packet_a, corpus, annotator_id="annotator_a")
-    assert not packet_issues(packet_b, corpus, annotator_id="annotator_b")
-    assert [row["task_id"] for row in packet_a] != [
-        row["task_id"] for row in packet_b
-    ]
+    packets = {
+        annotator_id: load_jsonl(
+            PILOT / "packets" / f"{annotator_id}.v1.jsonl"
+        )
+        for annotator_id in ("annotator_a", "annotator_b", "annotator_c")
+    }
+    for annotator_id, packet in packets.items():
+        assert not packet_issues(packet, corpus, annotator_id=annotator_id)
+    orders = {
+        tuple(str(row["task_id"]) for row in packet)
+        for packet in packets.values()
+    }
+    assert len(orders) == 3
     forbidden = {"provenance", "grouping", "design_strata", "annotation", "gold"}
-    assert all(not (set(row) & forbidden) for row in (*packet_a, *packet_b))
+    assert all(
+        not (set(row) & forbidden)
+        for packet in packets.values()
+        for row in packet
+    )
 
 
 def test_packet_generation_is_deterministic_and_matches_tracked_files(
     corpus: tuple[dict[str, Any], ...]
 ) -> None:
-    for annotator_id, seed in (("annotator_a", 41041), ("annotator_b", 92093)):
+    for annotator_id, seed in (
+        ("annotator_a", 41041),
+        ("annotator_b", 92093),
+        ("annotator_c", 63127),
+    ):
         generated = build_blind_packet(
             corpus, annotator_id=annotator_id, seed=seed
         )
@@ -143,6 +159,9 @@ def test_manifest_binds_corpus_and_packets_by_sha256() -> None:
     manifest = load_json(PILOT / "pilot_manifest.v1.json")
     assert manifest["gold_status"] == "not_collected"
     assert manifest["human_annotators_required"] == 2
+    assert manifest["primary_annotators"] == ["annotator_a", "annotator_b"]
+    assert manifest["diagnostic_annotators"] == ["annotator_c"]
+    assert "majority-vote" in manifest["diagnostic_policy"]
     assert manifest["design_metadata_is_gold"] is False
     corpus_info = manifest["corpus"]
     assert file_sha256(ROOT / corpus_info["path"]) == corpus_info["sha256"]
@@ -197,6 +216,15 @@ def test_structurally_complete_submission_passes_integrity_checks(
         annotator_id="annotator_a",
     )
     assert audit.is_valid, audit.issues
+
+    diagnostic = audit_submission(
+        submission_for(corpus, "annotator_c"),
+        corpus,
+        wrapper,
+        semantic,
+        annotator_id="annotator_c",
+    )
+    assert diagnostic.is_valid, diagnostic.issues
 
 
 def test_submission_rejects_nonverbatim_evidence_and_stale_hash(
@@ -394,3 +422,117 @@ def test_submission_audit_detects_identity_language_and_coverage_drift(
         any(fragment in issue for issue in audit.issues)
         for fragment in expected_fragments
     )
+
+
+def test_annotation_release_requires_explicit_human_text_approval(
+    corpus: tuple[dict[str, Any], ...],
+) -> None:
+    approved = audit_annotation_release(corpus)
+    assert approved.is_ready, approved.issues
+    assert dict(approved.review_status_counts) == {"approved": 20}
+
+    pending_corpus = [copy.deepcopy(item) for item in corpus]
+    for item in pending_corpus:
+        item["provenance"]["human_text_review"] = "pending"
+    pending = audit_annotation_release(pending_corpus)
+    assert not pending.is_ready
+    assert dict(pending.review_status_counts) == {"pending": 20}
+    assert any("await human review" in issue for issue in pending.issues)
+
+    pending_corpus[0]["provenance"]["human_text_review"] = "rejected"
+    rejected = audit_annotation_release(pending_corpus)
+    assert not rejected.is_ready
+    assert any("were rejected" in issue for issue in rejected.issues)
+
+
+def test_offline_form_contains_only_blind_packet_data(
+    corpus: tuple[dict[str, Any], ...],
+) -> None:
+    packet_path = PILOT / "packets" / "annotator_a.v1.jsonl"
+    packet = load_jsonl(packet_path)
+    html = render_annotation_form(
+        packet,
+        annotator_id="annotator_a",
+        packet_sha256=file_sha256(packet_path),
+    )
+    assert "__ANNOTATION_FORM_PAYLOAD__" not in html
+    assert "connect-src 'none'" in html
+    assert "annotator_a" in html
+    assert all(str(row["task_id"]) in html for row in packet)
+    assert all(str(row["task_text"]) in html for row in packet)
+    forbidden = (
+        '"provenance"',
+        '"design_strata"',
+        '"grouping"',
+        '"gold"',
+        "bupt_edge_computing_dataset",
+    )
+    assert all(fragment not in html for fragment in forbidden)
+
+
+def test_offline_form_rejects_wrong_identity_hash_and_field_set(
+    corpus: tuple[dict[str, Any], ...],
+) -> None:
+    packet = [
+        dict(row)
+        for row in build_blind_packet(corpus, annotator_id="annotator_a", seed=5)
+    ]
+    with pytest.raises(ValueError, match="unsupported annotator"):
+        render_annotation_form(
+            packet,
+            annotator_id="llm_persona",
+            packet_sha256="a" * 64,
+        )
+    with pytest.raises(ValueError, match="packet_sha256"):
+        render_annotation_form(
+            packet,
+            annotator_id="annotator_a",
+            packet_sha256="not-a-hash",
+        )
+    packet[0]["design_strata"] = {"scenario_domain": "healthcare"}
+    with pytest.raises(ValueError, match="exact blind field set"):
+        render_annotation_form(
+            packet,
+            annotator_id="annotator_a",
+            packet_sha256="a" * 64,
+        )
+
+
+def test_offline_form_can_seed_a_partial_annotator_draft(
+    corpus: tuple[dict[str, Any], ...],
+) -> None:
+    packet = build_blind_packet(corpus, annotator_id="annotator_c", seed=63127)
+    task_id = str(packet[0]["task_id"])
+    initial = {
+        task_id: {
+            "domain": {
+                "status": "explicit",
+                "value": "consumer",
+                "evidence": "Müze ziyaretçisinin",
+            }
+        }
+    }
+    html = render_annotation_form(
+        packet,
+        annotator_id="annotator_c",
+        packet_sha256="a" * 64,
+        initial_responses=initial,
+    )
+    assert '"form_version":"1.1.0"' in html
+    assert '"initial_responses"' in html
+    assert '"value":"consumer"' in html
+
+    with pytest.raises(ValueError, match="unknown task ids"):
+        render_annotation_form(
+            packet,
+            annotator_id="annotator_c",
+            packet_sha256="a" * 64,
+            initial_responses={"pilot_tr_999": {}},
+        )
+    with pytest.raises(ValueError, match="unknown fields"):
+        render_annotation_form(
+            packet,
+            annotator_id="annotator_c",
+            packet_sha256="a" * 64,
+            initial_responses={task_id: {"oracle_action": {}}},
+        )

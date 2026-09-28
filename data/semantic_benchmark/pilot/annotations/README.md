@@ -1,8 +1,10 @@
 # Pilot insan annotasyonları
 
 Bu klasör henüz insan etiketi içermez. `annotator_a` ve `annotator_b` isimleri
-iki **gerçek ve bağımsız** kişiyi temsil eder; yapay zekâ çıktısı veya iki yapay
-persona bu dosyaların yerine kullanılamaz.
+iki **gerçek ve bağımsız** birincil kişiyi temsil eder; yapay zekâ çıktısı veya
+iki yapay persona bu dosyaların yerine kullanılamaz. `annotator_c` varsa, yalnız
+kör pilot tanısı sağlayan üçüncü gerçek kişidir; birincil A/B anlaşmasını veya
+gold kararı otomatik olarak değiştirmez.
 
 İş akışı:
 
@@ -14,7 +16,7 @@ persona bu dosyaların yerine kullanılamaz.
    adjudication'a açılır.
 5. Gold dosyası ham dosyaların üstüne yazılmaz; ayrı üretilir.
 
-Bu klasörde `annotator_a.jsonl`, `annotator_b.jsonl` veya
+Bu klasörde `annotator_a.jsonl`, `annotator_b.jsonl`, `annotator_c.jsonl` veya
 `adjudicated_gold.jsonl` görülmesi, tek başına gerçek insan etiketlemesinin
 tamamlandığını kanıtlamaz. Manifest checksum'ları, annotator onayı ve anlaşma
 raporu birlikte bulunmalıdır.

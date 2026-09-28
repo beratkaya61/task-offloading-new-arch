@@ -29,7 +29,7 @@ ANNOTATION_FIELDS = (
     "energy_priority",
     "divisibility",
 )
-ANNOTATOR_IDS = frozenset({"annotator_a", "annotator_b"})
+ANNOTATOR_IDS = frozenset({"annotator_a", "annotator_b", "annotator_c"})
 PACKET_KEYS = frozenset(
     {
         "packet_version",

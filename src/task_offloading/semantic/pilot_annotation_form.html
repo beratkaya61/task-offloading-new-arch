@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; img-src data:">
+  <title>MEC Semantik Pilot Etiketleme</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+    body { margin: 0; background: #f4f6f8; color: #17212b; }
+    header, main, footer { max-width: 1120px; margin: auto; padding: 18px; }
+    header { display: flex; gap: 18px; align-items: center; justify-content: space-between; }
+    h1 { font-size: 1.35rem; margin: 0 0 5px; }
+    .muted { color: #536475; font-size: .92rem; }
+    .notice { background: #e8f2ff; border-left: 4px solid #1769aa; padding: 12px; margin-bottom: 16px; }
+    .task { background: white; border: 1px solid #d8e0e8; border-radius: 10px; padding: 18px; box-shadow: 0 2px 8px #23384d10; }
+    .task-text { font-size: 1.08rem; line-height: 1.6; white-space: pre-wrap; }
+    .policy { margin-top: 12px; padding: 10px; background: #fff8df; border-radius: 6px; white-space: pre-wrap; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 14px; margin-top: 16px; }
+    .field { background: white; border: 1px solid #d8e0e8; border-radius: 9px; padding: 14px; }
+    .field h3 { margin: 0 0 4px; font-size: 1rem; }
+    .field p { min-height: 38px; margin: 0 0 10px; color: #536475; font-size: .85rem; }
+    label { display: block; margin-top: 9px; font-size: .85rem; font-weight: 650; }
+    select, input, textarea { box-sizing: border-box; width: 100%; margin-top: 4px; padding: 8px; border: 1px solid #aebdca; border-radius: 5px; background: white; color: #17212b; }
+    textarea { min-height: 58px; resize: vertical; }
+    button { border: 0; border-radius: 6px; padding: 10px 14px; cursor: pointer; background: #1769aa; color: white; font-weight: 650; }
+    button.secondary { background: #5b6c7d; }
+    button.danger { background: #a72f2f; }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin-top: 16px; }
+    .controls .spacer { flex: 1; }
+    .errors { margin-top: 14px; padding: 12px; border-radius: 7px; background: #fff1f0; border: 1px solid #e9aaa5; display: none; }
+    .errors.ok { display: block; background: #eaf8ee; border-color: #9bc7a7; }
+    .status { background: #23384d; color: white; padding: 8px 11px; border-radius: 999px; font-size: .88rem; }
+    .hidden { display: none; }
+    footer { color: #536475; font-size: .83rem; }
+    code { background: #e9edf1; padding: 2px 4px; border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>MEC Semantik Pilot Etiketleme</h1>
+      <div id="identity" class="muted"></div>
+    </div>
+    <div id="progress" class="status"></div>
+  </header>
+  <main>
+    <div class="notice">
+      Yalnızca görev ve politika metninde bulunan bilgiyi işaretleyin. En iyi
+      local/edge/cloud kararını tahmin etmeyin. Bilgi yoksa
+      <code>not_stated</code>, metin çelişkiliyse <code>ambiguous</code> seçin.
+      Bu dosya çevrimdışı çalışır ve ağa veri göndermez.
+    </div>
+    <section class="task">
+      <div id="task-number" class="muted"></div>
+      <div id="task-text" class="task-text"></div>
+      <div id="policy" class="policy hidden"></div>
+    </section>
+    <section id="fields" class="grid"></section>
+    <div id="errors" class="errors"></div>
+    <div class="controls">
+      <button id="previous" class="secondary" type="button">← Önceki</button>
+      <button id="fill-missing" class="secondary" type="button">Boş alanları “belirtilmemiş” yap</button>
+      <button id="check" type="button">Bu görevi kontrol et</button>
+      <button id="next" class="secondary" type="button">Sonraki →</button>
+      <span class="spacer"></span>
+      <button id="export" type="button">Tamamını JSONL indir</button>
+      <button id="reset" class="danger" type="button">Taslağı sıfırla</button>
+    </div>
+  </main>
+  <footer>
+    Taslak bu tarayıcının yerel depolamasında paket checksum'una bağlı tutulur.
+    Başka annotatorın paketi veya cevabı bu forma eklenmemiştir.
+  </footer>
+  <script>
+  "use strict";
+  const APP = __ANNOTATION_FORM_PAYLOAD__;
+  const FIELD_ORDER = [
+    "domain", "latency", "privacy", "execution_policy",
+    "reliability", "accuracy", "energy_priority", "divisibility"
+  ];
+  const META = {
+    domain: {title: "Uygulama alanı", help: "Sağlık, endüstri, ulaşım gibi metinde açıkça anlaşılan kullanım alanı."},
+    latency: {title: "Gecikme", help: "Görevin tamamlanması için açık sayısal veya nitel süre gereksinimi."},
+    privacy: {title: "Veri gizliliği", help: "Kamuya açık, kurum içi, hassas veya kısıtlı veri sınıfı."},
+    execution_policy: {title: "Çalıştırma izni", help: "Cihaz, edge ve cloud hedeflerinin açıkça izinli/yasak/bilinmiyor oluşu."},
+    reliability: {title: "Güvenilirlik", help: "İsteğin başarılı tamamlanma beklentisi; doğruluk ile karıştırmayın."},
+    accuracy: {title: "Sonuç doğruluğu", help: "Çıktının kalite/doğruluk beklentisi ve varsa sayısal hedefi."},
+    energy_priority: {title: "Enerji önceliği", help: "Enerji önemsiz, dengeli veya pil tasarrufu yüksek öncelikli mi?"},
+    divisibility: {title: "Bölünebilirlik", help: "Görev parçalarının bağımsız/paralel işlenebildiği açıkça söyleniyor mu?"}
+  };
+  const OPTIONS = {
+    status: [["", "Seçiniz"], ["explicit", "Açıkça belirtilmiş"], ["not_stated", "Belirtilmemiş"], ["ambiguous", "Belirsiz / çelişkili"]],
+    executionStatus: [["", "Seçiniz"], ["explicit", "Üç hedef de açık"], ["partial", "Yalnız bazı hedefler açık"], ["not_stated", "Belirtilmemiş"], ["ambiguous", "Belirsiz / çelişkili"]],
+    domain: [["", "Seçiniz"], ["healthcare", "Sağlık"], ["industrial", "Endüstri"], ["transportation", "Ulaşım"], ["public_safety", "Kamu güvenliği"], ["smart_city", "Akıllı şehir"], ["agriculture", "Tarım"], ["consumer", "Tüketici"], ["other", "Diğer"]],
+    latency: [["", "Seçiniz"], ["relaxed", "Rahat / ertelenebilir (>1 s)"], ["interactive", "Etkileşimli (yaklaşık 200–1000 ms)"], ["real_time", "Gerçek zamanlı (yaklaşık 50–200 ms)"], ["hard_real_time", "Sert gerçek zamanlı (<50 ms / kritik)"]],
+    privacy: [["", "Seçiniz"], ["public", "Kamuya açık"], ["internal", "Kurum/ev içi"], ["sensitive", "Hassas"], ["restricted", "Kısıtlı / çok hassas"]],
+    permission: [["unknown", "Bilinmiyor"], ["allowed", "İzinli"], ["forbidden", "Yasak"]],
+    reliability: [["", "Seçiniz"], ["best_effort", "Best effort"], ["standard", "Standart"], ["high", "Yüksek"], ["mission_critical", "Görev-kritik"]],
+    accuracy: [["", "Seçiniz"], ["relaxed", "Düşük/ yaklaşık kabul"], ["standard", "Standart"], ["high", "Yüksek"], ["critical", "Kritik"]],
+    energy: [["", "Seçiniz"], ["low", "Düşük öncelik"], ["balanced", "Dengeli"], ["high", "Yüksek öncelik"]],
+    divisibility: [["", "Seçiniz"], ["divisible", "Bölünebilir"], ["indivisible", "Bölünemez"]],
+    confidence: [["0.90", "Eminim (0,90)"], ["0.70", "Orta (0,70)"], ["0.50", "Emin değilim (0,50)"]]
+  };
+  const storageKey = `mec-semantic:${APP.form_version}:${APP.annotator_id}:${APP.packet_sha256}`;
+  let state = loadState();
+  let current = Number.isInteger(state.current) ? state.current : 0;
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (raw) return JSON.parse(raw);
+    } catch (_) { /* A corrupt local draft starts fresh. */ }
+    const responses = {};
+    APP.tasks.forEach(task => {
+      const fields = {};
+      const initial = APP.initial_responses[task.task_id] || {};
+      FIELD_ORDER.forEach(name => fields[name] = {...freshField(name), ...(initial[name] || {})});
+      responses[task.task_id] = {started_at_utc: new Date().toISOString(), fields};
+    });
+    return {current: 0, responses};
+  }
+  function saveState() {
+    state.current = current;
+    localStorage.setItem(storageKey, JSON.stringify(state));
+  }
+  function freshField(name) {
+    const base = {status: "", evidence: "", confidence: "0.90"};
+    if (name === "domain") return {...base, value: ""};
+    if (name === "latency") return {...base, class: "", max_ms: ""};
+    if (name === "privacy") return {...base, data_class: ""};
+    if (name === "execution_policy") return {...base, device: "unknown", edge: "unknown", cloud: "unknown"};
+    if (name === "reliability") return {...base, tier: "", min_success_probability: ""};
+    if (name === "accuracy") return {...base, tier: "", min_score: "", metric: ""};
+    return {...base, value: ""};
+  }
+  function ensureResponse(task) {
+    if (!state.responses[task.task_id]) {
+      const fields = {};
+      FIELD_ORDER.forEach(name => fields[name] = freshField(name));
+      state.responses[task.task_id] = {started_at_utc: new Date().toISOString(), fields};
+      saveState();
+    }
+    return state.responses[task.task_id];
+  }
+  function makeSelect(labelText, options, value, callback) {
+    const label = document.createElement("label");
+    label.textContent = labelText;
+    const select = document.createElement("select");
+    options.forEach(([key, text]) => {
+      const option = document.createElement("option");
+      option.value = key; option.textContent = text;
+      select.appendChild(option);
+    });
+    select.value = value;
+    select.addEventListener("change", () => callback(select.value));
+    label.appendChild(select);
+    return label;
+  }
+  function makeInput(labelText, value, callback, type="text", placeholder="") {
+    const label = document.createElement("label");
+    label.textContent = labelText;
+    const input = document.createElement("input");
+    input.type = type; input.value = value; input.placeholder = placeholder;
+    if (type === "number") input.step = "any";
+    input.addEventListener("input", () => callback(input.value));
+    label.appendChild(input);
+    return label;
+  }
+  function normalize(name, field) {
+    if (field.status === "not_stated" || field.status === "ambiguous") {
+      if (name === "execution_policy") {
+        field.device = "unknown"; field.edge = "unknown"; field.cloud = "unknown";
+      } else if (name === "latency") {
+        field.class = ""; field.max_ms = "";
+      } else if (name === "privacy") field.data_class = "";
+      else if (name === "reliability") { field.tier = ""; field.min_success_probability = ""; }
+      else if (name === "accuracy") { field.tier = ""; field.min_score = ""; field.metric = ""; }
+      else field.value = "";
+    }
+    if (field.status === "not_stated") field.evidence = "";
+  }
+  function update(task, name, key, value, rerender=false) {
+    const response = ensureResponse(task);
+    response.fields[name][key] = value;
+    normalize(name, response.fields[name]);
+    saveState();
+    if (rerender) render(); else updateProgress();
+  }
+  function addValueControls(card, task, name, field) {
+    if (["not_stated", "ambiguous", ""].includes(field.status)) return;
+    if (name === "domain") card.appendChild(makeSelect("Alan", OPTIONS.domain, field.value, v => update(task, name, "value", v)));
+    if (name === "latency") {
+      card.appendChild(makeSelect("Sınıf", OPTIONS.latency, field.class, v => update(task, name, "class", v)));
+      card.appendChild(makeInput("Varsa üst sınır (ms)", field.max_ms, v => update(task, name, "max_ms", v), "number", "Örn. 100"));
+    }
+    if (name === "privacy") card.appendChild(makeSelect("Veri sınıfı", OPTIONS.privacy, field.data_class, v => update(task, name, "data_class", v)));
+    if (name === "execution_policy") {
+      [["device", "Cihaz"], ["edge", "Edge"], ["cloud", "Cloud"]].forEach(([key, label]) => card.appendChild(makeSelect(label, OPTIONS.permission, field[key], v => update(task, name, key, v))));
+    }
+    if (name === "reliability") {
+      card.appendChild(makeSelect("Seviye", OPTIONS.reliability, field.tier, v => update(task, name, "tier", v)));
+      card.appendChild(makeInput("Varsa minimum başarı olasılığı (0–1)", field.min_success_probability, v => update(task, name, "min_success_probability", v), "number", "Örn. 0.999"));
+    }
+    if (name === "accuracy") {
+      card.appendChild(makeSelect("Seviye", OPTIONS.accuracy, field.tier, v => update(task, name, "tier", v)));
+      card.appendChild(makeInput("Varsa minimum skor (0–1)", field.min_score, v => update(task, name, "min_score", v), "number", "Örn. 0.95"));
+      card.appendChild(makeInput("Varsa metrik adı", field.metric, v => update(task, name, "metric", v), "text", "Örn. F1"));
+    }
+    if (name === "energy_priority") card.appendChild(makeSelect("Öncelik", OPTIONS.energy, field.value, v => update(task, name, "value", v)));
+    if (name === "divisibility") card.appendChild(makeSelect("Durum", OPTIONS.divisibility, field.value, v => update(task, name, "value", v)));
+  }
+  function renderField(task, name, field) {
+    const card = document.createElement("article"); card.className = "field";
+    const title = document.createElement("h3"); title.textContent = META[name].title;
+    const help = document.createElement("p"); help.textContent = META[name].help;
+    card.append(title, help);
+    const statuses = name === "execution_policy" ? OPTIONS.executionStatus : OPTIONS.status;
+    card.appendChild(makeSelect("Metindeki durum", statuses, field.status, v => update(task, name, "status", v, true)));
+    addValueControls(card, task, name, field);
+    if (field.status && field.status !== "not_stated") {
+      const label = document.createElement("label");
+      label.textContent = "Kanıt — metinden birebir alıntı, birden fazlaysa her satıra bir tane";
+      const area = document.createElement("textarea"); area.value = field.evidence;
+      area.addEventListener("input", () => update(task, name, "evidence", area.value));
+      label.appendChild(area); card.appendChild(label);
+    }
+    card.appendChild(makeSelect("Karardan ne kadar eminsiniz?", OPTIONS.confidence, field.confidence, v => update(task, name, "confidence", v)));
+    return card;
+  }
+  function evidenceList(field) { return field.evidence.split("\n").map(x => x.trim()).filter(Boolean); }
+  function numeric(value) { return value === "" ? null : Number(value); }
+  function validateResponse(task, response) {
+    const errors = [];
+    if (!response) return ["Görev henüz açılmadı ve etiketlenmedi."];
+    const visible = task.task_text + "\n" + (task.user_policy_text || "");
+    FIELD_ORDER.forEach(name => {
+      const f = response.fields[name]; const title = META[name].title;
+      if (!f.status) { errors.push(`${title}: metindeki durum seçilmedi.`); return; }
+      const evidence = evidenceList(f);
+      if (["explicit", "partial", "ambiguous"].includes(f.status) && evidence.length === 0) errors.push(`${title}: birebir metin kanıtı gerekli.`);
+      evidence.forEach(snippet => { if (!visible.includes(snippet)) errors.push(`${title}: “${snippet}” metinde birebir bulunamadı.`); });
+      if (f.status === "explicit") {
+        const required = name === "privacy" ? f.data_class : (["latency", "reliability", "accuracy"].includes(name) ? (name === "latency" ? f.class : f.tier) : (name === "execution_policy" ? "ok" : f.value));
+        if (!required) errors.push(`${title}: açık etiket için değer seçilmedi.`);
+      }
+      if (name === "execution_policy" && f.status === "explicit" && [f.device, f.edge, f.cloud].includes("unknown")) errors.push(`${title}: explicit durumda üç hedef de bilinmelidir.`);
+      if (name === "execution_policy" && f.status === "partial" && [f.device, f.edge, f.cloud].every(x => x === "unknown")) errors.push(`${title}: partial durumda en az bir hedef bilinmelidir.`);
+      [["latency", "max_ms", 0, 3600000], ["reliability", "min_success_probability", 0, 1], ["accuracy", "min_score", 0, 1]].forEach(([fieldName, key, min, max]) => {
+        if (name === fieldName && f[key] !== "") {
+          const n = numeric(f[key]);
+          if (!Number.isFinite(n) || n < min || n > max || (key === "max_ms" && n <= 0)) errors.push(`${title}: sayısal değer izin verilen aralıkta değil.`);
+        }
+      });
+    });
+    return errors;
+  }
+  function fieldAnnotation(name, f) {
+    const base = {status: f.status, evidence: evidenceList(f), confidence: Number(f.confidence)};
+    if (name === "domain") return {value: f.value || null, ...base};
+    if (name === "latency") return {class: f.class || null, max_ms: numeric(f.max_ms), ...base};
+    if (name === "privacy") return {data_class: f.data_class || null, ...base};
+    if (name === "execution_policy") return {device: f.device, edge: f.edge, cloud: f.cloud, ...base};
+    if (name === "reliability") return {tier: f.tier || null, min_success_probability: numeric(f.min_success_probability), ...base};
+    if (name === "accuracy") return {tier: f.tier || null, min_score: numeric(f.min_score), metric: f.metric.trim() || null, ...base};
+    return {value: f.value || null, ...base};
+  }
+  function buildRecord(task, response, submitted) {
+    const annotation = {schema_version: APP.schema_version, task_id: task.task_id, language: task.language};
+    FIELD_ORDER.forEach(name => annotation[name] = fieldAnnotation(name, response.fields[name]));
+    annotation.abstained_fields = FIELD_ORDER.filter(name => ["not_stated", "ambiguous"].includes(response.fields[name].status));
+    annotation.overall_confidence = FIELD_ORDER.reduce((sum, name) => sum + Number(response.fields[name].confidence), 0) / FIELD_ORDER.length;
+    return {record_version: APP.record_version, protocol_version: APP.protocol_version, annotator_id: APP.annotator_id, task_id: task.task_id, task_content_sha256: task.task_content_sha256, started_at_utc: response.started_at_utc, submitted_at_utc: submitted, annotation};
+  }
+  function canonical(value) {
+    if (Array.isArray(value)) return value.map(canonical);
+    if (value && typeof value === "object") return Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])]));
+    return value;
+  }
+  function updateProgress() {
+    const valid = APP.tasks.filter(task => validateResponse(task, state.responses[task.task_id]).length === 0).length;
+    document.getElementById("progress").textContent = `${valid}/${APP.tasks.length} geçerli`;
+  }
+  function showErrors(errors) {
+    const box = document.getElementById("errors"); box.style.display = "block";
+    box.className = errors.length ? "errors" : "errors ok";
+    box.textContent = errors.length ? errors.join("\n") : "Bu görev eksiksiz ve biçimsel olarak geçerli.";
+    box.style.whiteSpace = "pre-wrap";
+  }
+  function render() {
+    const task = APP.tasks[current]; const response = ensureResponse(task);
+    document.getElementById("identity").textContent = `${APP.annotator_id} · paket ${APP.packet_sha256.slice(0, 12)}…`;
+    document.getElementById("task-number").textContent = `Görev ${current + 1}/${APP.tasks.length} · ${task.task_id}`;
+    document.getElementById("task-text").textContent = task.task_text;
+    const policy = document.getElementById("policy");
+    policy.textContent = task.user_policy_text ? `Ayrı politika: ${task.user_policy_text}` : "";
+    policy.classList.toggle("hidden", !task.user_policy_text);
+    const fields = document.getElementById("fields"); fields.replaceChildren();
+    FIELD_ORDER.forEach(name => fields.appendChild(renderField(task, name, response.fields[name])));
+    document.getElementById("previous").disabled = current === 0;
+    document.getElementById("next").disabled = current === APP.tasks.length - 1;
+    document.getElementById("errors").style.display = "none";
+    updateProgress(); saveState(); window.scrollTo({top: 0, behavior: "smooth"});
+  }
+  document.getElementById("previous").addEventListener("click", () => { if (current > 0) { current--; render(); } });
+  document.getElementById("next").addEventListener("click", () => { if (current < APP.tasks.length - 1) { current++; render(); } });
+  document.getElementById("check").addEventListener("click", () => { const task = APP.tasks[current]; showErrors(validateResponse(task, state.responses[task.task_id])); });
+  document.getElementById("fill-missing").addEventListener("click", () => {
+    const task = APP.tasks[current]; const response = ensureResponse(task);
+    if (!confirm("Yalnızca boş bırakılan alanlar 'belirtilmemiş' yapılacak. Metni kontrol ettiğinizi onaylıyor musunuz?")) return;
+    FIELD_ORDER.forEach(name => { if (!response.fields[name].status) { response.fields[name].status = "not_stated"; normalize(name, response.fields[name]); } });
+    saveState(); render();
+  });
+  document.getElementById("export").addEventListener("click", () => {
+    const allErrors = [];
+    APP.tasks.forEach((task, i) => validateResponse(task, state.responses[task.task_id]).forEach(error => allErrors.push(`Görev ${i + 1}: ${error}`)));
+    if (allErrors.length) { alert(`Dışa aktarma durduruldu. ${allErrors.length} hata var. İlk hata:\n${allErrors[0]}`); return; }
+    const submitted = new Date().toISOString();
+    const lines = APP.tasks.map(task => JSON.stringify(canonical(buildRecord(task, state.responses[task.task_id], submitted))));
+    const blob = new Blob([lines.join("\n") + "\n"], {type: "application/x-ndjson;charset=utf-8"});
+    const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `${APP.annotator_id}.jsonl`; link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  });
+  document.getElementById("reset").addEventListener("click", () => {
+    if (!confirm("Bu tarayıcıdaki bütün etiketleme taslağı silinsin mi? Bu işlem geri alınamaz.")) return;
+    localStorage.removeItem(storageKey); state = loadState(); current = 0; render();
+  });
+  render();
+  </script>
+</body>
+</html>

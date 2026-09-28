@@ -17,7 +17,9 @@
   "properties": {
     "record_version": {"const": "1.0.0"},
     "protocol_version": {"const": "1.0.0"},
-    "annotator_id": {"enum": ["annotator_a", "annotator_b"]},
+    "annotator_id": {
+      "enum": ["annotator_a", "annotator_b", "annotator_c"]
+    },
     "task_id": {"type": "string", "pattern": "^pilot_tr_[0-9]{3}$"},
     "task_content_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "started_at_utc": {"type": "string", "format": "date-time"},
