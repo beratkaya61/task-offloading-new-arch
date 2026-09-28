@@ -223,7 +223,7 @@ generated, human_labeled, simulated
 | Kaynak | Rol | 2026-09-18 statüsü |
 |---|---|---|
 | BUPT Edge Computing Dataset | Mobil oturum gelişleri, byte, RAT, hücre geçişi, hizmet metadata | `schema_validated`; research-only, raw paylaşılmaz |
-| EdgeWorkloadsTraces NEP-large/full | Edge VM CPU/bant genişliği, site RTT ve kapasite | `checksum_verified`; full satır profili bekleniyor |
+| EdgeWorkloadsTraces NEP-large/full | Edge VM CPU/bant genişliği, site RTT ve kapasite | `schema_validated`; 685.506.639 satırdan 592.724.139'u v1.0.0 soy/değer politikasını geçiyor |
 | UCI MEC Execution Times 859 | Dört cihazda ölçülmüş image-recognition turnaround | `schema_validated`; CC BY 4.0 |
 | EUA | Kullanıcı ve edge coğrafi konum senaryosu | `schema_validated`; commit-sabit, MIT |
 | T-Drive veya DiDi GAIA | Sürekli mobilite stres deneyi | Bir kaynak erişim/lisans denetiminden sonra seçilecek |

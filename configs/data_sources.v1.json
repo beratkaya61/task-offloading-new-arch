@@ -246,7 +246,7 @@
       "version_kind": "dated_snapshot",
       "immutable_version": true,
       "access_status": "request_required",
-      "dataset_status": "checksum_verified",
+      "dataset_status": "schema_validated",
       "license": {
         "identifier": "LicenseRef-NEP-Research-Only-No-Offline-Sharing",
         "verification_status": "verified",
@@ -342,7 +342,7 @@
         }
       ],
       "raw_data_committed_to_git": false,
-      "notes": "Access received and archive SHA-256 verified on 2026-09-18. Header probes identify 7410 VMs across 139 VM sites and confirm the NEP-large/full layout. Full row-level schema profiling remains required before dataset_status can advance to schema_validated. Raw files must never be committed or redistributed."
+      "notes": "Access, archive SHA-256 and full-member CRC were verified on 2026-09-18. DuckDB 1.5.5 scanned all 685506639 rows. Acceptance policy v1.0.0 retains 592724139 rows (86.46%) with valid values and complete PM-to-VM-to-site lineage and deterministically rejects 92782500 rows without repair. Only accepted rows may enter replay. Raw files must never be committed or redistributed."
     },
     {
       "id": "tdrive_mobility",

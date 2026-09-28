@@ -19,6 +19,12 @@ from task_offloading.data.manifest import (
     source_is_analysis_ready,
     validate_manifest_semantics,
 )
+from task_offloading.data.nep import (
+    NEP_ACCEPTANCE_POLICY_VERSION,
+    NepProfileError,
+    profile_nep_accepted_rows,
+    profile_nep_directory,
+)
 from task_offloading.data.normalization import (
     StandardizationStats,
     TrainOnlyStandardizer,
@@ -47,6 +53,7 @@ from task_offloading.data.uci_mec import (
 )
 
 __all__ = [
+    "NEP_ACCEPTANCE_POLICY_VERSION",
     "BenchmarkKind",
     "BuptParseError",
     "BuptTraceRecord",
@@ -56,6 +63,7 @@ __all__ = [
     "EuaLocationRecord",
     "EuaParseError",
     "LeakageReport",
+    "NepProfileError",
     "ProvenanceKind",
     "SplitAssignment",
     "SplitPlan",
@@ -75,6 +83,8 @@ __all__ = [
     "iter_uci_mec_archive",
     "load_and_validate_manifest",
     "parse_bupt_line",
+    "profile_nep_accepted_rows",
+    "profile_nep_directory",
     "sha256_file",
     "source_is_analysis_ready",
     "validate_manifest_semantics",

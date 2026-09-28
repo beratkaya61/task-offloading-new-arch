@@ -9,7 +9,8 @@ eklenmez.
 - Talep tarihi: **2026-09-14**
 - Talebi gönderen: proje sahibi
 - Erişim/alım tarihi: **2026-09-18**
-- Durum: **erişim alındı, SHA-256 doğrulandı** (`checksum_verified`)
+- Durum: **erişim, checksum, CRC ve tam satır profili doğrulandı**
+  (`schema_validated`)
 - Resmî başvuru: <https://forms.gle/j3QDp9qtCVyrcTwm9>
 - Resmî iletişim: `mwx@bupt.edu.cn`
 - Artifact: `Full_trace.7z`, **5.885.170.081 byte**
@@ -24,8 +25,9 @@ eklenmez.
 
 Erişim izninin özel yazışması Git'e konmaz. Kullanıcının izin aldığı beyanı,
 resmî research-only/offline paylaşım yasağı ve yerel artifact kanıtı ayrı
-alanlarda tutulur. Tam CRC taraması geçmiştir; satır düzeyi şema/range profili
-bitmeden kaynak `schema_validated` sayılmaz.
+alanlarda tutulur. Tam CRC taraması ve 685.506.639 satırın profil taraması
+geçmiştir. Kabul politikası v1.0.0, değerleri ve PM-VM-site soyu geçerli
+592.724.139 satırı kabul eder; 92.782.500 satırı onarmadan reddeder.
 
 ## BUPT Edge Computing Dataset
 

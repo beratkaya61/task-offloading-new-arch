@@ -103,19 +103,32 @@ def test_nep_large_manifest_and_non_sensitive_profile_are_aligned() -> None:
         profile = json.load(handle)
 
     artifact = nep["artifacts"][0]  # type: ignore[index]
-    assert nep["dataset_status"] == "checksum_verified"
+    assert nep["dataset_status"] == "schema_validated"
     assert nep["citation_url"] == "https://arxiv.org/abs/2109.03395"
     assert artifact["filename"] == profile["archive"]["filename"]
     assert artifact["size_bytes"] == profile["archive"]["size_bytes"]
     assert artifact["checksum"]["value"] == profile["archive"]["sha256"]
     assert artifact["checksum"]["verification"] == "verified"
     assert profile["small_table_profile"]["vm_site_count"] == 139
+    full = profile["full_row_profile"]
+    assert full["total_rows"] == 685_506_639
+    assert full["accepted_rows_total"] == 592_724_139
+    assert full["rejected_rows_total"] == 92_782_500
+    assert full["acceptance_policy"]["version"] == "1.0.0"
+    assert sum(
+        member["acceptance"]["accepted_row_count"]
+        for member in full["members"]
+    ) == full["accepted_rows_total"]
+    assert sum(
+        member["acceptance"]["rejected_row_count"]
+        for member in full["members"]
+    ) == full["rejected_rows_total"]
     assert profile["access"]["offline_sharing_allowed"] is False
     privacy = profile["privacy_and_git_policy"]
     assert not privacy["raw_archive_committed"]
     assert not privacy["raw_rows_committed"]
     assert not privacy["raw_identifiers_committed"]
-    assert not source_is_analysis_ready(nep)
+    assert source_is_analysis_ready(nep)
 
 
 def test_uci_and_eua_are_analysis_ready_with_matching_profiles() -> None:

@@ -218,9 +218,11 @@ Eski repo doğrudan taşınmayacaktır. Fizik hataları regresyon testine, eski 
   denetlenir; normalizer yalnız train split'ine fit edilir.
 - `synthetic_v1` ile `trace_driven_hybrid_v1` ayrı benchmark'lardır. Hibrit ad,
   farklı kaynakların doğal olarak ortak ölçülmüş olaylar olduğu iddiasını taşımaz.
-- UCI MEC, EUA ve BUPT doğrulanmış kaynaklardır. NEP-large/full erişimi alınmış,
-  checksum/CRC doğrulanmış fakat tam satır profili beklemektedir. T-Drive ve
-  Alibaba yalnız açık kısıtlarıyla ikincil adaydır.
+- UCI MEC, EUA, BUPT ve NEP-large/full doğrulanmış kaynaklardır. NEP'in
+  685.506.639 satırının tamamı taranmış; değer ve PM-VM-site soyunu birlikte
+  uygulayan kabul politikası v1.0.0 ile 592.724.139 satır kabul, 92.782.500 satır
+  onarılmadan deterministik ret edilmiştir. T-Drive ve Alibaba yalnız açık
+  kısıtlarıyla ikincil adaydır.
 - Faz 3 yazılım/sözleşme kapsamı 61 Faz 3 testiyle tamamlandı; tüm 111 test,
   Ruff ve strict mypy geçti, toplam branch coverage yüzde 91'dir. Faz 3'ün ilk
   kapanışında ham kaynak yoktu; aşağıdaki Faz 3A kararıyla BUPT sonradan
@@ -262,5 +264,9 @@ Eski repo doğrudan taşınmayacaktır. Fizik hataları regresyon testine, eski 
 - NEP-large/full; CPU, bant genişliği, site RTT ve PM/VM kapasite replay'i için
   ana gerçek iz kaynağıdır. BUPT mobil iziyle satır numarasına göre birleştirilmez;
   yalnız açık zaman-penceresi/eşleme kurallarıyla hibrit senaryo kurulur.
-- SHA-256 ve tam üye CRC taraması geçmiştir. Satır düzeyi şema/range profili
-  bitmeden kaynak `schema_validated` ilan edilmez.
+- SHA-256 ve tam üye CRC taraması geçmiştir. DuckDB 1.5.5 ile altı üyenin
+  685.506.639 satırı taranmış; kabul politikası v1.0.0 yalnız değerleri geçerli
+  ve PM-VM-site soyu eksiksiz 592.724.139 satırı analize açmıştır. Kaynak
+  `schema_validated` durumundadır; 92.782.500 reddedilen satır onarılmaz.
+- Kabul sayacı kesinti sonrası dosya bazında devam edebilir; 17 NEP testi dahil
+  tüm 180 test, Ruff ve strict mypy geçmiştir; toplam branch coverage yüzde 92'dir.

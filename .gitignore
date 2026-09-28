@@ -16,6 +16,7 @@ env/
 .coverage
 .coverage.*
 htmlcov/
+.duckdb_tmp/
 
 # Packaging and build output
 build/

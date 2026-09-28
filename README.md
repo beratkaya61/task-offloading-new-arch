@@ -18,7 +18,7 @@ Başlangıç belgeleri:
 - [Faz bazlı görev listesi](task.md)
 - [Bilimsel ve mimari sözleşme](TODO_ANTIGRAVITY_TASK_OFFLOADING_UPGRADE.md)
 
-Mevcut durum: Faz 0–3 tamamlandı. Son doğrulamada 163/163 test, Ruff ve strict
+Mevcut durum: Faz 0–3 tamamlandı. Son doğrulamada 180/180 test, Ruff ve strict
 mypy geçti; toplam branch coverage yüzde 92'dir. Gymnasium ile event replay aynı
 fizik çekirdeğini kullanır ve parity testi geçmiştir. Faz 3'te veri manifesti,
 alan kökeni sözlüğü, checksum/statü kapıları, train-only normalizer ve sızıntı
@@ -26,8 +26,10 @@ denetimli split sistemi kuruldu. BUPT'nin commit ile sabitlenmiş 482.687 satır
 artifact'ı için checksum, şema profili ve mahremiyet-minimum adaptör doğrulandı.
 UCI MEC 859'un 4.000 ölçümü ile EUA'nın commit-sabit 100.310 seçili koordinat
 kaydı da `schema_validated` durumundadır. Erişimle alınan 5,89 GB
-`Full_trace.7z`, 2026-09-18'de NEP-large/full olarak tanımlandı; SHA-256 ve tam
-üye CRC taraması geçti, tam satır profili bekleniyor. Bütün raw artifact'lar
+`Full_trace.7z`, 2026-09-18'de NEP-large/full olarak tanımlandı; SHA-256, tam
+üye CRC ve 685.506.639 satırlık profil geçti. Soy/değer kabul politikası
+592.724.139 satırı analize açıp 92.782.500 satırı onarmadan reddeder. NEP artık
+`schema_validated` durumundadır. Bütün raw artifact'lar
 repo dışında `D:\task_offloading_datasets` altında tutulur; Git'e yalnız küçük
 şema/checksum/profil kanıtları girer.
 Sıradaki ana iş Faz 4 semantik benchmark'tır. Eski kaynak kod taşınmamıştır.

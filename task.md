@@ -70,7 +70,9 @@ Bu dosya günlük ilerleme listesidir. Bilimsel kurallar için `TODO_ANTIGRAVITY
 - [x] NEP erişim talebini gönder: 2026-09-14.
 - [x] NEP-large/full erişimini al, artifact kimliğini ve SHA-256'yı doğrula: 2026-09-18.
 - [x] NEP-large/full için tam üye CRC taramasını tamamla.
-- [ ] NEP-large/full için tam satır-şema/range profilini tamamla.
+- [x] NEP-large/full için tam satır-şema/range profilini tamamla: 685.506.639
+  satır tarandı; kabul politikası v1.0.0 ile 592.724.139 satır kabul, 92.782.500
+  satır onarılmadan deterministik ret.
 - [x] UCI MEC 859 artifact'ını indirip checksum/şema doğrula.
 - [x] EUA reposunu commit SHA ile sabitleyip checksum/şema doğrula.
 

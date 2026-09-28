@@ -23,7 +23,9 @@
     "filename": "Full_trace.7z",
     "local_storage": "external_untracked",
     "format": "7z",
-    "compression": ["LZMA2"],
+    "compression": [
+      "LZMA2"
+    ],
     "solid": false,
     "blocks": 6,
     "size_bytes": 5885170081,
@@ -38,42 +40,96 @@
       "compressed_size_bytes": 45022,
       "uncompressed_size_bytes": 153167,
       "crc32": "2fcdccee",
-      "header": ["pm_name", "site_id", "cores", "memory", "storage"]
+      "header": [
+        "pm_name",
+        "site_id",
+        "cores",
+        "memory",
+        "storage"
+      ]
     },
     {
       "path": "Full_trace/SITE_RTT.csv",
       "compressed_size_bytes": 3078444834,
       "uncompressed_size_bytes": 36820005748,
       "crc32": "7e3c61e1",
-      "header": ["", "from_site_id", "to_site_id", "rtt", "loss", "type", "biz_ts", "biz_time", "create_time"]
+      "header": [
+        "",
+        "from_site_id",
+        "to_site_id",
+        "rtt",
+        "loss",
+        "type",
+        "biz_ts",
+        "biz_time",
+        "create_time"
+      ]
     },
     {
       "path": "Full_trace/VM.csv",
       "compressed_size_bytes": 216065,
       "uncompressed_size_bytes": 1418045,
       "crc32": "99e9cb0e",
-      "header": ["vm_id", "uid", "pm_name", "site_id", "status", "image_id", "cores", "memory", "storage", "os_type", "os_name", "start_time", "end_time"]
+      "header": [
+        "vm_id",
+        "uid",
+        "pm_name",
+        "site_id",
+        "status",
+        "image_id",
+        "cores",
+        "memory",
+        "storage",
+        "os_type",
+        "os_name",
+        "start_time",
+        "end_time"
+      ]
     },
     {
       "path": "Full_trace/VM_BANDWIDTH.csv",
       "compressed_size_bytes": 1369646513,
       "uncompressed_size_bytes": 6521205631,
       "crc32": "469ed283",
-      "header": ["vm_id", "site_id", "pub_down_flow", "pub_up_flow", "pub_down_bw", "pub_up_bw", "pri_down_flow", "pri_up_flow", "pri_down_bw", "pri_up_bw", "report_ts"]
+      "header": [
+        "vm_id",
+        "site_id",
+        "pub_down_flow",
+        "pub_up_flow",
+        "pub_down_bw",
+        "pub_up_bw",
+        "pri_down_flow",
+        "pri_up_flow",
+        "pri_down_bw",
+        "pri_up_bw",
+        "report_ts"
+      ]
     },
     {
       "path": "Full_trace/VM_BW_THREE_MONTHS.csv",
       "compressed_size_bytes": 267351388,
       "uncompressed_size_bytes": 1646605073,
       "crc32": "6716c125",
-      "header": ["vm_id", "report_time", "pub_down_bw", "pub_up_bw", "pri_down_bw", "pri_up_bw"]
+      "header": [
+        "vm_id",
+        "report_time",
+        "pub_down_bw",
+        "pub_up_bw",
+        "pri_down_bw",
+        "pri_up_bw"
+      ]
     },
     {
       "path": "Full_trace/VM_CPU.csv",
       "compressed_size_bytes": 1169465907,
       "uncompressed_size_bytes": 18242036209,
       "crc32": "d78cd797",
-      "header": ["vm_id", "site_id", "cpu_rate", "report_ts"]
+      "header": [
+        "vm_id",
+        "site_id",
+        "cpu_rate",
+        "report_ts"
+      ]
     }
   ],
   "small_table_profile": {
@@ -90,12 +146,882 @@
     "small_tables_parsed": true,
     "full_member_crc_validation": "passed",
     "full_member_crc_validation_elapsed_s": 894.646,
-    "full_row_schema_validation": "pending"
+    "full_row_schema_validation": "completed_with_violations"
   },
   "privacy_and_git_policy": {
     "raw_archive_committed": false,
     "raw_rows_committed": false,
     "raw_identifiers_committed": false,
     "profile_contains_aggregates_and_schema_only": true
+  },
+  "full_row_profile": {
+    "engine": {
+      "name": "duckdb",
+      "version": "1.5.5",
+      "out_of_core": true
+    },
+    "extracted_root": "Full_trace",
+    "total_rows": 685506639,
+    "is_valid": false,
+    "members": [
+      {
+        "filename": "PM.csv",
+        "size_bytes": 153167,
+        "row_count": 2242,
+        "invalid_row_count": 23,
+        "is_valid": false,
+        "columns": [
+          {
+            "name": "pm_name",
+            "kind": "text",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": 2242,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": null,
+            "maximum": null,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "site_id",
+            "kind": "text",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": 149,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": null,
+            "maximum": null,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "cores",
+            "kind": "integer",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 23,
+            "above_maximum_count": 0,
+            "minimum": 0,
+            "maximum": 174,
+            "invalid_value_count": 23
+          },
+          {
+            "name": "memory",
+            "kind": "integer",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 23,
+            "above_maximum_count": 0,
+            "minimum": 0,
+            "maximum": 11353856,
+            "invalid_value_count": 23
+          },
+          {
+            "name": "storage",
+            "kind": "integer",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 50268,
+            "maximum": 130544160,
+            "invalid_value_count": 0
+          }
+        ],
+        "checks": [
+          {
+            "name": "duplicate_pm_id_rows",
+            "count": 0,
+            "severity": "error",
+            "description": "Physical-machine identifiers must be unique."
+          }
+        ],
+        "acceptance": {
+          "policy_version": "1.0.0",
+          "accepted_row_count": 2219,
+          "rejected_row_count": 23
+        }
+      },
+      {
+        "filename": "VM.csv",
+        "size_bytes": 1418045,
+        "row_count": 7410,
+        "invalid_row_count": 0,
+        "is_valid": false,
+        "columns": [
+          {
+            "name": "vm_id",
+            "kind": "text",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": 7410,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": null,
+            "maximum": null,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "uid",
+            "kind": "text",
+            "nullable": true,
+            "empty_count": 0,
+            "distinct_count": 153,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": null,
+            "maximum": null,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "pm_name",
+            "kind": "text",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": 1890,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": null,
+            "maximum": null,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "site_id",
+            "kind": "text",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": 139,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": null,
+            "maximum": null,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "status",
+            "kind": "text",
+            "nullable": true,
+            "empty_count": 0,
+            "distinct_count": 1,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": null,
+            "maximum": null,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "image_id",
+            "kind": "text",
+            "nullable": true,
+            "empty_count": 0,
+            "distinct_count": 115,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": null,
+            "maximum": null,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "cores",
+            "kind": "integer",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 1,
+            "maximum": 64,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "memory",
+            "kind": "integer",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 2048,
+            "maximum": 409600,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "storage",
+            "kind": "integer",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 1024,
+            "maximum": 88760323,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "os_type",
+            "kind": "text",
+            "nullable": true,
+            "empty_count": 67,
+            "distinct_count": 3,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": null,
+            "maximum": null,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "os_name",
+            "kind": "text",
+            "nullable": true,
+            "empty_count": 42,
+            "distinct_count": 25,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": null,
+            "maximum": null,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "start_time",
+            "kind": "integer",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 0,
+            "maximum": 1595606400,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "end_time",
+            "kind": "integer",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 1540107367,
+            "maximum": 4748500905,
+            "invalid_value_count": 0
+          }
+        ],
+        "checks": [
+          {
+            "name": "duplicate_vm_id_rows",
+            "count": 0,
+            "severity": "error",
+            "description": "VM identifiers must be unique."
+          },
+          {
+            "name": "unknown_pm_rows",
+            "count": 4,
+            "severity": "error",
+            "description": "Every VM must reference a known physical machine."
+          },
+          {
+            "name": "pm_site_mismatch_rows",
+            "count": 0,
+            "severity": "error",
+            "description": "A VM site must match its physical machine site."
+          },
+          {
+            "name": "zero_start_time_rows",
+            "count": 3,
+            "severity": "info",
+            "description": "Zero start times are retained as source sentinels, not dates."
+          },
+          {
+            "name": "end_before_start_rows",
+            "count": 0,
+            "severity": "info",
+            "description": "Source lifecycle values requiring replay-policy handling."
+          }
+        ],
+        "acceptance": {
+          "policy_version": "1.0.0",
+          "accepted_row_count": 7354,
+          "rejected_row_count": 56
+        }
+      },
+      {
+        "filename": "VM_CPU.csv",
+        "size_bytes": 18242036209,
+        "row_count": 276268767,
+        "invalid_row_count": 184318,
+        "is_valid": false,
+        "columns": [
+          {
+            "name": "vm_id",
+            "kind": "text",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": null,
+            "maximum": null,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "site_id",
+            "kind": "text",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": null,
+            "maximum": null,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "cpu_rate",
+            "kind": "float",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 184318,
+            "minimum": 0.0,
+            "maximum": 66901.7578,
+            "invalid_value_count": 184318
+          },
+          {
+            "name": "report_ts",
+            "kind": "integer",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 1590940800,
+            "maximum": 1593532740,
+            "invalid_value_count": 0
+          }
+        ],
+        "checks": [
+          {
+            "name": "unknown_vm_rows",
+            "count": 34313330,
+            "severity": "error",
+            "description": "Every CPU observation must reference a known VM."
+          },
+          {
+            "name": "vm_site_mismatch_rows",
+            "count": 43016,
+            "severity": "error",
+            "description": "CPU observation site must match the VM affiliation table."
+          }
+        ],
+        "acceptance": {
+          "policy_version": "1.0.0",
+          "accepted_row_count": 240204910,
+          "rejected_row_count": 36063857
+        }
+      },
+      {
+        "filename": "VM_BANDWIDTH.csv",
+        "size_bytes": 6521205631,
+        "row_count": 61720997,
+        "invalid_row_count": 0,
+        "is_valid": false,
+        "columns": [
+          {
+            "name": "vm_id",
+            "kind": "text",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": null,
+            "maximum": null,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "site_id",
+            "kind": "text",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": null,
+            "maximum": null,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "pub_down_flow",
+            "kind": "integer",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 0,
+            "maximum": 702092769112,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "pub_up_flow",
+            "kind": "integer",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 0,
+            "maximum": 710366029981,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "pub_down_bw",
+            "kind": "float",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 0.0,
+            "maximum": 18722473842.0,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "pub_up_bw",
+            "kind": "float",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 0.0,
+            "maximum": 18943094132.0,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "pri_down_flow",
+            "kind": "integer",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 0,
+            "maximum": 223636641748,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "pri_up_flow",
+            "kind": "integer",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 0,
+            "maximum": 678896287648,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "pri_down_bw",
+            "kind": "float",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 0.0,
+            "maximum": 5963643779.0,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "pri_up_bw",
+            "kind": "float",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 0.0,
+            "maximum": 18103901003.0,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "report_ts",
+            "kind": "integer",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 1590940800,
+            "maximum": 1593532500,
+            "invalid_value_count": 0
+          }
+        ],
+        "checks": [
+          {
+            "name": "unknown_vm_rows",
+            "count": 7961702,
+            "severity": "error",
+            "description": "Every bandwidth observation must reference a known VM."
+          },
+          {
+            "name": "vm_site_mismatch_rows",
+            "count": 12313,
+            "severity": "error",
+            "description": "Bandwidth observation site must match VM affiliation."
+          }
+        ],
+        "acceptance": {
+          "policy_version": "1.0.0",
+          "accepted_row_count": 53402219,
+          "rejected_row_count": 8318778
+        }
+      },
+      {
+        "filename": "VM_BW_THREE_MONTHS.csv",
+        "size_bytes": 1646605073,
+        "row_count": 16409250,
+        "invalid_row_count": 0,
+        "is_valid": false,
+        "columns": [
+          {
+            "name": "vm_id",
+            "kind": "text",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": null,
+            "maximum": null,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "report_time",
+            "kind": "timestamp",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": "2020-06-01 00:00:00",
+            "maximum": "2020-08-31 23:00:00",
+            "invalid_value_count": 0
+          },
+          {
+            "name": "pub_down_bw",
+            "kind": "float",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 0.0,
+            "maximum": 9603899283.583334,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "pub_up_bw",
+            "kind": "float",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 0.0,
+            "maximum": 16660067427.25,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "pri_down_bw",
+            "kind": "float",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 0.0,
+            "maximum": 4531191539.583333,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "pri_up_bw",
+            "kind": "float",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 0.0,
+            "maximum": 5723494286.083333,
+            "invalid_value_count": 0
+          }
+        ],
+        "checks": [
+          {
+            "name": "unknown_vm_rows",
+            "count": 1365773,
+            "severity": "error",
+            "description": "Every three-month bandwidth row must reference a known VM."
+          }
+        ],
+        "acceptance": {
+          "policy_version": "1.0.0",
+          "accepted_row_count": 14940861,
+          "rejected_row_count": 1468389
+        }
+      },
+      {
+        "filename": "SITE_RTT.csv",
+        "size_bytes": 36820005748,
+        "row_count": 331097973,
+        "invalid_row_count": 1582,
+        "is_valid": false,
+        "columns": [
+          {
+            "name": "row_index",
+            "kind": "integer",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": 0,
+            "maximum": 529905,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "from_site_id",
+            "kind": "text",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": null,
+            "maximum": null,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "to_site_id",
+            "kind": "text",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": null,
+            "maximum": null,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "rtt",
+            "kind": "float",
+            "nullable": false,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 36,
+            "non_finite_count": 0,
+            "below_minimum_count": 1,
+            "above_maximum_count": 0,
+            "minimum": -1.0,
+            "maximum": 1978885268252024.0,
+            "invalid_value_count": 37
+          },
+          {
+            "name": "loss",
+            "kind": "float",
+            "nullable": true,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 35,
+            "non_finite_count": 0,
+            "below_minimum_count": 149,
+            "above_maximum_count": 0,
+            "minimum": -100.0,
+            "maximum": 100.0,
+            "invalid_value_count": 184
+          },
+          {
+            "name": "type",
+            "kind": "text",
+            "nullable": true,
+            "empty_count": 0,
+            "distinct_count": null,
+            "parse_error_count": 0,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": null,
+            "maximum": null,
+            "invalid_value_count": 0
+          },
+          {
+            "name": "biz_ts",
+            "kind": "integer",
+            "nullable": false,
+            "empty_count": 2,
+            "distinct_count": null,
+            "parse_error_count": 34,
+            "non_finite_count": 0,
+            "below_minimum_count": 1088,
+            "above_maximum_count": 0,
+            "minimum": 0,
+            "maximum": 1593532740,
+            "invalid_value_count": 1124
+          },
+          {
+            "name": "biz_time",
+            "kind": "timestamp",
+            "nullable": false,
+            "empty_count": 1,
+            "distinct_count": null,
+            "parse_error_count": 1430,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": "2020-06-01 00:00:00",
+            "maximum": "2020-06-30 23:59:00",
+            "invalid_value_count": 1431
+          },
+          {
+            "name": "create_time",
+            "kind": "timestamp",
+            "nullable": false,
+            "empty_count": 2,
+            "distinct_count": null,
+            "parse_error_count": 1427,
+            "non_finite_count": 0,
+            "below_minimum_count": 0,
+            "above_maximum_count": 0,
+            "minimum": "2020-06-01 00:00:00",
+            "maximum": "2020-06-30 23:59:19",
+            "invalid_value_count": 1429
+          }
+        ],
+        "checks": [
+          {
+            "name": "self_pair_rows",
+            "count": 0,
+            "severity": "info",
+            "description": "Self-site RTT rows are disclosed separately."
+          },
+          {
+            "name": "unknown_from_site_rows",
+            "count": 23596622,
+            "severity": "error",
+            "description": "Every RTT source must reference a known site."
+          },
+          {
+            "name": "unknown_to_site_rows",
+            "count": 23336066,
+            "severity": "error",
+            "description": "Every RTT destination must reference a known site."
+          }
+        ],
+        "acceptance": {
+          "policy_version": "1.0.0",
+          "accepted_row_count": 284166576,
+          "rejected_row_count": 46931397
+        }
+      }
+    ],
+    "acceptance_policy": {
+      "version": "1.0.0",
+      "rule": "Accept only type/range-valid rows with complete PM-to-VM-to-site lineage; never repair or invent identifiers."
+    },
+    "accepted_rows_total": 592724139,
+    "rejected_rows_total": 92782500
   }
 }

@@ -159,7 +159,7 @@
       {
         "id": "edge_workloads_traces_nep_large",
         "role": "edge VM CPU, bandwidth, site RTT and physical capacity replay",
-        "status": "access_received_checksum_verified_schema_profile_pending",
+        "status": "schema_validated_with_deterministic_rejection",
         "raw_redistribution": false,
         "url": "https://github.com/xumengwei/EdgeWorkloadsTraces"
       },

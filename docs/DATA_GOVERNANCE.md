@@ -63,7 +63,7 @@ indirildikten sonra aynı değer yerelde üretilmeden `verified` olmaz.
 | UCI 859 | Ölçülmüş edge turnaround kalibrasyonu | `schema_validated` | 4.000 satır ve nested ZIP doğrulandı |
 | EUA | Avustralya kullanıcı/edge konumu | `schema_validated` | Commit-sabit ZIP ve seçilen 100.310 koordinat satırı doğrulandı |
 | BUPT | Oturum, byte, RAT, hücre, servis metadata | `schema_validated` | Yerel research-only; ham/türev satır dağıtımı yok |
-| NEP-large/full | Edge CPU/bant/RTT/kapasite replay | `checksum_verified` | Erişim alındı; raw paylaşılmaz, tam satır profili bekleniyor |
+| NEP-large/full | Edge CPU/bant/RTT/kapasite replay | `schema_validated` | 685.506.639 satır tarandı; v1.0.0 politikası 592.724.139 kabul/92.782.500 ret; raw paylaşılmaz |
 | T-Drive | Mobility stress | `catalogued` | Non-commercial ve yeniden dağıtım yasaklı |
 | Alibaba 2018 | İkincil cluster/OOD stresi | `access_pending` | Survey/erişim ve lisans kapsamı; MEC değil |
 
@@ -89,6 +89,11 @@ ayrıca üç aylık saatlik bant genişliği izini içerir. Yerelde alınan full
 bu kimliği VM/site sayısı ve `VM_BW_THREE_MONTHS.csv` üyesiyle doğrular. Resmî
 depo yalnız araştırma kullanımını ve offline paylaşım yasağını bildirir:
 <https://github.com/xumengwei/EdgeWorkloadsTraces>
+
+Tam satır profili DuckDB 1.5.5 ile altı üyedeki 685.506.639 satırı tarar.
+Kabul politikası v1.0.0 yalnız tür/aralık değerleri geçerli ve PM'den VM ile
+siteye uzanan soyu eksiksiz satırları tutar. 592.724.139 satır kabul edilir,
+92.782.500 satır uydurma eşleme veya sessiz onarım yapılmadan reddedilir.
 
 T-Drive sample 10.357 taksinin bir haftalık izidir ve MSR lisansı
 non-commercial kullanımla sınırlayıp yeniden dağıtımı yasaklar:
