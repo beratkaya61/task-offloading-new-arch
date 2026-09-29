@@ -1,0 +1,193 @@
+{
+  "gate_version": "1.0.0",
+  "status": "failed",
+  "main_240_annotation_allowed": false,
+  "thresholds": {
+    "minimum_kappa": 0.7,
+    "minimum_exact_field_agreement": 0.8,
+    "minimum_value_sample_size": 5
+  },
+  "inputs": {
+    "round_1": {
+      "path": "data/semantic_benchmark/pilot/annotations/round_1/agreement.v1.json",
+      "sha256": "b32a13a117c99476796f0ef820a264b52522745a261e2714c0e159c5c467443c"
+    },
+    "round_2": {
+      "path": "data/semantic_benchmark/pilot/round_2/annotations/agreement.v1.json",
+      "sha256": "28e31df556c4004f6413a162067161b9196c19f92349d082c272ec7694931549"
+    }
+  },
+  "round_comparison": {
+    "exact_field_agreement": {
+      "round_1": 0.75625,
+      "round_2": 0.8375,
+      "delta": 0.08125
+    },
+    "exact_record_agreement": {
+      "round_1": 0.1,
+      "round_2": 0.3,
+      "delta": 0.2
+    }
+  },
+  "checks": [
+    {
+      "name": "overall.exact_field_agreement",
+      "value": 0.8375,
+      "threshold": 0.8,
+      "passed": true
+    },
+    {
+      "name": "domain.status_kappa",
+      "value": 0.0,
+      "threshold": 0.7,
+      "passed": false
+    },
+    {
+      "name": "domain.value_kappa",
+      "value": 0.831325,
+      "threshold": 0.7,
+      "passed": true
+    },
+    {
+      "name": "latency.status_kappa",
+      "value": 0.89011,
+      "threshold": 0.7,
+      "passed": true
+    },
+    {
+      "name": "latency.value_kappa",
+      "value": 1.0,
+      "threshold": 0.7,
+      "passed": true
+    },
+    {
+      "name": "privacy.status_kappa",
+      "value": 0.897959,
+      "threshold": 0.7,
+      "passed": true
+    },
+    {
+      "name": "privacy.value_kappa",
+      "value": 0.531915,
+      "threshold": 0.7,
+      "passed": false
+    },
+    {
+      "name": "reliability.status_kappa",
+      "value": 0.318182,
+      "threshold": 0.7,
+      "passed": false
+    },
+    {
+      "name": "accuracy.status_kappa",
+      "value": 0.661017,
+      "threshold": 0.7,
+      "passed": false
+    },
+    {
+      "name": "energy_priority.status_kappa",
+      "value": 1.0,
+      "threshold": 0.7,
+      "passed": true
+    },
+    {
+      "name": "energy_priority.value_kappa",
+      "value": 0.615385,
+      "threshold": 0.7,
+      "passed": false
+    },
+    {
+      "name": "divisibility.status_kappa",
+      "value": 0.885057,
+      "threshold": 0.7,
+      "passed": true
+    },
+    {
+      "name": "divisibility.value_kappa",
+      "value": 1.0,
+      "threshold": 0.7,
+      "passed": true
+    },
+    {
+      "name": "execution_policy.status_kappa",
+      "value": 0.69697,
+      "threshold": 0.7,
+      "passed": false
+    },
+    {
+      "name": "execution_policy.device_kappa",
+      "value": 0.666667,
+      "threshold": 0.7,
+      "passed": false
+    },
+    {
+      "name": "execution_policy.edge_kappa",
+      "value": 0.795918,
+      "threshold": 0.7,
+      "passed": true
+    },
+    {
+      "name": "execution_policy.cloud_kappa",
+      "value": 0.82906,
+      "threshold": 0.7,
+      "passed": true
+    }
+  ],
+  "failed_checks": [
+    {
+      "name": "domain.status_kappa",
+      "value": 0.0,
+      "threshold": 0.7,
+      "passed": false
+    },
+    {
+      "name": "privacy.value_kappa",
+      "value": 0.531915,
+      "threshold": 0.7,
+      "passed": false
+    },
+    {
+      "name": "reliability.status_kappa",
+      "value": 0.318182,
+      "threshold": 0.7,
+      "passed": false
+    },
+    {
+      "name": "accuracy.status_kappa",
+      "value": 0.661017,
+      "threshold": 0.7,
+      "passed": false
+    },
+    {
+      "name": "energy_priority.value_kappa",
+      "value": 0.615385,
+      "threshold": 0.7,
+      "passed": false
+    },
+    {
+      "name": "execution_policy.status_kappa",
+      "value": 0.69697,
+      "threshold": 0.7,
+      "passed": false
+    },
+    {
+      "name": "execution_policy.device_kappa",
+      "value": 0.666667,
+      "threshold": 0.7,
+      "passed": false
+    }
+  ],
+  "insufficient_value_samples": [
+    {
+      "name": "reliability.value_kappa",
+      "sample_size": 1,
+      "minimum_sample_size": 5
+    },
+    {
+      "name": "accuracy.value_kappa",
+      "sample_size": 2,
+      "minimum_sample_size": 5
+    }
+  ],
+  "required_next_action": "targeted annotator calibration with novel examples; do not start the main 240-task annotation"
+}

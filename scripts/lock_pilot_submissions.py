@@ -38,7 +38,11 @@ def _write_once(path: Path, content: bytes) -> None:
                 f"refusing to overwrite a different locked submission: {path}"
             )
         return
-    path.write_bytes(content)
+    temporary = path.with_suffix(f"{path.suffix}.tmp")
+    temporary.write_bytes(content)
+    if temporary.read_bytes() != content:
+        raise OSError(f"temporary write verification failed: {temporary}")
+    temporary.replace(path)
 
 
 def parse_args() -> argparse.Namespace:
@@ -47,8 +51,15 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--annotator-a", required=True, type=Path)
     parser.add_argument("--annotator-b", required=True, type=Path)
-    parser.add_argument("--annotator-c", required=True, type=Path)
+    parser.add_argument("--annotator-c", type=Path)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
+    parser.add_argument("--round-id", default="pilot_round_1")
+    parser.add_argument(
+        "--protocol-version",
+        choices=("1.0.0", "1.1.0"),
+        default="1.0.0",
+    )
+    parser.add_argument("--packet-manifest", type=Path)
     return parser.parse_args()
 
 
@@ -57,8 +68,9 @@ def main() -> None:
     sources = {
         "annotator_a": args.annotator_a.resolve(),
         "annotator_b": args.annotator_b.resolve(),
-        "annotator_c": args.annotator_c.resolve(),
     }
+    if args.annotator_c is not None:
+        sources["annotator_c"] = args.annotator_c.resolve()
     corpus_path = PILOT / "tasks.v1.jsonl"
     corpus = load_jsonl(corpus_path)
     wrapper = _load_json(ROOT / "schemas" / "human_annotation_record.schema.json")
@@ -75,6 +87,7 @@ def main() -> None:
             wrapper,
             semantic,
             annotator_id=annotator,
+            expected_protocol_version=args.protocol_version,
         )
         if not audit.is_valid:
             raise ValueError(
@@ -95,20 +108,28 @@ def main() -> None:
 
     manifest = {
         "manifest_version": "1.0.0",
-        "round_id": "pilot_round_1",
+        "round_id": args.round_id,
         "corpus": {
             "path": corpus_path.relative_to(ROOT).as_posix(),
             "sha256": _sha256(corpus_path),
             "task_count": len(corpus),
         },
-        "protocol_version": "1.0.0",
+        "protocol_version": args.protocol_version,
         "primary_annotators": ["annotator_a", "annotator_b"],
-        "diagnostic_annotators": ["annotator_c"],
+        "diagnostic_annotators": (
+            ["annotator_c"] if "annotator_c" in sources else []
+        ),
         "diagnostic_excluded_from_primary_kappa": True,
         "automatic_majority_vote": False,
         "adjudication_status": "not_started",
         "submissions": entries,
     }
+    if args.packet_manifest is not None:
+        packet_manifest = args.packet_manifest.resolve()
+        manifest["packet_manifest"] = {
+            "path": packet_manifest.relative_to(ROOT).as_posix(),
+            "sha256": _sha256(packet_manifest),
+        }
     manifest_path = output_dir / "submission_manifest.v1.json"
     manifest_content = (
         json.dumps(manifest, ensure_ascii=False, indent=2, allow_nan=False) + "\n"

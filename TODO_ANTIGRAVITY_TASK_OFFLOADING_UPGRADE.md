@@ -270,3 +270,78 @@ Eski repo doğrudan taşınmayacaktır. Fizik hataları regresyon testine, eski 
   `schema_validated` durumundadır; 92.782.500 reddedilen satır onarılmaz.
 - Kabul sayacı kesinti sonrası dosya bazında devam edebilir; 17 NEP testi dahil
   tüm 180 test, Ruff ve strict mypy geçmiştir; toplam branch coverage yüzde 92'dir.
+
+## 14. Faz 4 pilot Round 1 ve Round 2 kararları
+
+- Pilot Round 1'de A, B ve tanısal C'nin 20'şer kaydı şema, görev hash'i ve
+  metin-içi kanıtla doğrulanıp checksum ile donduruldu. C birincil A/B kappa'ya
+  veya otomatik çoğunluk kararına katılmadı.
+- A/B, 160 semantik alanın 121'inde aynı, 39'unda farklı karar verdi; strict alan
+  uyumu yüzde 75,625, tam kayıt uyumu 2/20 oldu. Round 1 gold değildir ve
+  adjudication yapılmadı.
+- Round 1 protokolü `1.0.0` anlık görüntüsüyle birlikte korundu. Ana veri toplama
+  başlamadan protokol `1.1.0` olarak açıkça amend edildi.
+- `1.1.0`; confidence varsayılanını kaldırır, sayısal kanıt/değer tutarlılığını,
+  latency eşik sınıfını ve execution `explicit/partial` bütünlüğünü formda zorlar;
+  domain, privacy, reliability ve accuracy ayrımlarını kılavuzda kesinleştirir.
+- Round 2 yalnız A/B ile, yeni ve birbirinden farklı kör sıralarda yürütülür.
+  Round 1 cevapları ve anlaşmazlık listesi gösterilmez; C tekrar edilmez.
+- Round 2 kalite kapısı geçmeden adjudication'a veya 240 görevlik ana annotasyona
+  başlanmaz.
+- Round 2 A/B gönderimleri protokol `1.1.0` sunucu kalite kapılarıyla doğrulanıp
+  checksum ile kilitlendi. Strict alan uyumu yüzde 75,625'ten 83,75'e, tam kayıt
+  uyumu 2/20'den 6/20'ye çıktı; A/B anlaşmazlığı 39'dan 26'ya düştü.
+- İyileşmeye rağmen Round 2 kapısı geçmedi: domain status, privacy value,
+  reliability status, accuracy status, energy value, execution status ve device
+  permission kappaları `0.70` altındadır. Reliability/accuracy value kappaları
+  için ortak explicit örnek sayısı da yetersizdir.
+- Bu sonuç adjudication veya gold değildir. Ana 240 görev, gerçek pilot
+  cevaplarını göstermeyen hedefli eğitim/kalibrasyon ve yeni doğrulama kanıtı
+  tamamlanana kadar bloke kalır.
+
+## 15. Faz 4 annotasyon protokolü 1.2.0 ve ana corpus hazırlığı
+
+- İkinci annotatorın sürekli bulunamaması nedeniyle, ana etiketleme başlamadan
+  protokol `docs/ANNOTATION_PROTOCOL_AMENDMENT_1_2.md` ile amend edildi. Round 1
+  ve Round 2 ham verileri ve başarısız Round 2 kapısı tarihsel kanıt olarak aynen
+  korunur; geçmiş sonuç başarıya çevrilmez.
+- Ana 240 görevin 180'i makine ön etiketli ve A tarafından tek-insan doğrulamalı
+  development verisidir; gold diye adlandırılmaz. Etiketlerden önce seçilmiş 60
+  görev A/B tarafından bağımsız ve kör etiketlenip uzlaştırılır; yalnız bu bölüm
+  `adjudicated_gold` olabilir.
+- 20 yeni cevaplı eğitim örneği sekiz semantik alanı kapsar; pilot metinleri veya
+  A/B cevapları yeniden kullanılmaz. Paket eğitim materyalidir, insan etiketi ya
+  da ground truth değildir.
+- Ana corpus taslağı 240 görev, 120 ikili senaryo/paraphrase ailesi, domain başına
+  30 ve `standard_derived / trace_conditioned / llm_assisted_synthetic /
+  adversarial` origin başına 60 görev olarak üretildi.
+- 180/60 split, insan veya model etiketi kullanılmadan, scenario/paraphrase
+  ailelerini iki tarafa sızdırmadan donduruldu. BUPT yalnız güvenli aggregate
+  input-bit quantile'larıyla görev büyüklüğünü koşullar; satır verisi ve semantik
+  etiket sağlamaz.
+- Bütün 240 metin `human_text_review=pending` durumundadır. A'nın 60 kör ve 180
+  assisted formu hazırdır; A'nın geçerli gönderimleri metin inceleme kanıtı
+  olmadan B taslak formu dağıtılamaz.
+- B için yalnız tek 60 görevlik kör paket planlanmıştır. İş yükünü azaltmak için
+  gizli tekrar yoktur; annotator-içi tekrar güvenilirliğinin ölçülememesi nihai
+  sınırlılıklarda açıkça yazılacaktır.
+
+## 16. Faz 4 annotasyon protokolü 1.3.0 iş yükü düzeltmesi
+
+- İnsan ana-corpus etiketlemesi başlamadan annotator B'nin 60 görevi
+  tamamlayamayacağı kesinleşti. Protokol `docs/ANNOTATION_PROTOCOL_AMENDMENT_1_3.md`
+  ile tekrar amend edildi; geçmiş pilot ve 1.2 hazırlık kanıtları değiştirilmedi.
+- A yalnız 60 kör değerlendirme görevini etiketler; B veya C'den yeni görev
+  istenmez. Ana 60 kayıt `single_human_reference`, 180 geliştirme kaydı ise
+  `machine_generated_weak_label` olarak açıkça ayrılır; ikisi de adjudicated gold
+  değildir.
+- Round 1 A/B/C ve Round 2 A/B kayıtları korunur. C'nin 20 etiketi pairwise
+  sensitivity ve A/B uyuşmazlık teşhisinde kullanılır; yeni 60 görevin etiketiymiş
+  gibi taşınmaz ve otomatik çoğunluk oyu yapılmaz.
+- İki insan 60 kaydı etiketlemiş gibi bir iddia yapılamaz. Uyum yalnız mevcut pilot
+  turlarında ölçülür; küçük örneklem, protokol farkı, prevalans ve ana corpus'un
+  tek-insan olması nihai sınırlılıklarda raporlanır.
+- Annotator A'nın 60/60 protokol `1.3.0` kaydı sunucu denetiminden geçti ve
+  `7eecd3d8efd42b1606911729cbd96706cc9b4b55560fb78fabb8a1f37dae3b08`
+  SHA-256 ile `single_human_reference` olarak kilitlendi. Bu kayıt gold diye
+  sunulmaz; ek A/B/C anketi planlanmaz.

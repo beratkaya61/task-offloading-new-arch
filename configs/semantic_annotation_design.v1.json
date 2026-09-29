@@ -1,0 +1,92 @@
+{
+  "design_version": "1.1.0",
+  "protocol_version": "1.3.0",
+  "created_on": "2026-09-29",
+  "corpus": {
+    "unique_task_count": 240,
+    "language": "tr"
+  },
+  "partitions": {
+    "machine_labeled_development": {
+      "unique_task_count": 180,
+      "annotation_method": "deterministic_machine_weak_labels",
+      "human_annotators": [],
+      "human_validated": false,
+      "adjudicated_gold": false,
+      "allowed_uses": [
+        "training",
+        "prompt_development",
+        "error_analysis"
+      ]
+    },
+    "single_human_evaluation": {
+      "unique_task_count": 60,
+      "annotation_method": "blind_single_human_reference",
+      "annotators": ["annotator_a"],
+      "llm_preannotation_visible_to_annotators": false,
+      "adjudicated_gold": false,
+      "allowed_uses": [
+        "semantic_evaluation_with_single_annotator_limitation",
+        "error_analysis"
+      ]
+    }
+  },
+  "evaluation_selection": {
+    "performed_before_annotation": true,
+    "seed": 20260929,
+    "label_values_may_be_used": false,
+    "stratification_keys": [
+      "design_strata.scenario_domain",
+      "design_strata.semantic_phenomena",
+      "provenance.origin",
+      "grouping.scenario_family_id"
+    ],
+    "group_leakage_keys": [
+      "grouping.scenario_family_id",
+      "grouping.paraphrase_family_id",
+      "grouping.source_entity_id"
+    ]
+  },
+  "quality_gate": {
+    "minimum_exact_field_agreement": 0.8,
+    "minimum_kappa": 0.7,
+    "preferred_kappa": 0.8,
+    "minimum_joint_explicit_value_samples": 5,
+    "report_percent_agreement": true,
+    "report_class_prevalence": true,
+    "report_confidence_interval": true,
+    "report_intra_annotator_repeats": false,
+    "single_human_main_evaluation_limitation_required": true
+  },
+  "existing_human_evidence": {
+    "new_tasks_required_from_annotator_b": 0,
+    "new_tasks_required_from_annotator_c": 0,
+    "pilot_round_1": {
+      "unique_task_count": 20,
+      "primary_annotators": ["annotator_a", "annotator_b"],
+      "diagnostic_annotator": "annotator_c",
+      "c_role": "pairwise_sensitivity_and_disagreement_diagnosis",
+      "adjudicated_gold": false
+    },
+    "pilot_round_2": {
+      "unique_task_count": 20,
+      "annotators": ["annotator_a", "annotator_b"],
+      "quality_gate_status": "failed",
+      "adjudicated_gold": false
+    }
+  },
+  "provenance_labels": {
+    "machine_labeled_development": "machine_generated_weak_label",
+    "single_human_evaluation": "single_human_reference",
+    "pilot_round_1_c": "diagnostic_human_annotation",
+    "pilot_round_2_a_b": "independent_double_human_unadjudicated"
+  },
+  "preannotation": {
+    "model_must_be_frozen_before_use": true,
+    "model_id": null,
+    "prompt_version": null,
+    "parser_version": null,
+    "cache_required": true,
+    "evaluation_partition_must_remain_blind": true
+  }
+}

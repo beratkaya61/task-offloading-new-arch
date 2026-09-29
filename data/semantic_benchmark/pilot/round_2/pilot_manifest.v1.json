@@ -1,0 +1,57 @@
+{
+  "manifest_version": "1.0.0",
+  "round_id": "pilot_round_2",
+  "created_on": "2026-09-29",
+  "purpose": "blind repeat after pre-main-study protocol clarification",
+  "corpus": {
+    "path": "data/semantic_benchmark/pilot/tasks.v1.jsonl",
+    "sha256": "3e8988b31d6473df61a39888030809278f02ddf94282176fb1217fc690df2af3",
+    "task_count": 20
+  },
+  "protocol": {
+    "version": "1.1.0",
+    "path": "docs/ANNOTATION_PROTOCOL.md",
+    "sha256": "3969dd3c2e428ec8590a0129aa6c6183e2f8c8b80db3922a1fb89d1665c90ec5"
+  },
+  "semantic_schema_version": "1.0.0",
+  "primary_annotators": [
+    "annotator_a",
+    "annotator_b"
+  ],
+  "diagnostic_annotators": [],
+  "diagnostic_note": "annotator_c is not repeated in Round 2",
+  "blindness": {
+    "round_1_answers_visible": false,
+    "other_annotator_answers_visible": false,
+    "round_1_disagreement_list_visible": false
+  },
+  "source_round_1_agreement": {
+    "path": "data/semantic_benchmark/pilot/annotations/round_1/agreement.v1.json",
+    "sha256": "b32a13a117c99476796f0ef820a264b52522745a261e2714c0e159c5c467443c",
+    "used_only_for_protocol_and_form_quality_improvement": true
+  },
+  "quality_gates": [
+    "confidence_must_be_selected",
+    "latency_unit_and_class_consistency",
+    "numeric_evidence_consistency",
+    "execution_status_completeness"
+  ],
+  "packets": {
+    "annotator_a": {
+      "path": "data/semantic_benchmark/pilot/round_2/packets/annotator_a.v1.1.jsonl",
+      "seed": 17389,
+      "sha256": "a3cf19fea4823c2582457465e5c94cfbefd89a2003474833ae9fe2357a16e04d",
+      "packet_version": "1.1.0",
+      "protocol_version": "1.1.0"
+    },
+    "annotator_b": {
+      "path": "data/semantic_benchmark/pilot/round_2/packets/annotator_b.v1.1.jsonl",
+      "seed": 68443,
+      "sha256": "3ff7c3fe16bd2156b149c1f31617f9301c0bf2aae056e38a60fe6c24f9741712",
+      "packet_version": "1.1.0",
+      "protocol_version": "1.1.0"
+    }
+  },
+  "submission_status": "not_collected",
+  "adjudication_status": "not_started"
+}

@@ -29,10 +29,20 @@ from task_offloading.semantic.benchmark import (
     packet_issues,
     write_jsonl,
 )
+from task_offloading.semantic.calibration import (
+    CalibrationAudit,
+    audit_targeted_calibration,
+    render_targeted_calibration,
+)
+from task_offloading.semantic.preannotation import (
+    annotation_form_seed,
+    authoring_preannotation,
+)
 
 __all__ = [
     "ANNOTATION_FIELDS",
     "AgreementMetric",
+    "CalibrationAudit",
     "CorpusAudit",
     "ExecutionAgreement",
     "FieldAgreement",
@@ -40,9 +50,12 @@ __all__ = [
     "ReleaseAudit",
     "SubmissionAudit",
     "ThirdAnnotatorFieldDiagnostic",
+    "annotation_form_seed",
     "audit_annotation_release",
     "audit_corpus",
     "audit_submission",
+    "audit_targeted_calibration",
+    "authoring_preannotation",
     "build_blind_packet",
     "cohen_kappa",
     "corpus_task_sha256",
@@ -53,5 +66,6 @@ __all__ = [
     "pairwise_agreement",
     "quadratic_weighted_kappa",
     "render_annotation_form",
+    "render_targeted_calibration",
     "write_jsonl",
 ]

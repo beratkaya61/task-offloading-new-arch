@@ -1,23 +1,12 @@
 # İki İnsanlı Semantik Annotasyon Protokolü
 
-**Sürüm:** 1.1.0
+**Sürüm:** 1.0.0
 
 **Bağlı şema:** `schemas/semantic_requirements.schema.json`
 
 **Ana corpus:** 240 benzersiz Türkçe görev metni
 
 **Annotator:** 2 gerçek insan; bütün ana örnekler çift etiketlenecek
-
-### Sürüm geçmişi
-
-- `1.0.0`: Pilot Round 1'de kullanılan ilk kılavuz.
-- `1.1.0`: Round 1 anlaşma analizinden sonra, ana etiketleme başlamadan önce
-  yayımlanan açıklık ve veri-giriş kalite değişikliği. Semantik alanlar değişmedi;
-  domain önceliği, sayısal eşik dönüşümü, execution statüsü, reliability/accuracy
-  ayrımı ve confidence seçimi kesinleştirildi.
-
-Round 1 ham cevapları daima `1.0.0` anlık görüntüsüyle yorumlanır. `1.1.0`
-yalnız Round 2 ve sonrasına uygulanır.
 
 ## 1. Amaç
 
@@ -92,19 +81,6 @@ Annotator genel dünya bilgisinden gizli kısıt üretmez. “Sağlık görevi�
 
 Domain, offloading izni üretmez.
 
-Bir metin birden fazla sektörü çağrıştırıyorsa görevin **asıl nesnesi ve hizmeti**
-esas alınır:
-
-- araç, yol, trafik ve toplu taşıma görevi → `transportation`,
-- afet, yangın, kolluk veya acil müdahale → `public_safety`,
-- bunların dışında belediye altyapısı/aydınlatma/çevre hizmeti → `smart_city`,
-- son kullanıcıya dönük ev, giyilebilir cihaz, ziyaretçi veya kişisel uygulama →
-  `consumer`.
-
-Metindeki “robot”, “fabrika”, “yoğun bakım”, “tarla” gibi doğrudan sektör
-ifadeleri domain kanıtıdır; bu durumda `not_stated` seçilmez. Kurumun sahibi veya
-cihazın edge/cloud konumu domain'i değiştirmez.
-
 ### 5.2 Latency
 
 Önce metindeki açık `max_ms` değeri çıkarılır. Saniye verilmişse arayüz milisaniyeye dönüştürür. Sayısal sınır yoksa yalnızca nitel ifade etiketlenir.
@@ -117,12 +93,7 @@ cihazın edge/cloud konumu domain'i değiştirmez.
 | `hard_real_time` | 50 ms altı açık sınır ya da kaçırılması güvenliği/işlevi bozan sert süre |
 | `null` | Gecikme gereksinimi yok veya çelişkili |
 
-Sayısal sınır varsa sınıfı sayı belirler: `<50` hard real-time, `50–200`
-real-time, `200–1000` interactive, `>1000` relaxed. Sayısal sınır varken nitel
-yorumla başka sınıf seçilmez. `3 saniye`, `3000 ms` olarak yazılır; arayüz kanıt,
-değer ve sınıfın birbiriyle uyuşmasını zorunlu kılar. Sayı yoksa “anlık”, “vardiya
-sonu”, “ertesi sabah” gibi nitel kanıt kullanılır. LLM cevabı hiçbir zaman
-gösterilmez.
+Sayısal sınır varsa sınıf arayüz tarafından bu eşiklerle önerilebilir; ancak öneri kaydedilmeden önce annotator tarafından onaylanır. LLM cevabı hiçbir zaman gösterilmez.
 
 ### 5.3 Privacy veri sınıfı
 
@@ -135,11 +106,6 @@ gösterilmez.
 | `null` | Veri hassasiyeti belirtilmemiş veya çelişkili |
 
 Privacy sınıfı ve execution policy ayrıdır. Hassas veri şifreli biçimde cloud'a gönderilebilir; metin cloud'u yasaklamıyorsa annotator yasağı tahmin etmez.
-
-Literal ifadeler önceliklidir: “kamuya açık” → `public`; “kişisel”, “konum” veya
-“ticari açıdan hassas” → `sensitive`; “kısıtlı”, biyometrik veya ham klinik kayıt
-→ `restricted`; yalnız kurum/ev dışına çıkmayan fakat kişisel ya da klinik olduğu
-söylenmeyen veri → `internal`. Execution yasağı tek başına privacy sınıfı değildir.
 
 ### 5.4 Execution policy
 
@@ -162,13 +128,6 @@ Hedefler:
 - Hedef hakkında cümle yok → üçü de `unknown`, status `not_stated`.
 - “Yalnız edge'de çalışsın fakat gerekirse cloud kullanılabilir” bağlama göre çelişkiliyse üçü `unknown`, status `ambiguous`.
 
-`explicit`, üç hedefin de **izin durumunun bilindiği** anlamına gelir; üçünün de
-izinli olması gerekmez. Örneğin device ve edge izinli, cloud yasak ise status
-`explicit` olur. `partial`, en az bir hedef bilinirken en az bir hedefin
-`unknown` kalmasıdır. Aynı hedef hem zorunlu hem yasaksa tüm hedefler `unknown`
-ve status `ambiguous` olur. Yalnız cloud'un izinli olduğu cümleden device veya
-edge izni türetilmez.
-
 ### 5.5 Reliability
 
 | Etiket | Operasyonel anlam |
@@ -180,12 +139,6 @@ edge izni türetilmez.
 | `null` | Güvenilirlik belirtilmemiş veya çelişkili |
 
 Yüzde verilmişse `min_success_probability` 0–1 aralığına dönüştürülür. “Hasta izleme” ifadesi tek başına sayısal güvenilirlik üretmez.
-
-“Başarısız istek kabul edilebilir” reliability için `best_effort`; “yüksek
-güvenilirlik” reliability için `high` kanıtıdır. Yüzde yazmıyorsa
-`min_success_probability` uydurulmaz. “Tek bir kayıp kabul edilemez”
-`mission_critical` olabilir, fakat tek başına sayısal `1.0` anlamına gelmez.
-Yanlış sınıflandırma veya yanlış negatif sonucu reliability değil accuracy'dir.
 
 ### 5.6 Accuracy
 
@@ -199,12 +152,6 @@ Yanlış sınıflandırma veya yanlış negatif sonucu reliability değil accura
 
 Sayısal değer varsa `min_score` 0–1 aralığında, metrik adı varsa `metric` alanına yazılır. Metrik yoksa uydurulmaz.
 
-“Yanlış sonuç kabul edilebilir” accuracy için `relaxed`; “yüksek doğruluk”
-accuracy için `high`; ciddi zarar doğuran yanlış sonuç `critical` kanıtıdır.
-“İstek başarısızlığı” ise accuracy değil reliability alanına gider. `%95` →
-`0.95` olarak yazılır. `F1 skoru 0,97` ifadesinde hem `min_score=0.97` hem de
-`metric=F1` girilir.
-
 ### 5.7 Energy priority
 
 | Etiket | Operasyonel anlam |
@@ -213,9 +160,6 @@ accuracy için `high`; ciddi zarar doğuran yanlış sonuç `critical` kanıtıd
 | `balanced` | Enerji ile performans arasında açık denge istenir |
 | `high` | Pil ömrü/enerji tasarrufu açık önceliktir |
 | `null` | Enerji tercihi belirtilmemiş veya çelişkili |
-
-“Pil ömrünü mümkün olduğunca korumak” ve “enerji tasarrufu yüksek öncelik” →
-`high`; enerji ile gecikme/deneyim arasında açık denge → `balanced` olur.
 
 ### 5.8 Divisibility
 
@@ -239,9 +183,7 @@ Confidence arayüzünde üç seçenek bulunur:
 | Orta | 0.70 |
 | Emin değilim | 0.50 |
 
-Hiçbir confidence değeri varsayılan seçili gelmez; annotator her alan için kendi
-kararını verir. `not_stated` kararından emin olunabilir; bu nedenle confidence ile
-bilginin varlığı karıştırılmaz. Genel confidence alan değerlerinin ortalamasıdır.
+`not_stated` kararından emin olunabilir; bu nedenle confidence ile bilginin varlığı karıştırılmaz. Genel confidence, alan değerlerinin ortalaması olarak önerilir ve annotator tarafından onaylanır.
 
 ## 7. Corpus tasarımı
 

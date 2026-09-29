@@ -22,6 +22,7 @@ from task_offloading.semantic.benchmark import (
 )
 
 _SHA256_PATTERN = re.compile(r"^[a-f0-9]{64}$")
+_SUBMISSION_SLUG_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]{2,127}$")
 _PAYLOAD_MARKER = "__ANNOTATION_FORM_PAYLOAD__"
 
 
@@ -97,6 +98,14 @@ def _validate_form_inputs(
             raise ValueError(f"packet row {index} has the wrong annotator id")
         if row.get("presentation_order") != index:
             raise ValueError(f"packet row {index} has non-contiguous order")
+    packet_versions = {row.get("packet_version") for row in packet}
+    protocol_versions = {row.get("protocol_version") for row in packet}
+    if len(packet_versions) != 1 or not isinstance(next(iter(packet_versions)), str):
+        raise ValueError("packet rows must share one packet version")
+    if len(protocol_versions) != 1 or not isinstance(
+        next(iter(protocol_versions)), str
+    ):
+        raise ValueError("packet rows must share one protocol version")
 
 
 def _validate_initial_responses(
@@ -133,6 +142,7 @@ def render_annotation_form(
     annotator_id: str,
     packet_sha256: str,
     initial_responses: Mapping[str, Any] | None = None,
+    submission_slug: str | None = None,
 ) -> str:
     """Render a deterministic offline form, optionally with an annotator draft."""
 
@@ -143,13 +153,22 @@ def render_annotation_form(
     )
     responses = initial_responses or {}
     _validate_initial_responses(packet, responses)
+    packet_version = str(packet[0]["packet_version"])
+    protocol_version = str(packet[0]["protocol_version"])
+    if submission_slug is not None and not _SUBMISSION_SLUG_PATTERN.fullmatch(
+        submission_slug
+    ):
+        raise ValueError("submission_slug must be a safe lowercase filename stem")
     payload = {
-        "form_version": "1.1.0" if responses else "1.0.0",
+        "form_version": "1.2.0" if responses else "1.1.0",
         "record_version": "1.0.0",
-        "protocol_version": "1.0.0",
+        "packet_version": packet_version,
+        "protocol_version": protocol_version,
         "schema_version": "1.0.0",
         "annotator_id": annotator_id,
+        "form_mode": "assisted_review" if responses else "blind_annotation",
         "packet_sha256": packet_sha256,
+        "submission_slug": submission_slug,
         "tasks": [dict(row) for row in packet],
         "initial_responses": responses,
     }

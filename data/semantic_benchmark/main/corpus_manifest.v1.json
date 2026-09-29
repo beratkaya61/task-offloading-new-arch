@@ -1,0 +1,152 @@
+{
+  "manifest_version": "1.0.0",
+  "created_on": "2026-09-29",
+  "corpus_version": "main-1.0.0",
+  "status": "generated_awaiting_human_text_review",
+  "annotation_release_allowed": false,
+  "task_count": 240,
+  "scenario_family_count": 120,
+  "human_text_review": {
+    "pending": 240,
+    "approved": 0,
+    "rejected": 0
+  },
+  "tasks": {
+    "path": "data/semantic_benchmark/main/tasks.v1.jsonl",
+    "sha256": "c045f48afeab9b4c95dc023ca2d4df9215205f10dba29d45d0e8e69f39f7270a"
+  },
+  "schema": {
+    "path": "schemas/main_semantic_task.schema.json",
+    "sha256": "9cc3fc32ddaba860cceec35a650941432d9e5a41a1a0a4358e3b1110142677e4"
+  },
+  "blueprint": {
+    "path": "configs/main_semantic_scenarios.v1.json",
+    "sha256": "19de47440428508ce2c7c21e3c509e2afb35a992dfb3777b29c80f38de84217f"
+  },
+  "annotation_design": {
+    "path": "configs/semantic_annotation_design.v1.json",
+    "sha256": "2f138a737fea1b7215d12986d9cf188b793071a533b73b9aad42da12dde904e9"
+  },
+  "protocol": {
+    "version": "1.3.0",
+    "path": "docs/ANNOTATION_PROTOCOL_AMENDMENT_1_3.md",
+    "sha256": "1252584dd6cc80ac3ad5a2eb4879d4f392e7a27fc9609ada3e83b473cf65ab98"
+  },
+  "split": {
+    "path": "data/semantic_benchmark/main/split_manifest.v1.json",
+    "sha256": "2f59855ad9a1b86342e676f7435667a8a0cd4e62cd035cef2b430169d98420e3"
+  },
+  "design_metadata_is_gold": false,
+  "generation_model_may_define_gold": false,
+  "pilot_exact_text_overlap_count": 0,
+  "overall_counts": {
+    "domains": {
+      "agriculture": 30,
+      "consumer": 30,
+      "healthcare": 30,
+      "industrial": 30,
+      "other": 30,
+      "public_safety": 30,
+      "smart_city": 30,
+      "transportation": 30
+    },
+    "origins": {
+      "adversarial": 60,
+      "llm_assisted_synthetic": 60,
+      "standard_derived": 60,
+      "trace_conditioned": 60
+    },
+    "semantic_phenomena": {
+      "ambiguity": 48,
+      "explicit_accuracy": 48,
+      "explicit_divisibility": 32,
+      "explicit_energy": 32,
+      "explicit_execution_policy": 64,
+      "explicit_latency": 48,
+      "explicit_privacy": 48,
+      "explicit_reliability": 32,
+      "missing_information": 16,
+      "negation": 48,
+      "numeric_threshold": 80,
+      "qualitative_requirement": 80
+    }
+  },
+  "partition_counts": {
+    "machine_labeled_development": {
+      "domains": {
+        "agriculture": 22,
+        "consumer": 24,
+        "healthcare": 22,
+        "industrial": 22,
+        "other": 24,
+        "public_safety": 22,
+        "smart_city": 22,
+        "transportation": 22
+      },
+      "origins": {
+        "adversarial": 46,
+        "llm_assisted_synthetic": 46,
+        "standard_derived": 44,
+        "trace_conditioned": 44
+      },
+      "semantic_phenomena": {
+        "ambiguity": 36,
+        "explicit_accuracy": 36,
+        "explicit_divisibility": 20,
+        "explicit_energy": 18,
+        "explicit_execution_policy": 52,
+        "explicit_latency": 34,
+        "explicit_privacy": 40,
+        "explicit_reliability": 22,
+        "missing_information": 14,
+        "negation": 40,
+        "numeric_threshold": 58,
+        "qualitative_requirement": 56
+      }
+    },
+    "single_human_evaluation": {
+      "domains": {
+        "agriculture": 8,
+        "consumer": 6,
+        "healthcare": 8,
+        "industrial": 8,
+        "other": 6,
+        "public_safety": 8,
+        "smart_city": 8,
+        "transportation": 8
+      },
+      "origins": {
+        "adversarial": 14,
+        "llm_assisted_synthetic": 14,
+        "standard_derived": 16,
+        "trace_conditioned": 16
+      },
+      "semantic_phenomena": {
+        "ambiguity": 12,
+        "explicit_accuracy": 12,
+        "explicit_divisibility": 12,
+        "explicit_energy": 14,
+        "explicit_execution_policy": 12,
+        "explicit_latency": 14,
+        "explicit_privacy": 8,
+        "explicit_reliability": 10,
+        "missing_information": 2,
+        "negation": 8,
+        "numeric_threshold": 22,
+        "qualitative_requirement": 24
+      }
+    }
+  },
+  "sources": [
+    {
+      "id": "etsi_mec_overview",
+      "url": "https://www.etsi.org/technologies/multi-access-edge-computing",
+      "use": "scenario inspiration only; no verbatim source text"
+    },
+    {
+      "id": "bupt_edge_computing_dataset",
+      "profile": "configs/data_profiles/bupt_04e664f_workload_quantiles.json",
+      "use": "privacy-safe input-bit quantiles only; no row-level data or semantic labels"
+    }
+  ]
+}

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'none'; img-src data:">
-  <title>MEC Semantik Pilot Etiketleme</title>
+  <title>MEC Semantik Etiketleme</title>
   <style>
     :root { color-scheme: light; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
     body { margin: 0; background: #f4f6f8; color: #17212b; }
@@ -40,7 +40,7 @@
 <body>
   <header>
     <div>
-      <h1>MEC Semantik Pilot Etiketleme</h1>
+      <h1>MEC Semantik Etiketleme</h1>
       <div id="identity" class="muted"></div>
     </div>
     <div id="progress" class="status"></div>
@@ -50,7 +50,13 @@
       Yalnızca görev ve politika metninde bulunan bilgiyi işaretleyin. En iyi
       local/edge/cloud kararını tahmin etmeyin. Bilgi yoksa
       <code>not_stated</code>, metin çelişkiliyse <code>ambiguous</code> seçin.
+      Sayısal değerleri kanıtla birebir eşleştirin ve her alanın confidence
+      değerini kendiniz seçin.
       Bu dosya çevrimdışı çalışır ve ağa veri göndermez.
+    </div>
+    <div id="assisted-notice" class="notice hidden">
+      Bu formdaki başlangıç değerleri yalnız makine önerisidir; insan etiketi veya
+      gold değildir. Her alanı metne göre kontrol edin ve gerekiyorsa düzeltin.
     </div>
     <section class="task">
       <div id="task-number" class="muted"></div>
@@ -82,9 +88,9 @@
   ];
   const META = {
     domain: {title: "Uygulama alanı", help: "Sağlık, endüstri, ulaşım gibi metinde açıkça anlaşılan kullanım alanı."},
-    latency: {title: "Gecikme", help: "Görevin tamamlanması için açık sayısal veya nitel süre gereksinimi."},
+    latency: {title: "Gecikme", help: "Sayısal süre varsa aynen çıkarın; saniyeyi 1000 ile çarpıp milisaniyeye dönüştürün."},
     privacy: {title: "Veri gizliliği", help: "Kamuya açık, kurum içi, hassas veya kısıtlı veri sınıfı."},
-    execution_policy: {title: "Çalıştırma izni", help: "Cihaz, edge ve cloud hedeflerinin açıkça izinli/yasak/bilinmiyor oluşu."},
+    execution_policy: {title: "Çalıştırma izni", help: "Explicit: üç hedef de biliniyor. Partial: en az bir hedef bilinmiyor. Çelişki: ambiguous."},
     reliability: {title: "Güvenilirlik", help: "İsteğin başarılı tamamlanma beklentisi; doğruluk ile karıştırmayın."},
     accuracy: {title: "Sonuç doğruluğu", help: "Çıktının kalite/doğruluk beklentisi ve varsa sayısal hedefi."},
     energy_priority: {title: "Enerji önceliği", help: "Enerji önemsiz, dengeli veya pil tasarrufu yüksek öncelikli mi?"},
@@ -92,7 +98,7 @@
   };
   const OPTIONS = {
     status: [["", "Seçiniz"], ["explicit", "Açıkça belirtilmiş"], ["not_stated", "Belirtilmemiş"], ["ambiguous", "Belirsiz / çelişkili"]],
-    executionStatus: [["", "Seçiniz"], ["explicit", "Üç hedef de açık"], ["partial", "Yalnız bazı hedefler açık"], ["not_stated", "Belirtilmemiş"], ["ambiguous", "Belirsiz / çelişkili"]],
+    executionStatus: [["", "Seçiniz"], ["explicit", "Cihaz/edge/cloud üçü de biliniyor"], ["partial", "En az bir hedef bilinmiyor"], ["not_stated", "Belirtilmemiş"], ["ambiguous", "Belirsiz / çelişkili"]],
     domain: [["", "Seçiniz"], ["healthcare", "Sağlık"], ["industrial", "Endüstri"], ["transportation", "Ulaşım"], ["public_safety", "Kamu güvenliği"], ["smart_city", "Akıllı şehir"], ["agriculture", "Tarım"], ["consumer", "Tüketici"], ["other", "Diğer"]],
     latency: [["", "Seçiniz"], ["relaxed", "Rahat / ertelenebilir (>1 s)"], ["interactive", "Etkileşimli (yaklaşık 200–1000 ms)"], ["real_time", "Gerçek zamanlı (yaklaşık 50–200 ms)"], ["hard_real_time", "Sert gerçek zamanlı (<50 ms / kritik)"]],
     privacy: [["", "Seçiniz"], ["public", "Kamuya açık"], ["internal", "Kurum/ev içi"], ["sensitive", "Hassas"], ["restricted", "Kısıtlı / çok hassas"]],
@@ -101,7 +107,7 @@
     accuracy: [["", "Seçiniz"], ["relaxed", "Düşük/ yaklaşık kabul"], ["standard", "Standart"], ["high", "Yüksek"], ["critical", "Kritik"]],
     energy: [["", "Seçiniz"], ["low", "Düşük öncelik"], ["balanced", "Dengeli"], ["high", "Yüksek öncelik"]],
     divisibility: [["", "Seçiniz"], ["divisible", "Bölünebilir"], ["indivisible", "Bölünemez"]],
-    confidence: [["0.90", "Eminim (0,90)"], ["0.70", "Orta (0,70)"], ["0.50", "Emin değilim (0,50)"]]
+    confidence: [["", "Seçiniz"], ["0.90", "Eminim (0,90)"], ["0.70", "Orta (0,70)"], ["0.50", "Emin değilim (0,50)"]]
   };
   const storageKey = `mec-semantic:${APP.form_version}:${APP.annotator_id}:${APP.packet_sha256}`;
   let state = loadState();
@@ -126,7 +132,7 @@
     localStorage.setItem(storageKey, JSON.stringify(state));
   }
   function freshField(name) {
-    const base = {status: "", evidence: "", confidence: "0.90"};
+    const base = {status: "", evidence: "", confidence: ""};
     if (name === "domain") return {...base, value: ""};
     if (name === "latency") return {...base, class: "", max_ms: ""};
     if (name === "privacy") return {...base, data_class: ""};
@@ -193,7 +199,7 @@
     if (name === "domain") card.appendChild(makeSelect("Alan", OPTIONS.domain, field.value, v => update(task, name, "value", v)));
     if (name === "latency") {
       card.appendChild(makeSelect("Sınıf", OPTIONS.latency, field.class, v => update(task, name, "class", v)));
-      card.appendChild(makeInput("Varsa üst sınır (ms)", field.max_ms, v => update(task, name, "max_ms", v), "number", "Örn. 100"));
+      card.appendChild(makeInput("Varsa üst sınır (ms; saniye × 1000)", field.max_ms, v => update(task, name, "max_ms", v), "number", "Örn. 3 saniye = 3000"));
     }
     if (name === "privacy") card.appendChild(makeSelect("Veri sınıfı", OPTIONS.privacy, field.data_class, v => update(task, name, "data_class", v)));
     if (name === "execution_policy") {
@@ -231,6 +237,38 @@
   }
   function evidenceList(field) { return field.evidence.split("\n").map(x => x.trim()).filter(Boolean); }
   function numeric(value) { return value === "" ? null : Number(value); }
+  function localeNumber(value) { return Number(value.replace(",", ".")); }
+  function approximatelyEqual(left, right) { return Math.abs(left - right) < 1e-9; }
+  function evidenceText(field) { return evidenceList(field).join("\n"); }
+  function latencyEvidenceMs(field) {
+    const values = [];
+    const pattern = /(\d+(?:[.,]\d+)?)\s*(ms|milisaniye|saniye)/giu;
+    for (const match of evidenceText(field).matchAll(pattern)) {
+      const value = localeNumber(match[1]);
+      values.push(match[2].toLocaleLowerCase("tr-TR") === "saniye" ? value * 1000 : value);
+    }
+    return values;
+  }
+  function percentageEvidence(field) {
+    const values = [];
+    const text = evidenceText(field);
+    for (const pattern of [/%\s*(\d+(?:[.,]\d+)?)/gu, /(\d+(?:[.,]\d+)?)\s*%/gu]) {
+      for (const match of text.matchAll(pattern)) values.push(localeNumber(match[1]) / 100);
+    }
+    return [...new Set(values)];
+  }
+  function accuracyEvidenceScores(field) {
+    const values = percentageEvidence(field);
+    const pattern = /\b(0[.,]\d+|1(?:[.,]0+)?)\b/gu;
+    for (const match of evidenceText(field).matchAll(pattern)) values.push(localeNumber(match[1]));
+    return [...new Set(values)];
+  }
+  function expectedLatencyClass(maxMs) {
+    if (maxMs < 50) return "hard_real_time";
+    if (maxMs <= 200) return "real_time";
+    if (maxMs <= 1000) return "interactive";
+    return "relaxed";
+  }
   function validateResponse(task, response) {
     const errors = [];
     if (!response) return ["Görev henüz açılmadı ve etiketlenmedi."];
@@ -238,6 +276,7 @@
     FIELD_ORDER.forEach(name => {
       const f = response.fields[name]; const title = META[name].title;
       if (!f.status) { errors.push(`${title}: metindeki durum seçilmedi.`); return; }
+      if (!["0.50", "0.70", "0.90"].includes(f.confidence)) errors.push(`${title}: confidence seçilmedi.`);
       const evidence = evidenceList(f);
       if (["explicit", "partial", "ambiguous"].includes(f.status) && evidence.length === 0) errors.push(`${title}: birebir metin kanıtı gerekli.`);
       evidence.forEach(snippet => { if (!visible.includes(snippet)) errors.push(`${title}: “${snippet}” metinde birebir bulunamadı.`); });
@@ -247,12 +286,34 @@
       }
       if (name === "execution_policy" && f.status === "explicit" && [f.device, f.edge, f.cloud].includes("unknown")) errors.push(`${title}: explicit durumda üç hedef de bilinmelidir.`);
       if (name === "execution_policy" && f.status === "partial" && [f.device, f.edge, f.cloud].every(x => x === "unknown")) errors.push(`${title}: partial durumda en az bir hedef bilinmelidir.`);
+      if (name === "execution_policy" && f.status === "partial" && ![f.device, f.edge, f.cloud].includes("unknown")) errors.push(`${title}: üç hedef de biliniyorsa partial değil explicit seçilmelidir.`);
       [["latency", "max_ms", 0, 3600000], ["reliability", "min_success_probability", 0, 1], ["accuracy", "min_score", 0, 1]].forEach(([fieldName, key, min, max]) => {
         if (name === fieldName && f[key] !== "") {
           const n = numeric(f[key]);
           if (!Number.isFinite(n) || n < min || n > max || (key === "max_ms" && n <= 0)) errors.push(`${title}: sayısal değer izin verilen aralıkta değil.`);
         }
       });
+      if (name === "latency" && f.status === "explicit") {
+        const stated = latencyEvidenceMs(f); const maximum = numeric(f.max_ms);
+        if (stated.length && maximum === null) errors.push(`${title}: kanıtta sayısal süre var; ms üst sınırı girilmelidir.`);
+        if (maximum !== null && !stated.length) errors.push(`${title}: metinde sayısal süre yoksa ms üst sınırı uydurulamaz.`);
+        if (maximum !== null && stated.length && !stated.some(value => approximatelyEqual(value, maximum))) errors.push(`${title}: ms üst sınırı kanıttaki süreyle eşleşmiyor.`);
+        if (maximum !== null && f.class !== expectedLatencyClass(maximum)) errors.push(`${title}: sınıf sayısal ms eşiğiyle uyuşmuyor.`);
+      }
+      if (name === "reliability" && f.status === "explicit") {
+        const stated = percentageEvidence(f); const minimum = numeric(f.min_success_probability);
+        if (stated.length && minimum === null) errors.push(`${title}: kanıtta yüzde var; minimum olasılık girilmelidir.`);
+        if (minimum !== null && !stated.length) errors.push(`${title}: sayısal yüzde yoksa minimum olasılık uydurulamaz.`);
+        if (minimum !== null && stated.length && !stated.some(value => approximatelyEqual(value, minimum))) errors.push(`${title}: minimum olasılık kanıttaki yüzdeyle eşleşmiyor.`);
+      }
+      if (name === "accuracy" && f.status === "explicit") {
+        const stated = accuracyEvidenceScores(f); const minimum = numeric(f.min_score);
+        if (stated.length && minimum === null) errors.push(`${title}: kanıtta sayısal skor var; minimum skor girilmelidir.`);
+        if (minimum !== null && !stated.length) errors.push(`${title}: sayısal skor yoksa minimum skor uydurulamaz.`);
+        if (minimum !== null && stated.length && !stated.some(value => approximatelyEqual(value, minimum))) errors.push(`${title}: minimum skor kanıttaki değerle eşleşmiyor.`);
+        if (/\bF1\b/iu.test(evidenceText(f)) && f.metric.trim().toLocaleLowerCase("tr-TR") !== "f1") errors.push(`${title}: kanıtta F1 geçiyorsa metrik F1 olmalıdır.`);
+        if (f.metric.trim() && !evidenceText(f).toLocaleLowerCase("tr-TR").includes(f.metric.trim().toLocaleLowerCase("tr-TR"))) errors.push(`${title}: metrik adı kanıtta bulunmuyor.`);
+      }
     });
     return errors;
   }
@@ -290,10 +351,11 @@
   }
   function render() {
     const task = APP.tasks[current]; const response = ensureResponse(task);
-    document.getElementById("identity").textContent = `${APP.annotator_id} · paket ${APP.packet_sha256.slice(0, 12)}…`;
+    document.getElementById("identity").textContent = `${APP.annotator_id} · protokol ${APP.protocol_version} · paket ${APP.packet_sha256.slice(0, 12)}…`;
     document.getElementById("task-number").textContent = `Görev ${current + 1}/${APP.tasks.length} · ${task.task_id}`;
     document.getElementById("task-text").textContent = task.task_text;
     const policy = document.getElementById("policy");
+    document.getElementById("assisted-notice").classList.toggle("hidden", APP.form_mode !== "assisted_review");
     policy.textContent = task.user_policy_text ? `Ayrı politika: ${task.user_policy_text}` : "";
     policy.classList.toggle("hidden", !task.user_policy_text);
     const fields = document.getElementById("fields"); fields.replaceChildren();
@@ -319,7 +381,7 @@
     const submitted = new Date().toISOString();
     const lines = APP.tasks.map(task => JSON.stringify(canonical(buildRecord(task, state.responses[task.task_id], submitted))));
     const blob = new Blob([lines.join("\n") + "\n"], {type: "application/x-ndjson;charset=utf-8"});
-    const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `${APP.annotator_id}.jsonl`; link.click();
+    const link = document.createElement("a"); link.href = URL.createObjectURL(blob); link.download = `${APP.submission_slug || `${APP.annotator_id}.protocol-${APP.protocol_version}`}.jsonl`; link.click();
     setTimeout(() => URL.revokeObjectURL(link.href), 1000);
   });
   document.getElementById("reset").addEventListener("click", () => {

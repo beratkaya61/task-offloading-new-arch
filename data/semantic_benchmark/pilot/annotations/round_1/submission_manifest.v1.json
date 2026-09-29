@@ -1,0 +1,46 @@
+{
+  "manifest_version": "1.0.0",
+  "round_id": "pilot_round_1",
+  "corpus": {
+    "path": "data/semantic_benchmark/pilot/tasks.v1.jsonl",
+    "sha256": "3e8988b31d6473df61a39888030809278f02ddf94282176fb1217fc690df2af3",
+    "task_count": 20
+  },
+  "protocol_version": "1.0.0",
+  "primary_annotators": [
+    "annotator_a",
+    "annotator_b"
+  ],
+  "diagnostic_annotators": [
+    "annotator_c"
+  ],
+  "diagnostic_excluded_from_primary_kappa": true,
+  "automatic_majority_vote": false,
+  "adjudication_status": "not_started",
+  "submissions": {
+    "annotator_a": {
+      "path": "data/semantic_benchmark/pilot/annotations/round_1/annotator_a.jsonl",
+      "sha256": "b7196773cdd7fbd710987dc2f32a2444137785afa40c05f8efb5f60c55357b0c",
+      "byte_count": 29197,
+      "record_count": 20,
+      "validation_status": "schema_and_evidence_valid",
+      "lock_status": "checksum_locked"
+    },
+    "annotator_b": {
+      "path": "data/semantic_benchmark/pilot/annotations/round_1/annotator_b.jsonl",
+      "sha256": "41eb808705d3dcfef44ce12c6012222d5dc70b336157ad4386bfe01cec7346a1",
+      "byte_count": 29863,
+      "record_count": 20,
+      "validation_status": "schema_and_evidence_valid",
+      "lock_status": "checksum_locked"
+    },
+    "annotator_c": {
+      "path": "data/semantic_benchmark/pilot/annotations/round_1/annotator_c.jsonl",
+      "sha256": "8eae624ee5c397e448df7ca8882c51061fb86ba721e0a6c11f8c2a30af2c2e26",
+      "byte_count": 28305,
+      "record_count": 20,
+      "validation_status": "schema_and_evidence_valid",
+      "lock_status": "checksum_locked"
+    }
+  }
+}

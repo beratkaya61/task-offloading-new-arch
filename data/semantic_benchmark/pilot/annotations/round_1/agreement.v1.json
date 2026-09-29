@@ -1,0 +1,1765 @@
+{
+  "analysis_version": "1.0.0",
+  "policy": {
+    "primary_pair": [
+      "annotator_a",
+      "annotator_b"
+    ],
+    "diagnostic_annotator": "annotator_c",
+    "diagnostic_excluded_from_primary_kappa": true,
+    "automatic_majority_vote": false,
+    "adjudication_performed": false
+  },
+  "inputs": {
+    "annotator_a": {
+      "sha256": "b7196773cdd7fbd710987dc2f32a2444137785afa40c05f8efb5f60c55357b0c",
+      "byte_count": 29197,
+      "record_count": 20
+    },
+    "annotator_b": {
+      "sha256": "41eb808705d3dcfef44ce12c6012222d5dc70b336157ad4386bfe01cec7346a1",
+      "byte_count": 29863,
+      "record_count": 20
+    },
+    "annotator_c": {
+      "sha256": "8eae624ee5c397e448df7ca8882c51061fb86ba721e0a6c11f8c2a30af2c2e26",
+      "byte_count": 28305,
+      "record_count": 20
+    }
+  },
+  "primary_pairwise": {
+    "left_annotator": "annotator_a",
+    "right_annotator": "annotator_b",
+    "task_count": 20,
+    "exact_record_agreement": 0.1,
+    "exact_field_agreement": 0.75625,
+    "fields": [
+      {
+        "field": "domain",
+        "exact_semantic_agreement": 0.5,
+        "status": {
+          "sample_size": 20,
+          "percent_agreement": 0.65,
+          "kappa": 0.047619,
+          "kappa_kind": "cohen_kappa"
+        },
+        "value": {
+          "sample_size": 12,
+          "percent_agreement": 0.75,
+          "kappa": 0.7,
+          "kappa_kind": "cohen_kappa"
+        }
+      },
+      {
+        "field": "latency",
+        "exact_semantic_agreement": 0.65,
+        "status": {
+          "sample_size": 20,
+          "percent_agreement": 0.9,
+          "kappa": 0.793814,
+          "kappa_kind": "cohen_kappa"
+        },
+        "value": {
+          "sample_size": 12,
+          "percent_agreement": 0.75,
+          "kappa": 0.571429,
+          "kappa_kind": "quadratic_weighted_kappa"
+        }
+      },
+      {
+        "field": "privacy",
+        "exact_semantic_agreement": 0.75,
+        "status": {
+          "sample_size": 20,
+          "percent_agreement": 0.9,
+          "kappa": 0.807692,
+          "kappa_kind": "cohen_kappa"
+        },
+        "value": {
+          "sample_size": 10,
+          "percent_agreement": 0.7,
+          "kappa": 0.605263,
+          "kappa_kind": "cohen_kappa"
+        }
+      },
+      {
+        "field": "reliability",
+        "exact_semantic_agreement": 0.8,
+        "status": {
+          "sample_size": 20,
+          "percent_agreement": 0.8,
+          "kappa": 0.245283,
+          "kappa_kind": "cohen_kappa"
+        },
+        "value": {
+          "sample_size": 1,
+          "percent_agreement": 1.0,
+          "kappa": null,
+          "kappa_kind": "quadratic_weighted_kappa"
+        }
+      },
+      {
+        "field": "accuracy",
+        "exact_semantic_agreement": 0.8,
+        "status": {
+          "sample_size": 20,
+          "percent_agreement": 0.85,
+          "kappa": 0.661017,
+          "kappa_kind": "cohen_kappa"
+        },
+        "value": {
+          "sample_size": 2,
+          "percent_agreement": 1.0,
+          "kappa": null,
+          "kappa_kind": "quadratic_weighted_kappa"
+        }
+      },
+      {
+        "field": "energy_priority",
+        "exact_semantic_agreement": 0.95,
+        "status": {
+          "sample_size": 20,
+          "percent_agreement": 1.0,
+          "kappa": 1.0,
+          "kappa_kind": "cohen_kappa"
+        },
+        "value": {
+          "sample_size": 5,
+          "percent_agreement": 0.8,
+          "kappa": 0.615385,
+          "kappa_kind": "quadratic_weighted_kappa"
+        }
+      },
+      {
+        "field": "divisibility",
+        "exact_semantic_agreement": 0.95,
+        "status": {
+          "sample_size": 20,
+          "percent_agreement": 0.95,
+          "kappa": 0.885057,
+          "kappa_kind": "cohen_kappa"
+        },
+        "value": {
+          "sample_size": 5,
+          "percent_agreement": 1.0,
+          "kappa": 1.0,
+          "kappa_kind": "cohen_kappa"
+        }
+      }
+    ],
+    "execution_policy": {
+      "exact_semantic_agreement": 0.65,
+      "status": {
+        "sample_size": 20,
+        "percent_agreement": 0.75,
+        "kappa": 0.622642,
+        "kappa_kind": "cohen_kappa"
+      },
+      "targets": [
+        [
+          "device",
+          {
+            "sample_size": 20,
+            "percent_agreement": 0.85,
+            "kappa": 0.666667,
+            "kappa_kind": "cohen_kappa"
+          }
+        ],
+        [
+          "edge",
+          {
+            "sample_size": 20,
+            "percent_agreement": 0.9,
+            "kappa": 0.795918,
+            "kappa_kind": "cohen_kappa"
+          }
+        ],
+        [
+          "cloud",
+          {
+            "sample_size": 20,
+            "percent_agreement": 0.85,
+            "kappa": 0.748954,
+            "kappa_kind": "cohen_kappa"
+          }
+        ]
+      ],
+      "mean_allowed_target_jaccard": 0.875
+    }
+  },
+  "diagnostic_pairwise": [
+    {
+      "left_annotator": "annotator_a",
+      "right_annotator": "annotator_c",
+      "task_count": 20,
+      "exact_record_agreement": 0.1,
+      "exact_field_agreement": 0.8,
+      "fields": [
+        {
+          "field": "domain",
+          "exact_semantic_agreement": 0.65,
+          "status": {
+            "sample_size": 20,
+            "percent_agreement": 0.85,
+            "kappa": 0.0,
+            "kappa_kind": "cohen_kappa"
+          },
+          "value": {
+            "sample_size": 17,
+            "percent_agreement": 0.764706,
+            "kappa": 0.722449,
+            "kappa_kind": "cohen_kappa"
+          }
+        },
+        {
+          "field": "latency",
+          "exact_semantic_agreement": 0.65,
+          "status": {
+            "sample_size": 20,
+            "percent_agreement": 0.85,
+            "kappa": 0.679144,
+            "kappa_kind": "cohen_kappa"
+          },
+          "value": {
+            "sample_size": 12,
+            "percent_agreement": 0.75,
+            "kappa": 0.571429,
+            "kappa_kind": "quadratic_weighted_kappa"
+          }
+        },
+        {
+          "field": "privacy",
+          "exact_semantic_agreement": 0.8,
+          "status": {
+            "sample_size": 20,
+            "percent_agreement": 0.85,
+            "kappa": 0.710145,
+            "kappa_kind": "cohen_kappa"
+          },
+          "value": {
+            "sample_size": 10,
+            "percent_agreement": 0.9,
+            "kappa": 0.861111,
+            "kappa_kind": "cohen_kappa"
+          }
+        },
+        {
+          "field": "reliability",
+          "exact_semantic_agreement": 0.75,
+          "status": {
+            "sample_size": 20,
+            "percent_agreement": 0.85,
+            "kappa": 0.5,
+            "kappa_kind": "cohen_kappa"
+          },
+          "value": {
+            "sample_size": 2,
+            "percent_agreement": 0.5,
+            "kappa": 0.0,
+            "kappa_kind": "quadratic_weighted_kappa"
+          }
+        },
+        {
+          "field": "accuracy",
+          "exact_semantic_agreement": 0.95,
+          "status": {
+            "sample_size": 20,
+            "percent_agreement": 1.0,
+            "kappa": 1.0,
+            "kappa_kind": "cohen_kappa"
+          },
+          "value": {
+            "sample_size": 5,
+            "percent_agreement": 1.0,
+            "kappa": 1.0,
+            "kappa_kind": "quadratic_weighted_kappa"
+          }
+        },
+        {
+          "field": "energy_priority",
+          "exact_semantic_agreement": 0.95,
+          "status": {
+            "sample_size": 20,
+            "percent_agreement": 1.0,
+            "kappa": 1.0,
+            "kappa_kind": "cohen_kappa"
+          },
+          "value": {
+            "sample_size": 5,
+            "percent_agreement": 0.8,
+            "kappa": 0.615385,
+            "kappa_kind": "quadratic_weighted_kappa"
+          }
+        },
+        {
+          "field": "divisibility",
+          "exact_semantic_agreement": 0.95,
+          "status": {
+            "sample_size": 20,
+            "percent_agreement": 0.95,
+            "kappa": 0.893048,
+            "kappa_kind": "cohen_kappa"
+          },
+          "value": {
+            "sample_size": 5,
+            "percent_agreement": 1.0,
+            "kappa": 1.0,
+            "kappa_kind": "cohen_kappa"
+          }
+        }
+      ],
+      "execution_policy": {
+        "exact_semantic_agreement": 0.7,
+        "status": {
+          "sample_size": 20,
+          "percent_agreement": 0.75,
+          "kappa": 0.65035,
+          "kappa_kind": "cohen_kappa"
+        },
+        "targets": [
+          [
+            "device",
+            {
+              "sample_size": 20,
+              "percent_agreement": 0.9,
+              "kappa": 0.782609,
+              "kappa_kind": "cohen_kappa"
+            }
+          ],
+          [
+            "edge",
+            {
+              "sample_size": 20,
+              "percent_agreement": 0.95,
+              "kappa": 0.902913,
+              "kappa_kind": "cohen_kappa"
+            }
+          ],
+          [
+            "cloud",
+            {
+              "sample_size": 20,
+              "percent_agreement": 0.9,
+              "kappa": 0.82906,
+              "kappa_kind": "cohen_kappa"
+            }
+          ]
+        ],
+        "mean_allowed_target_jaccard": 0.925
+      }
+    },
+    {
+      "left_annotator": "annotator_b",
+      "right_annotator": "annotator_c",
+      "task_count": 20,
+      "exact_record_agreement": 0.2,
+      "exact_field_agreement": 0.825,
+      "fields": [
+        {
+          "field": "domain",
+          "exact_semantic_agreement": 0.65,
+          "status": {
+            "sample_size": 20,
+            "percent_agreement": 0.7,
+            "kappa": 0.0,
+            "kappa_kind": "cohen_kappa"
+          },
+          "value": {
+            "sample_size": 14,
+            "percent_agreement": 0.928571,
+            "kappa": 0.916167,
+            "kappa_kind": "cohen_kappa"
+          }
+        },
+        {
+          "field": "latency",
+          "exact_semantic_agreement": 0.85,
+          "status": {
+            "sample_size": 20,
+            "percent_agreement": 0.95,
+            "kappa": 0.893048,
+            "kappa_kind": "cohen_kappa"
+          },
+          "value": {
+            "sample_size": 13,
+            "percent_agreement": 1.0,
+            "kappa": 1.0,
+            "kappa_kind": "quadratic_weighted_kappa"
+          }
+        },
+        {
+          "field": "privacy",
+          "exact_semantic_agreement": 0.8,
+          "status": {
+            "sample_size": 20,
+            "percent_agreement": 0.95,
+            "kappa": 0.893617,
+            "kappa_kind": "cohen_kappa"
+          },
+          "value": {
+            "sample_size": 12,
+            "percent_agreement": 0.75,
+            "kappa": 0.653846,
+            "kappa_kind": "cohen_kappa"
+          }
+        },
+        {
+          "field": "reliability",
+          "exact_semantic_agreement": 0.8,
+          "status": {
+            "sample_size": 20,
+            "percent_agreement": 0.9,
+            "kappa": 0.666667,
+            "kappa_kind": "cohen_kappa"
+          },
+          "value": {
+            "sample_size": 2,
+            "percent_agreement": 0.5,
+            "kappa": 0.857143,
+            "kappa_kind": "quadratic_weighted_kappa"
+          }
+        },
+        {
+          "field": "accuracy",
+          "exact_semantic_agreement": 0.85,
+          "status": {
+            "sample_size": 20,
+            "percent_agreement": 0.85,
+            "kappa": 0.661017,
+            "kappa_kind": "cohen_kappa"
+          },
+          "value": {
+            "sample_size": 2,
+            "percent_agreement": 1.0,
+            "kappa": null,
+            "kappa_kind": "quadratic_weighted_kappa"
+          }
+        },
+        {
+          "field": "energy_priority",
+          "exact_semantic_agreement": 1.0,
+          "status": {
+            "sample_size": 20,
+            "percent_agreement": 1.0,
+            "kappa": 1.0,
+            "kappa_kind": "cohen_kappa"
+          },
+          "value": {
+            "sample_size": 5,
+            "percent_agreement": 1.0,
+            "kappa": 1.0,
+            "kappa_kind": "quadratic_weighted_kappa"
+          }
+        },
+        {
+          "field": "divisibility",
+          "exact_semantic_agreement": 0.9,
+          "status": {
+            "sample_size": 20,
+            "percent_agreement": 0.9,
+            "kappa": 0.78022,
+            "kappa_kind": "cohen_kappa"
+          },
+          "value": {
+            "sample_size": 5,
+            "percent_agreement": 1.0,
+            "kappa": 1.0,
+            "kappa_kind": "cohen_kappa"
+          }
+        }
+      ],
+      "execution_policy": {
+        "exact_semantic_agreement": 0.75,
+        "status": {
+          "sample_size": 20,
+          "percent_agreement": 0.75,
+          "kappa": 0.636364,
+          "kappa_kind": "cohen_kappa"
+        },
+        "targets": [
+          [
+            "device",
+            {
+              "sample_size": 20,
+              "percent_agreement": 0.95,
+              "kappa": 0.875,
+              "kappa_kind": "cohen_kappa"
+            }
+          ],
+          [
+            "edge",
+            {
+              "sample_size": 20,
+              "percent_agreement": 0.95,
+              "kappa": 0.89011,
+              "kappa_kind": "cohen_kappa"
+            }
+          ],
+          [
+            "cloud",
+            {
+              "sample_size": 20,
+              "percent_agreement": 0.75,
+              "kappa": 0.58159,
+              "kappa_kind": "cohen_kappa"
+            }
+          ]
+        ],
+        "mean_allowed_target_jaccard": 0.95
+      }
+    }
+  ],
+  "third_annotator_diagnostic": [
+    {
+      "field": "domain",
+      "primary_agreements": 10,
+      "diagnostic_matches_primary_agreement": 9,
+      "diagnostic_differs_from_primary_agreement": 1,
+      "primary_disagreements": 10,
+      "diagnostic_matches_left": 4,
+      "diagnostic_matches_right": 4,
+      "diagnostic_matches_neither": 2
+    },
+    {
+      "field": "latency",
+      "primary_agreements": 13,
+      "diagnostic_matches_primary_agreement": 12,
+      "diagnostic_differs_from_primary_agreement": 1,
+      "primary_disagreements": 7,
+      "diagnostic_matches_left": 1,
+      "diagnostic_matches_right": 5,
+      "diagnostic_matches_neither": 1
+    },
+    {
+      "field": "privacy",
+      "primary_agreements": 15,
+      "diagnostic_matches_primary_agreement": 14,
+      "diagnostic_differs_from_primary_agreement": 1,
+      "primary_disagreements": 5,
+      "diagnostic_matches_left": 2,
+      "diagnostic_matches_right": 2,
+      "diagnostic_matches_neither": 1
+    },
+    {
+      "field": "execution_policy",
+      "primary_agreements": 13,
+      "diagnostic_matches_primary_agreement": 12,
+      "diagnostic_differs_from_primary_agreement": 1,
+      "primary_disagreements": 7,
+      "diagnostic_matches_left": 2,
+      "diagnostic_matches_right": 3,
+      "diagnostic_matches_neither": 2
+    },
+    {
+      "field": "reliability",
+      "primary_agreements": 16,
+      "diagnostic_matches_primary_agreement": 15,
+      "diagnostic_differs_from_primary_agreement": 1,
+      "primary_disagreements": 4,
+      "diagnostic_matches_left": 0,
+      "diagnostic_matches_right": 1,
+      "diagnostic_matches_neither": 3
+    },
+    {
+      "field": "accuracy",
+      "primary_agreements": 16,
+      "diagnostic_matches_primary_agreement": 16,
+      "diagnostic_differs_from_primary_agreement": 0,
+      "primary_disagreements": 4,
+      "diagnostic_matches_left": 3,
+      "diagnostic_matches_right": 1,
+      "diagnostic_matches_neither": 0
+    },
+    {
+      "field": "energy_priority",
+      "primary_agreements": 19,
+      "diagnostic_matches_primary_agreement": 19,
+      "diagnostic_differs_from_primary_agreement": 0,
+      "primary_disagreements": 1,
+      "diagnostic_matches_left": 0,
+      "diagnostic_matches_right": 1,
+      "diagnostic_matches_neither": 0
+    },
+    {
+      "field": "divisibility",
+      "primary_agreements": 19,
+      "diagnostic_matches_primary_agreement": 18,
+      "diagnostic_differs_from_primary_agreement": 1,
+      "primary_disagreements": 1,
+      "diagnostic_matches_left": 1,
+      "diagnostic_matches_right": 0,
+      "diagnostic_matches_neither": 0
+    }
+  ],
+  "primary_disagreement_count": 39,
+  "primary_disagreements": [
+    {
+      "task_id": "pilot_tr_001",
+      "field": "domain",
+      "left": {
+        "confidence": 0.9,
+        "evidence": [
+          "Yoğun bakım monitörü"
+        ],
+        "status": "explicit",
+        "value": "healthcare"
+      },
+      "right": {
+        "confidence": 0.9,
+        "evidence": [],
+        "status": "not_stated",
+        "value": null
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "Yoğun bakım monitörü"
+        ],
+        "status": "explicit",
+        "value": "healthcare"
+      }
+    },
+    {
+      "task_id": "pilot_tr_001",
+      "field": "latency",
+      "left": {
+        "class": "hard_real_time",
+        "confidence": 0.9,
+        "evidence": [
+          "en geç 40 ms içinde üretmelidir."
+        ],
+        "max_ms": null,
+        "status": "explicit"
+      },
+      "right": {
+        "class": "hard_real_time",
+        "confidence": 0.9,
+        "evidence": [
+          "Yoğun bakım monitörü, aritmi uyarısını sensör ölçümünden sonra en geç 40 ms içinde üretmelidir."
+        ],
+        "max_ms": 40,
+        "status": "explicit"
+      },
+      "diagnostic": {
+        "class": "hard_real_time",
+        "confidence": 0.9,
+        "evidence": [
+          "en geç 40 ms içinde"
+        ],
+        "max_ms": 40,
+        "status": "explicit"
+      }
+    },
+    {
+      "task_id": "pilot_tr_001",
+      "field": "privacy",
+      "left": {
+        "confidence": 0.9,
+        "data_class": "restricted",
+        "evidence": [
+          "Ham EKG kayıtları cihazdan çıkamaz"
+        ],
+        "status": "explicit"
+      },
+      "right": {
+        "confidence": 0.9,
+        "data_class": "internal",
+        "evidence": [
+          "Ham EKG kayıtları cihazdan çıkamaz."
+        ],
+        "status": "explicit"
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "data_class": "restricted",
+        "evidence": [
+          "cihazdan çıkamaz"
+        ],
+        "status": "explicit"
+      }
+    },
+    {
+      "task_id": "pilot_tr_001",
+      "field": "execution_policy",
+      "left": {
+        "cloud": "forbidden",
+        "confidence": 0.9,
+        "device": "allowed",
+        "edge": "forbidden",
+        "evidence": [
+          "Ham EKG kayıtları cihazdan çıkamaz"
+        ],
+        "status": "partial"
+      },
+      "right": {
+        "cloud": "unknown",
+        "confidence": 0.9,
+        "device": "unknown",
+        "edge": "unknown",
+        "evidence": [],
+        "status": "not_stated"
+      },
+      "diagnostic": {
+        "cloud": "forbidden",
+        "confidence": 0.9,
+        "device": "allowed",
+        "edge": "forbidden",
+        "evidence": [
+          "cihazdan çıkamaz"
+        ],
+        "status": "explicit"
+      }
+    },
+    {
+      "task_id": "pilot_tr_001",
+      "field": "reliability",
+      "left": {
+        "confidence": 0.7,
+        "evidence": [
+          "Yanlış negatif sonuç hastaya ciddi zarar verebileceğinden doğruluk kritik düzeyde olmalı"
+        ],
+        "min_success_probability": null,
+        "status": "ambiguous",
+        "tier": null
+      },
+      "right": {
+        "confidence": 0.9,
+        "evidence": [],
+        "min_success_probability": null,
+        "status": "not_stated",
+        "tier": null
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [],
+        "min_success_probability": null,
+        "status": "not_stated",
+        "tier": null
+      }
+    },
+    {
+      "task_id": "pilot_tr_001",
+      "field": "accuracy",
+      "left": {
+        "confidence": 0.9,
+        "evidence": [
+          "Yanlış negatif sonuç hastaya ciddi zarar verebileceğinden doğruluk kritik düzeyde olmalı"
+        ],
+        "metric": null,
+        "min_score": null,
+        "status": "explicit",
+        "tier": "critical"
+      },
+      "right": {
+        "confidence": 0.9,
+        "evidence": [
+          "doğruluk kritik düzeyde olmalı"
+        ],
+        "metric": null,
+        "min_score": null,
+        "status": "ambiguous",
+        "tier": null
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "doğruluk kritik düzeyde olmalı"
+        ],
+        "metric": null,
+        "min_score": null,
+        "status": "explicit",
+        "tier": "critical"
+      }
+    },
+    {
+      "task_id": "pilot_tr_002",
+      "field": "privacy",
+      "left": {
+        "confidence": 0.7,
+        "data_class": null,
+        "evidence": [
+          "kayıtlar kişisel sağlık verisidir"
+        ],
+        "status": "ambiguous"
+      },
+      "right": {
+        "confidence": 0.7,
+        "data_class": "sensitive",
+        "evidence": [
+          "kayıtlar kişisel sağlık verisidir."
+        ],
+        "status": "explicit"
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "data_class": "sensitive",
+        "evidence": [
+          "kişisel sağlık verisidir"
+        ],
+        "status": "explicit"
+      }
+    },
+    {
+      "task_id": "pilot_tr_002",
+      "field": "energy_priority",
+      "left": {
+        "confidence": 0.9,
+        "evidence": [
+          "Pil ömrünü mümkün olduğunca korumak önceliklidir"
+        ],
+        "status": "explicit",
+        "value": "balanced"
+      },
+      "right": {
+        "confidence": 0.9,
+        "evidence": [
+          "Pil ömrünü mümkün olduğunca korumak önceliklidir"
+        ],
+        "status": "explicit",
+        "value": "high"
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "Pil ömrünü mümkün olduğunca korumak önceliklidir"
+        ],
+        "status": "explicit",
+        "value": "high"
+      }
+    },
+    {
+      "task_id": "pilot_tr_003",
+      "field": "domain",
+      "left": {
+        "confidence": 0.7,
+        "evidence": [],
+        "status": "not_stated",
+        "value": null
+      },
+      "right": {
+        "confidence": 0.7,
+        "evidence": [
+          "fabrikanın edge sunucusunda"
+        ],
+        "status": "explicit",
+        "value": "industrial"
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "Robot kolunun"
+        ],
+        "status": "explicit",
+        "value": "industrial"
+      }
+    },
+    {
+      "task_id": "pilot_tr_005",
+      "field": "domain",
+      "left": {
+        "confidence": 0.7,
+        "evidence": [
+          "Kavşaktaki çarpışma uyarısı"
+        ],
+        "status": "explicit",
+        "value": "public_safety"
+      },
+      "right": {
+        "confidence": 0.5,
+        "evidence": [
+          "Kavşaktaki çarpışma uyarısı araç konumlarını kullanarak en geç 80 ms içinde üretilmelidir."
+        ],
+        "status": "explicit",
+        "value": "smart_city"
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "Kavşaktaki çarpışma uyarısı"
+        ],
+        "status": "explicit",
+        "value": "transportation"
+      }
+    },
+    {
+      "task_id": "pilot_tr_005",
+      "field": "execution_policy",
+      "left": {
+        "cloud": "forbidden",
+        "confidence": 0.9,
+        "device": "allowed",
+        "edge": "allowed",
+        "evidence": [
+          "İş cihazda veya yol kenarı edge sunucusunda çalışabilir, ancak uzak buluta gönderilmemelidir."
+        ],
+        "status": "partial"
+      },
+      "right": {
+        "cloud": "forbidden",
+        "confidence": 0.9,
+        "device": "allowed",
+        "edge": "allowed",
+        "evidence": [
+          "İş cihazda veya yol kenarı edge sunucusunda çalışabilir, ancak uzak buluta gönderilmemelidir."
+        ],
+        "status": "explicit"
+      },
+      "diagnostic": {
+        "cloud": "forbidden",
+        "confidence": 0.9,
+        "device": "allowed",
+        "edge": "allowed",
+        "evidence": [
+          "cihazda veya yol kenarı edge sunucusunda çalışabilir",
+          "uzak buluta gönderilmemelidir"
+        ],
+        "status": "explicit"
+      }
+    },
+    {
+      "task_id": "pilot_tr_006",
+      "field": "domain",
+      "left": {
+        "confidence": 0.9,
+        "evidence": [
+          "Otobüs durağı ekranı"
+        ],
+        "status": "explicit",
+        "value": "transportation"
+      },
+      "right": {
+        "confidence": 0.5,
+        "evidence": [
+          "Otobüs durağı ekranı, yaklaşık 11,4 kbitlik anonim varış bilgisini 800 ms içinde göstermelidir."
+        ],
+        "status": "explicit",
+        "value": "smart_city"
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "Otobüs durağı"
+        ],
+        "status": "explicit",
+        "value": "smart_city"
+      }
+    },
+    {
+      "task_id": "pilot_tr_006",
+      "field": "latency",
+      "left": {
+        "class": "hard_real_time",
+        "confidence": 0.7,
+        "evidence": [
+          "varış bilgisini 800 ms içinde göstermelidir"
+        ],
+        "max_ms": 800,
+        "status": "explicit"
+      },
+      "right": {
+        "class": "interactive",
+        "confidence": 0.9,
+        "evidence": [
+          "Otobüs durağı ekranı, yaklaşık 11,4 kbitlik anonim varış bilgisini 800 ms içinde göstermelidir."
+        ],
+        "max_ms": 802,
+        "status": "explicit"
+      },
+      "diagnostic": {
+        "class": "interactive",
+        "confidence": 0.9,
+        "evidence": [
+          "800 ms içinde"
+        ],
+        "max_ms": 800,
+        "status": "explicit"
+      }
+    },
+    {
+      "task_id": "pilot_tr_007",
+      "field": "execution_policy",
+      "left": {
+        "cloud": "forbidden",
+        "confidence": 0.9,
+        "device": "allowed",
+        "edge": "allowed",
+        "evidence": [
+          "Bağlantı koşulları nedeniyle yalnız drone veya yakın edge kullanılabilir; bulut kullanılamaz."
+        ],
+        "status": "partial"
+      },
+      "right": {
+        "cloud": "forbidden",
+        "confidence": 0.9,
+        "device": "allowed",
+        "edge": "allowed",
+        "evidence": [
+          "Bağlantı koşulları nedeniyle yalnız drone veya yakın edge kullanılabilir; bulut kullanılamaz."
+        ],
+        "status": "explicit"
+      },
+      "diagnostic": {
+        "cloud": "forbidden",
+        "confidence": 0.9,
+        "device": "allowed",
+        "edge": "allowed",
+        "evidence": [
+          "drone veya yakın edge kullanılabilir",
+          "bulut kullanılamaz"
+        ],
+        "status": "explicit"
+      }
+    },
+    {
+      "task_id": "pilot_tr_007",
+      "field": "reliability",
+      "left": {
+        "confidence": 0.9,
+        "evidence": [],
+        "min_success_probability": null,
+        "status": "not_stated",
+        "tier": null
+      },
+      "right": {
+        "confidence": 0.7,
+        "evidence": [
+          "bağlantı kopmalarına karşı yüksek güvenilirlik sağlanmalı"
+        ],
+        "min_success_probability": null,
+        "status": "ambiguous",
+        "tier": null
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "yüksek güvenilirlik sağlanmalı"
+        ],
+        "min_success_probability": null,
+        "status": "explicit",
+        "tier": "high"
+      }
+    },
+    {
+      "task_id": "pilot_tr_008",
+      "field": "privacy",
+      "left": {
+        "confidence": 0.9,
+        "data_class": null,
+        "evidence": [],
+        "status": "not_stated"
+      },
+      "right": {
+        "confidence": 0.9,
+        "data_class": "restricted",
+        "evidence": [
+          "Afet çağrısının ses kaydı kısıtlı veridir"
+        ],
+        "status": "explicit"
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "data_class": "restricted",
+        "evidence": [
+          "kısıtlı veridir"
+        ],
+        "status": "explicit"
+      }
+    },
+    {
+      "task_id": "pilot_tr_008",
+      "field": "execution_policy",
+      "left": {
+        "cloud": "unknown",
+        "confidence": 0.9,
+        "device": "unknown",
+        "edge": "unknown",
+        "evidence": [
+          "Kayıt hiçbir koşulda buluta gönderilmemelidir. Aynı kayıt yalnızca bulutta analiz edilmelidir."
+        ],
+        "status": "ambiguous"
+      },
+      "right": {
+        "cloud": "forbidden",
+        "confidence": 0.9,
+        "device": "unknown",
+        "edge": "unknown",
+        "evidence": [
+          "Kayıt hiçbir koşulda buluta gönderilmemelidir"
+        ],
+        "status": "partial"
+      },
+      "diagnostic": {
+        "cloud": "unknown",
+        "confidence": 0.9,
+        "device": "unknown",
+        "edge": "unknown",
+        "evidence": [
+          "hiçbir koşulda buluta gönderilmemelidir",
+          "yalnızca bulutta analiz edilmelidir"
+        ],
+        "status": "ambiguous"
+      }
+    },
+    {
+      "task_id": "pilot_tr_008",
+      "field": "reliability",
+      "left": {
+        "confidence": 0.9,
+        "evidence": [
+          "tek bir çağrının kaybolması kabul edilemez"
+        ],
+        "min_success_probability": null,
+        "status": "explicit",
+        "tier": "mission_critical"
+      },
+      "right": {
+        "confidence": 0.9,
+        "evidence": [],
+        "min_success_probability": null,
+        "status": "not_stated",
+        "tier": null
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "tek bir çağrının kaybolması kabul edilemez"
+        ],
+        "min_success_probability": 1,
+        "status": "explicit",
+        "tier": "mission_critical"
+      }
+    },
+    {
+      "task_id": "pilot_tr_009",
+      "field": "latency",
+      "left": {
+        "class": "hard_real_time",
+        "confidence": 0.9,
+        "evidence": [
+          "arıza tespiti 500 ms içinde yanıt vermeli"
+        ],
+        "max_ms": 500,
+        "status": "explicit"
+      },
+      "right": {
+        "class": "interactive",
+        "confidence": 0.9,
+        "evidence": [
+          "Akıllı sokak lambası arıza tespiti 500 ms içinde yanıt vermeli"
+        ],
+        "max_ms": 500,
+        "status": "explicit"
+      },
+      "diagnostic": {
+        "class": "interactive",
+        "confidence": 0.9,
+        "evidence": [
+          "500 ms içinde"
+        ],
+        "max_ms": 500,
+        "status": "explicit"
+      }
+    },
+    {
+      "task_id": "pilot_tr_010",
+      "field": "domain",
+      "left": {
+        "confidence": 0.7,
+        "evidence": [
+          "Hava kalitesi istasyonları"
+        ],
+        "status": "explicit",
+        "value": "smart_city"
+      },
+      "right": {
+        "confidence": 0.9,
+        "evidence": [],
+        "status": "not_stated",
+        "value": null
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "Hava kalitesi istasyonlarının"
+        ],
+        "status": "explicit",
+        "value": "smart_city"
+      }
+    },
+    {
+      "task_id": "pilot_tr_011",
+      "field": "latency",
+      "left": {
+        "class": "relaxed",
+        "confidence": 0.9,
+        "evidence": [
+          "sulama önerisini en geç 3 saniye içinde üretmelidir"
+        ],
+        "max_ms": 3000,
+        "status": "explicit"
+      },
+      "right": {
+        "class": "relaxed",
+        "confidence": 0.9,
+        "evidence": [
+          "Tarladaki nem sensörü sulama önerisini en geç 3 saniye içinde üretmelidir."
+        ],
+        "max_ms": 3,
+        "status": "explicit"
+      },
+      "diagnostic": {
+        "class": "relaxed",
+        "confidence": 0.9,
+        "evidence": [
+          "en geç 3 saniye içinde"
+        ],
+        "max_ms": 3000,
+        "status": "explicit"
+      }
+    },
+    {
+      "task_id": "pilot_tr_013",
+      "field": "domain",
+      "left": {
+        "confidence": 0.9,
+        "evidence": [],
+        "status": "not_stated",
+        "value": null
+      },
+      "right": {
+        "confidence": 0.7,
+        "evidence": [
+          "Artırılmış gerçeklik gözlüğü"
+        ],
+        "status": "explicit",
+        "value": "consumer"
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "Artırılmış gerçeklik gözlüğü"
+        ],
+        "status": "explicit",
+        "value": "consumer"
+      }
+    },
+    {
+      "task_id": "pilot_tr_013",
+      "field": "accuracy",
+      "left": {
+        "confidence": 0.9,
+        "evidence": [
+          "en az %95 doğruluk sağlamalıdır"
+        ],
+        "metric": null,
+        "min_score": null,
+        "status": "explicit",
+        "tier": "high"
+      },
+      "right": {
+        "confidence": 0.9,
+        "evidence": [
+          "en az %95 doğruluk sağlamalıdır."
+        ],
+        "metric": null,
+        "min_score": 0.95,
+        "status": "explicit",
+        "tier": "high"
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "en az %95 doğruluk sağlamalıdır"
+        ],
+        "metric": null,
+        "min_score": 0.95,
+        "status": "explicit",
+        "tier": "high"
+      }
+    },
+    {
+      "task_id": "pilot_tr_014",
+      "field": "domain",
+      "left": {
+        "confidence": 0.9,
+        "evidence": [
+          "Akıllı ev asistanı"
+        ],
+        "status": "explicit",
+        "value": "smart_city"
+      },
+      "right": {
+        "confidence": 0.5,
+        "evidence": [
+          "Akıllı ev asistanı"
+        ],
+        "status": "explicit",
+        "value": "consumer"
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "Akıllı ev asistanı"
+        ],
+        "status": "explicit",
+        "value": "consumer"
+      }
+    },
+    {
+      "task_id": "pilot_tr_014",
+      "field": "privacy",
+      "left": {
+        "confidence": 0.7,
+        "data_class": "restricted",
+        "evidence": [
+          "Ses kişisel veridir"
+        ],
+        "status": "explicit"
+      },
+      "right": {
+        "confidence": 0.7,
+        "data_class": "internal",
+        "evidence": [
+          "Ses kişisel veridir"
+        ],
+        "status": "explicit"
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "data_class": "sensitive",
+        "evidence": [
+          "kişisel veridir"
+        ],
+        "status": "explicit"
+      }
+    },
+    {
+      "task_id": "pilot_tr_015",
+      "field": "execution_policy",
+      "left": {
+        "cloud": "forbidden",
+        "confidence": 0.9,
+        "device": "allowed",
+        "edge": "forbidden",
+        "evidence": [
+          "yalnız yerel sistemlerde işlenmelidir."
+        ],
+        "status": "partial"
+      },
+      "right": {
+        "cloud": "forbidden",
+        "confidence": 0.7,
+        "device": "unknown",
+        "edge": "unknown",
+        "evidence": [
+          "yalnız yerel sistemlerde işlenmelidir."
+        ],
+        "status": "partial"
+      },
+      "diagnostic": {
+        "cloud": "unknown",
+        "confidence": 0.9,
+        "device": "unknown",
+        "edge": "unknown",
+        "evidence": [
+          "yalnız yerel sistemlerde işlenmelidir",
+          "genel bulutta işlenmesi zorunludur"
+        ],
+        "status": "ambiguous"
+      }
+    },
+    {
+      "task_id": "pilot_tr_016",
+      "field": "domain",
+      "left": {
+        "confidence": 0.5,
+        "evidence": [
+          "Müze ziyaretçisinin"
+        ],
+        "status": "explicit",
+        "value": "other"
+      },
+      "right": {
+        "confidence": 0.7,
+        "evidence": [],
+        "status": "not_stated",
+        "value": null
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "Müze ziyaretçisinin"
+        ],
+        "status": "explicit",
+        "value": "consumer"
+      }
+    },
+    {
+      "task_id": "pilot_tr_016",
+      "field": "reliability",
+      "left": {
+        "confidence": 0.5,
+        "evidence": [],
+        "min_success_probability": null,
+        "status": "not_stated",
+        "tier": null
+      },
+      "right": {
+        "confidence": 0.5,
+        "evidence": [
+          "Ara sıra yanlış çeviri veya başarısız istek kabul edilebilir."
+        ],
+        "min_success_probability": 0,
+        "status": "explicit",
+        "tier": "best_effort"
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "başarısız istek kabul edilebilir"
+        ],
+        "min_success_probability": null,
+        "status": "explicit",
+        "tier": "best_effort"
+      }
+    },
+    {
+      "task_id": "pilot_tr_016",
+      "field": "accuracy",
+      "left": {
+        "confidence": 0.7,
+        "evidence": [
+          "Ara sıra yanlış çeviri veya başarısız istek kabul edilebilir."
+        ],
+        "metric": null,
+        "min_score": null,
+        "status": "explicit",
+        "tier": "relaxed"
+      },
+      "right": {
+        "confidence": 0.9,
+        "evidence": [],
+        "metric": null,
+        "min_score": null,
+        "status": "not_stated",
+        "tier": null
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "yanlış çeviri veya başarısız istek kabul edilebilir"
+        ],
+        "metric": null,
+        "min_score": null,
+        "status": "explicit",
+        "tier": "relaxed"
+      }
+    },
+    {
+      "task_id": "pilot_tr_017",
+      "field": "privacy",
+      "left": {
+        "confidence": 0.9,
+        "data_class": "restricted",
+        "evidence": [
+          "Görüntüler kısıtlı sağlık verisidir"
+        ],
+        "status": "explicit"
+      },
+      "right": {
+        "confidence": 0.9,
+        "data_class": "sensitive",
+        "evidence": [
+          "Görüntüler kısıtlı sağlık verisidir; şifrelenmek koşuluyla bulutta işlenebilir."
+        ],
+        "status": "explicit"
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "data_class": "restricted",
+        "evidence": [
+          "kısıtlı sağlık verisidir"
+        ],
+        "status": "explicit"
+      }
+    },
+    {
+      "task_id": "pilot_tr_017",
+      "field": "execution_policy",
+      "left": {
+        "cloud": "allowed",
+        "confidence": 0.9,
+        "device": "allowed",
+        "edge": "unknown",
+        "evidence": [
+          "Görüntüler kısıtlı sağlık verisidir; şifrelenmek koşuluyla bulutta işlenebilir."
+        ],
+        "status": "partial"
+      },
+      "right": {
+        "cloud": "allowed",
+        "confidence": 0.9,
+        "device": "unknown",
+        "edge": "unknown",
+        "evidence": [
+          "Görüntüler kısıtlı sağlık verisidir; şifrelenmek koşuluyla bulutta işlenebilir."
+        ],
+        "status": "partial"
+      },
+      "diagnostic": {
+        "cloud": "allowed",
+        "confidence": 0.9,
+        "device": "unknown",
+        "edge": "unknown",
+        "evidence": [
+          "bulutta işlenebilir"
+        ],
+        "status": "partial"
+      }
+    },
+    {
+      "task_id": "pilot_tr_018",
+      "field": "latency",
+      "left": {
+        "class": "relaxed",
+        "confidence": 0.9,
+        "evidence": [
+          "Sonucun 3 saniye gecikmesi tamamen kabul edilebilir"
+        ],
+        "max_ms": 3000,
+        "status": "explicit"
+      },
+      "right": {
+        "class": null,
+        "confidence": 0.7,
+        "evidence": [
+          "Ambulanstan gelen yaşamsal bulgular anlık değerlendirilmelidir. Sonucun 3 saniye gecikmesi tamamen kabul edilebilir."
+        ],
+        "max_ms": null,
+        "status": "ambiguous"
+      },
+      "diagnostic": {
+        "class": null,
+        "confidence": 0.9,
+        "evidence": [
+          "anlık değerlendirilmelidir",
+          "3 saniye gecikmesi tamamen kabul edilebilir"
+        ],
+        "max_ms": null,
+        "status": "ambiguous"
+      }
+    },
+    {
+      "task_id": "pilot_tr_019",
+      "field": "domain",
+      "left": {
+        "confidence": 0.7,
+        "evidence": [
+          "Üretim hattındaki"
+        ],
+        "status": "explicit",
+        "value": "industrial"
+      },
+      "right": {
+        "confidence": 0.9,
+        "evidence": [],
+        "status": "not_stated",
+        "value": null
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "Üretim hattındaki"
+        ],
+        "status": "explicit",
+        "value": "industrial"
+      }
+    },
+    {
+      "task_id": "pilot_tr_019",
+      "field": "latency",
+      "left": {
+        "class": null,
+        "confidence": 0.7,
+        "evidence": [
+          "vardiya bitimine kadar toplu işlenebilir."
+        ],
+        "max_ms": null,
+        "status": "ambiguous"
+      },
+      "right": {
+        "class": "relaxed",
+        "confidence": 0.9,
+        "evidence": [
+          "vardiya bitimine kadar"
+        ],
+        "max_ms": null,
+        "status": "explicit"
+      },
+      "diagnostic": {
+        "class": "relaxed",
+        "confidence": 0.9,
+        "evidence": [
+          "vardiya bitimine kadar"
+        ],
+        "max_ms": null,
+        "status": "explicit"
+      }
+    },
+    {
+      "task_id": "pilot_tr_019",
+      "field": "accuracy",
+      "left": {
+        "confidence": 0.9,
+        "evidence": [
+          "yüksek doğruluk istenir"
+        ],
+        "metric": null,
+        "min_score": null,
+        "status": "explicit",
+        "tier": "high"
+      },
+      "right": {
+        "confidence": 0.9,
+        "evidence": [
+          "yüksek doğruluk istenir."
+        ],
+        "metric": null,
+        "min_score": null,
+        "status": "ambiguous",
+        "tier": null
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "yüksek doğruluk istenir"
+        ],
+        "metric": null,
+        "min_score": null,
+        "status": "explicit",
+        "tier": "high"
+      }
+    },
+    {
+      "task_id": "pilot_tr_020",
+      "field": "domain",
+      "left": {
+        "confidence": 0.9,
+        "evidence": [
+          "Endüstriyel kontrol görevi"
+        ],
+        "status": "explicit",
+        "value": "industrial"
+      },
+      "right": {
+        "confidence": 0.7,
+        "evidence": [
+          "Endüstriyel kontrol görevi"
+        ],
+        "status": "ambiguous",
+        "value": null
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "Endüstriyel kontrol"
+        ],
+        "status": "explicit",
+        "value": "industrial"
+      }
+    },
+    {
+      "task_id": "pilot_tr_020",
+      "field": "latency",
+      "left": {
+        "class": "relaxed",
+        "confidence": 0.7,
+        "evidence": [
+          "100 ms içinde tamamlanmalıdır"
+        ],
+        "max_ms": 100,
+        "status": "explicit"
+      },
+      "right": {
+        "class": "real_time",
+        "confidence": 0.9,
+        "evidence": [
+          "Endüstriyel kontrol görevi 100 ms içinde tamamlanmalıdır."
+        ],
+        "max_ms": 100,
+        "status": "explicit"
+      },
+      "diagnostic": {
+        "class": "real_time",
+        "confidence": 0.9,
+        "evidence": [
+          "100 ms içinde"
+        ],
+        "max_ms": 100,
+        "status": "explicit"
+      }
+    },
+    {
+      "task_id": "pilot_tr_020",
+      "field": "execution_policy",
+      "left": {
+        "cloud": "unknown",
+        "confidence": 0.9,
+        "device": "unknown",
+        "edge": "unknown",
+        "evidence": [
+          "Bulut kullanımı hem zorunludur hem de kesinlikle yasaktır."
+        ],
+        "status": "ambiguous"
+      },
+      "right": {
+        "cloud": "forbidden",
+        "confidence": 0.9,
+        "device": "unknown",
+        "edge": "unknown",
+        "evidence": [
+          "Bulut kullanımı hem zorunludur hem de kesinlikle yasaktır."
+        ],
+        "status": "partial"
+      },
+      "diagnostic": {
+        "cloud": "unknown",
+        "confidence": 0.9,
+        "device": "unknown",
+        "edge": "unknown",
+        "evidence": [
+          "Bulut kullanımı hem zorunludur hem de kesinlikle yasaktır"
+        ],
+        "status": "ambiguous"
+      }
+    },
+    {
+      "task_id": "pilot_tr_020",
+      "field": "divisibility",
+      "left": {
+        "confidence": 0.9,
+        "evidence": [
+          "Görev bağımsız parçalara ayrılmalıdır fakat mutlaka tek parça çalıştırılmalıdır."
+        ],
+        "status": "ambiguous",
+        "value": null
+      },
+      "right": {
+        "confidence": 0.5,
+        "evidence": [
+          "Görev bağımsız parçalara ayrılmalıdır fakat mutlaka tek parça çalıştırılmalıdır."
+        ],
+        "status": "explicit",
+        "value": "divisible"
+      },
+      "diagnostic": {
+        "confidence": 0.9,
+        "evidence": [
+          "bağımsız parçalara ayrılmalıdır fakat mutlaka tek parça çalıştırılmalıdır"
+        ],
+        "status": "ambiguous",
+        "value": null
+      }
+    }
+  ]
+}

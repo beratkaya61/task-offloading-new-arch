@@ -56,6 +56,12 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         help="Aynı annotator'ın daha önce verdiği kısmi cevap taslağı.",  # noqa: RUF001
     )
+    parser.add_argument(
+        "--round-id",
+        choices=("round_1", "round_2"),
+        default="round_1",
+        help="Kör paket ve protokol turu.",
+    )
     return parser.parse_args()
 
 
@@ -77,9 +83,28 @@ def main() -> None:
             + "\nA real human must review and approve every task text first."
         )
 
-    packet_path = PILOT / "packets" / f"{args.annotator}.v1.jsonl"
+    if args.round_id == "round_2":
+        if args.annotator == "annotator_c":
+            raise ValueError("annotator_c is not part of pilot Round 2")
+        if args.prefill_json is not None:
+            raise ValueError("Round 2 must start fresh without prefilled answers")
+        packet_path = (
+            PILOT / "round_2" / "packets" / f"{args.annotator}.v1.1.jsonl"
+        )
+        expected_packet_version = "1.1.0"
+        expected_protocol_version = "1.1.0"
+    else:
+        packet_path = PILOT / "packets" / f"{args.annotator}.v1.jsonl"
+        expected_packet_version = "1.0.0"
+        expected_protocol_version = "1.0.0"
     packet = load_jsonl(packet_path)
-    issues = packet_issues(packet, corpus, annotator_id=args.annotator)
+    issues = packet_issues(
+        packet,
+        corpus,
+        annotator_id=args.annotator,
+        packet_version=expected_packet_version,
+        protocol_version=expected_protocol_version,
+    )
     if issues:
         raise ValueError("blind packet audit failed:\n- " + "\n- ".join(issues))
 
@@ -96,7 +121,10 @@ def main() -> None:
     )
     output_dir: Path = args.output_dir.resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
-    suffix = ".prefilled.pilot.v1.html" if initial_responses else ".pilot.v1.html"
+    if args.round_id == "round_2":
+        suffix = ".round_2.pilot.v1.1.html"
+    else:
+        suffix = ".prefilled.pilot.v1.html" if initial_responses else ".pilot.v1.html"
     output_path = output_dir / f"{args.annotator}{suffix}"
     output_path.write_text(html, encoding="utf-8", newline="\n")
     print(f"form={output_path}")

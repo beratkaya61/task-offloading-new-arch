@@ -1,0 +1,38 @@
+{
+  "manifest_version": "1.0.0",
+  "created_on": "2026-09-29",
+  "status": "prepared_not_completed_by_humans",
+  "purpose": "novel worked examples before the one-time stratified human audit",
+  "source": {
+    "path": "data/semantic_benchmark/calibration/targeted_examples.v1.json",
+    "sha256": "d10ecce5b3ff033c2c016f39c62ccf3a82b1ada2f559ac1ca8f6e48f7d234a26",
+    "example_count": 20
+  },
+  "schema": {
+    "path": "schemas/targeted_calibration.schema.json",
+    "sha256": "88ecb8ec7332939ce23649006ac490d3154e187084d485f8f89847372b74c595"
+  },
+  "protocol": {
+    "version": "1.2.0",
+    "path": "docs/ANNOTATION_PROTOCOL_AMENDMENT_1_2.md",
+    "sha256": "5b460bb8cba27f28f80d8ad074c1142b7ef473c5d5da8892e04bd2fe56923a0d"
+  },
+  "rendered_html": {
+    "path": "data/semantic_benchmark/calibration/targeted_calibration.v1.html",
+    "sha256": "b34be9d81caa6d20778760103067268402b0d9ea5e1cf400fbeb84e9c5a85081",
+    "network_access": false
+  },
+  "pilot_exact_text_overlap_count": 0,
+  "contains_human_labels": false,
+  "is_ground_truth": false,
+  "focus_field_counts": {
+    "accuracy": 4,
+    "divisibility": 1,
+    "domain": 4,
+    "energy_priority": 2,
+    "execution_policy": 4,
+    "latency": 1,
+    "privacy": 4,
+    "reliability": 4
+  }
+}

@@ -34,6 +34,11 @@ def parse_args() -> argparse.Namespace:
         choices=("annotator_a", "annotator_b", "annotator_c"),
     )
     parser.add_argument("--submission", required=True, type=Path)
+    parser.add_argument(
+        "--expected-protocol-version",
+        choices=("1.0.0", "1.1.0"),
+        default="1.0.0",
+    )
     return parser.parse_args()
 
 
@@ -50,6 +55,7 @@ def main() -> None:
         wrapper,
         semantic,
         annotator_id=args.annotator,
+        expected_protocol_version=args.expected_protocol_version,
     )
     if not audit.is_valid:
         raise ValueError("submission audit failed:\n- " + "\n- ".join(audit.issues))

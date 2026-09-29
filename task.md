@@ -55,9 +55,35 @@ Bu dosya günlük ilerleme listesidir. Bilimsel kurallar için `TODO_ANTIGRAVITY
 
 ## Faz 4 — Semantik benchmark
 
-- [ ] Dengeli görev-niyet corpus’u hazırla.
-- [ ] En az iki bağımsız insan etiketi ve adjudication yap.
-- [ ] Etiketçi anlaşmasını hesapla.
+- [x] Pilot Round 1 A/B/C gönderimlerini doğrula, checksum ile dondur ve A/B
+  anlaşmasını C'den bağımsız hesapla: 20 görev, 160 alan, 39 A/B anlaşmazlığı.
+- [x] Round 1 bulgularıyla protokolü `1.1.0` yap; confidence, sayısal kanıt,
+  latency sınıfı ve execution status kalite kapılarını ekle.
+- [x] A/B için eski sırayı ve birbirini tekrar etmeyen kör Round 2 paket/formlarını
+  üret; Round 1 cevaplarını gizli tut.
+- [x] A/B Round 2 gönderimlerini topla ve kilitle; strict alan uyumu yüzde
+  83,75'e çıktı, anlaşmazlık 39'dan 26'ya düştü.
+- [x] Round 2 kalite kapısını yeniden ölç: 7 kappa kontrolü başarısız ve 2 sınıf
+  metriğinde örnek yetersiz; ana 240 görev bloke edildi.
+- [ ] Pilot cevaplarını göstermeyen yeni örneklerle hedefli annotator kalibrasyonu
+  ve odaklı doğrulama turu yap.
+- [x] Protokol `1.2.0` hazırlığını tarihsel olarak koru; insan toplama başlamadan
+  `1.3.0` iş yükü düzeltmesini yap: A 60 kör görevi etiketler; B/C'den yeni görev
+  istenmez, mevcut A/B/C pilot kanıtı ayrı kullanılır ve ana 60 gold sayılmaz.
+- [x] Pilot cevaplarını içermeyen 20 örnekli hedefli kalibrasyon materyalini hazırla
+  ve checksum ile bağla; insanın materyali okuması ve odaklı doğrulama henüz açık.
+- [x] Dengeli görev-niyet corpus’unu hazırla: 240 görev, 8 domain × 30, 4 origin ×
+  60 ve 180/60 aile-sızıntısız split doğrulandı. Ana 60 A tarafından etiketlenip
+  checksum ile kilitlendi; kalan 180 kayıt insan doğrulamalı gösterilmeden makine
+  zayıf etiketi olarak sınırlandı.
+- [x] A için 60 görevlik tek kör form üret. 180 geliştirme kaydını insan doğrulamalı
+  göstermeden makine zayıf etiketi olarak ayır. B/C için yeni ana-corpus formu
+  üretme; mevcut pilot etiketlerini tanımlı rolleriyle koru.
+- [x] Ana 60 görev için A'nın protokol 1.3.0 teslimini doğrula ve
+  `single_human_reference` olarak kilitle; ek insan anketi isteme ve gold iddiası
+  yapma.
+- [x] Mevcut etiketçi anlaşmasını hesapla: Round 1 A/B ve A/B/C tanısal çiftleri,
+  Round 2 A/B kalite kapısı sonuçları ayrı artifact'larda mevcut.
 - [ ] Sabit, rule, TF-IDF/logreg, küçük encoder, zero/few-shot LLM baselines.
 - [ ] Schema validity, exact match, F1, calibration, abstention, latency/cost ölç.
 - [ ] Seçilen LLM/prompt/parser/cache sürümünü dondur.
@@ -133,7 +159,8 @@ Bu faz çekirdek tez kabul koşulu değildir. Yapılmazsa sonuçlar sentetik ve 
 
 ## Sıradaki tek iş
 
-**Faz 4:** Önce 20 görevlik pilot semantik corpus ve iki bağımsız gerçek insan
-etiketleme/adjudication akışını tamamla; sonra rule, TF-IDF/logreg, küçük encoder
-ve zero/few-shot LLM baseline'larını aynı dondurulmuş test kümesinde karşılaştır.
-Gerçek veri edinimi yukarıdaki ayrı kontrol listesiyle paralel yürütülür.
+**Faz 4:** İnsan etiketleme kapandı; yeni anket istenmeyecek. Şimdi sabit profil,
+rule/keyword, TF-IDF + lojistik regresyon ve küçük encoder semantik baseline'larını
+aynı split ve metriklerle kur. Ardından Quadro RTX 4000 üzerinde Qwen3-4B/8B
+zero-shot/few-shot karşılaştırma paketini hazırla. A'nın 180 geliştirme görevini
+doldurması gerekmez.

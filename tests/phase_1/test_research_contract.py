@@ -75,7 +75,7 @@ class ResearchContractTests(unittest.TestCase):
         cls.contract = load_json(CONTRACT_PATH)
 
     def test_contract_and_documented_schema_versions_match(self) -> None:
-        self.assertEqual(self.contract["contract_version"], "1.0.0")
+        self.assertEqual(self.contract["contract_version"], "1.2.0")
         self.assertEqual(
             self.contract["semantic_isolation"]["llm_output_schema"],
             "schemas/semantic_requirements.schema.json",
@@ -109,13 +109,20 @@ class ResearchContractTests(unittest.TestCase):
         self.assertFalse(model["initial_scope"]["partial_offloading"])
         self.assertFalse(model["initial_scope"]["resource_allocation_action"])
 
-    def test_annotation_is_full_double_human_and_blind(self) -> None:
+    def test_annotation_uses_existing_pilot_evidence_without_new_b_work(self) -> None:
         annotation = self.contract["annotation"]
-        self.assertEqual(annotation["independent_human_annotators"], 2)
+        self.assertEqual(annotation["independent_human_annotators_in_main_corpus"], 1)
+        self.assertEqual(annotation["historical_pilot_human_annotators"], 3)
         self.assertGreaterEqual(annotation["main_unique_items"], 240)
-        self.assertTrue(annotation["both_annotate_every_main_item"])
+        self.assertFalse(annotation["both_annotate_every_main_item"])
+        self.assertEqual(annotation["primary_annotator_item_count"], 60)
+        self.assertEqual(annotation["new_secondary_annotator_item_count"], 0)
+        self.assertEqual(annotation["single_human_evaluation_item_count"], 60)
+        self.assertEqual(annotation["machine_labeled_development_item_count"], 180)
         self.assertTrue(annotation["blind_independent_pass"])
-        self.assertFalse(annotation["model_suggestions_visible"])
+        self.assertFalse(
+            annotation["model_suggestions_visible_on_human_evaluation"]
+        )
         self.assertIn("actual humans", annotation["annotator_claim"])
 
     def test_data_claim_is_hybrid_and_bupt_is_license_gated(self) -> None:

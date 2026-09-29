@@ -1,0 +1,315 @@
+{
+  "calibration_version": "1.0.0",
+  "protocol_version": "1.2.0",
+  "language": "tr",
+  "purpose": "Round 2'de zorlanan karar kurallarını pilot cevaplarını göstermeden yeni örneklerle öğretmek.",
+  "answer_visibility": "worked_examples",
+  "pilot_content_reused": false,
+  "is_ground_truth": false,
+  "examples": [
+    {
+      "example_id": "cal_tr_001",
+      "text": "Şehir içi tramvayın yaklaşma bilgisi duraktaki yolcu ekranına gönderilecektir.",
+      "focus_fields": ["domain"],
+      "decisions": [
+        {
+          "field": "domain",
+          "status": "explicit",
+          "value": "transportation",
+          "explanation": "Tramvay, durak ve yolcu taşımacılığı ulaşım alanını doğrudan belirtir."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_002",
+      "text": "Evde kullanılan kişisel sesli asistan, kullanıcının alışveriş listesini düzenler.",
+      "focus_fields": ["domain"],
+      "decisions": [
+        {
+          "field": "domain",
+          "status": "explicit",
+          "value": "consumer",
+          "explanation": "Evde son kullanıcıya sunulan kişisel uygulama consumer sınıfındadır; smart city değildir."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_003",
+      "text": "Sürüdeki koyunların görüntüleri hastalık belirtisi bulmak için analiz edilecektir.",
+      "focus_fields": ["domain"],
+      "decisions": [
+        {
+          "field": "domain",
+          "status": "explicit",
+          "value": "agriculture",
+          "explanation": "Sürü hayvanı ve hayvancılık görevi agriculture alanını açıkça gösterir."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_004",
+      "text": "Belediyenin hava kalitesi istasyonu gece boyunca partikül ölçümlerini özetler.",
+      "focus_fields": ["domain"],
+      "decisions": [
+        {
+          "field": "domain",
+          "status": "explicit",
+          "value": "smart_city",
+          "explanation": "Belediye çevre altyapısı ve hava kalitesi hizmeti smart city sınıfındadır."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_005",
+      "text": "Müşterinin e-posta adresi ve canlı konumu kişisel veri olarak işlenecektir.",
+      "focus_fields": ["privacy"],
+      "decisions": [
+        {
+          "field": "privacy",
+          "status": "explicit",
+          "value": "sensitive",
+          "explanation": "Kişisel iletişim ve konum verisi sensitive sınıfındadır."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_006",
+      "text": "Hastanın ham MR görüntüsü kısıtlı klinik kayıt olarak saklanmalıdır.",
+      "focus_fields": ["privacy"],
+      "decisions": [
+        {
+          "field": "privacy",
+          "status": "explicit",
+          "value": "restricted",
+          "explanation": "Ham klinik kayıt ve açık kısıtlılık ifadesi restricted sınıfını gerektirir."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_007",
+      "text": "Kişi bilgisi içermeyen bakım günlüğü yalnız fabrikanın kurum içi sisteminde tutulacaktır.",
+      "focus_fields": ["privacy"],
+      "decisions": [
+        {
+          "field": "privacy",
+          "status": "explicit",
+          "value": "internal",
+          "explanation": "Kişisel veya klinik içerik yoktur; yalnız kurum içinde tutulan işletme kaydı internal olur."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_008",
+      "text": "Kısıtlı patoloji görüntüsü şifrelenerek yetkili bulut hizmetinde işlenebilir.",
+      "focus_fields": ["privacy"],
+      "decisions": [
+        {
+          "field": "privacy",
+          "status": "explicit",
+          "value": "restricted",
+          "explanation": "Şifreleme ve bulut izni verinin kısıtlı sınıfını değiştirmez."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_009",
+      "text": "Ara sıra isteğin tamamlanamaması kabul edilir; fakat dönen sınıflandırmanın yüksek doğrulukta olması gerekir.",
+      "focus_fields": ["reliability", "accuracy"],
+      "decisions": [
+        {
+          "field": "reliability",
+          "status": "explicit",
+          "value": "best_effort",
+          "explanation": "Tamamlanamayan istek hizmet başarısızlığıdır ve reliability alanına gider."
+        },
+        {
+          "field": "accuracy",
+          "status": "explicit",
+          "value": "high",
+          "explanation": "Dönen sınıflandırmanın yüksek doğruluğu accuracy alanına ayrı olarak gider."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_010",
+      "text": "İsteklerin en az yüzde 99,95'i tamamlanmalıdır; yaklaşık sonuç yeterlidir.",
+      "focus_fields": ["reliability", "accuracy"],
+      "decisions": [
+        {
+          "field": "reliability",
+          "status": "explicit",
+          "value": "mission_critical",
+          "numeric_value": 0.9995,
+          "explanation": "Yüzde 99,95 tamamlanma hedefi 0,9995 olasılık ve mission-critical reliability demektir."
+        },
+        {
+          "field": "accuracy",
+          "status": "explicit",
+          "value": "relaxed",
+          "explanation": "Yaklaşık sonucun yeterli olduğu açıkça söylendiği için accuracy relaxed olur."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_011",
+      "text": "Yanlış negatif alarm hastaya ciddi zarar verebilir; hizmetin kesilip kesilemeyeceği belirtilmemiştir.",
+      "focus_fields": ["reliability", "accuracy"],
+      "decisions": [
+        {
+          "field": "reliability",
+          "status": "not_stated",
+          "value": null,
+          "explanation": "Metin istek başarısı, kayıp veya hizmet kesintisi için bir gereksinim vermiyor."
+        },
+        {
+          "field": "accuracy",
+          "status": "explicit",
+          "value": "critical",
+          "explanation": "Yanlış negatif sonucun ciddi zararı accuracy alanını critical yapar."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_012",
+      "text": "Tespit modelinin F1 skoru en az 0,94 olmalı; istek kaybına ilişkin hedef verilmemiştir.",
+      "focus_fields": ["reliability", "accuracy"],
+      "decisions": [
+        {
+          "field": "reliability",
+          "status": "not_stated",
+          "value": null,
+          "explanation": "F1 skoru reliability değil accuracy ölçütüdür."
+        },
+        {
+          "field": "accuracy",
+          "status": "explicit",
+          "value": "high",
+          "numeric_value": 0.94,
+          "metric": "F1",
+          "explanation": "F1 adı ve 0,94 alt sınırı birlikte accuracy alanına yazılır."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_013",
+      "text": "Sensörün pil ömrünü mümkün olduğunca uzatmak birinci önceliktir.",
+      "focus_fields": ["energy_priority"],
+      "decisions": [
+        {
+          "field": "energy_priority",
+          "status": "explicit",
+          "value": "high",
+          "explanation": "Pil ömrünün birinci öncelik olması high enerji önceliğidir."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_014",
+      "text": "Pil tüketimi ile kullanıcıya yanıt süresi arasında dengeli bir tercih yapılmalıdır.",
+      "focus_fields": ["energy_priority"],
+      "decisions": [
+        {
+          "field": "energy_priority",
+          "status": "explicit",
+          "value": "balanced",
+          "explanation": "Enerji ile gecikme arasında açık trade-off istendiği için balanced seçilir."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_015",
+      "text": "Görev yakın edge sunucusunda çalışabilir ve buluta gönderilemez.",
+      "focus_fields": ["execution_policy"],
+      "decisions": [
+        {
+          "field": "execution_policy",
+          "status": "partial",
+          "targets": {
+            "device": "unknown",
+            "edge": "allowed",
+            "cloud": "forbidden"
+          },
+          "explanation": "Edge ve cloud bilinmektedir; device hakkında bilgi olmadığı için unknown ve status partial kalır."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_016",
+      "text": "Ham kayıt cihazdan çıkamaz ve yalnız sensör üzerinde işlenir.",
+      "focus_fields": ["execution_policy"],
+      "decisions": [
+        {
+          "field": "execution_policy",
+          "status": "explicit",
+          "targets": {
+            "device": "allowed",
+            "edge": "forbidden",
+            "cloud": "forbidden"
+          },
+          "explanation": "Yalnız cihaz açıkça izinlidir; cihazdan çıkamama edge ve cloud'u yasaklar."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_017",
+      "text": "Belge yalnız kurum içi yerel sistemlerde işlenmeli ve genel buluta gönderilmemelidir.",
+      "focus_fields": ["execution_policy"],
+      "decisions": [
+        {
+          "field": "execution_policy",
+          "status": "partial",
+          "targets": {
+            "device": "unknown",
+            "edge": "unknown",
+            "cloud": "forbidden"
+          },
+          "explanation": "Yerel sistem ifadesi device ile kurum içi edge'i ayırmaz; yalnız cloud yasağı kesindir."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_018",
+      "text": "Analiz yalnız bulutta yapılmalıdır; aynı verinin buluta gönderilmesi kesinlikle yasaktır.",
+      "focus_fields": ["execution_policy"],
+      "decisions": [
+        {
+          "field": "execution_policy",
+          "status": "ambiguous",
+          "targets": {
+            "device": "unknown",
+            "edge": "unknown",
+            "cloud": "unknown"
+          },
+          "explanation": "Cloud aynı anda zorunlu ve yasaktır; iki cümleden biri atılamaz ve tüm hedefler unknown olur."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_019",
+      "text": "Kontrol yanıtı anlık verilmelidir; dört saniyelik gecikme tamamen kabul edilebilir.",
+      "focus_fields": ["latency"],
+      "decisions": [
+        {
+          "field": "latency",
+          "status": "ambiguous",
+          "value": null,
+          "numeric_value": null,
+          "explanation": "Anlık gereksinim ile dört saniyenin tamamen kabulü aynı alan için doğrudan çelişir."
+        }
+      ]
+    },
+    {
+      "example_id": "cal_tr_020",
+      "text": "Görüntü parçaları bağımsız ve paralel işlenmelidir; görev mutlaka tek parça çalıştırılmalıdır.",
+      "focus_fields": ["divisibility"],
+      "decisions": [
+        {
+          "field": "divisibility",
+          "status": "ambiguous",
+          "value": null,
+          "explanation": "Bağımsız parçalama ile zorunlu tek-parça çalışma doğrudan çeliştiği için ambiguous seçilir."
+        }
+      ]
+    }
+  ]
+}

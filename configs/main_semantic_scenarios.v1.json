@@ -1,0 +1,167 @@
+{
+  "blueprint_version": "1.0.0",
+  "language": "tr",
+  "contexts_per_domain": 15,
+  "domains": {
+    "healthcare": {
+      "data": "klinik sensör verisi",
+      "contexts": [
+        ["Giyilebilir EKG analizörü", "aritmi belirtisi çıkarma"],
+        ["Ambulans yaşamsal bulgu monitörü", "hasta riskini değerlendirme"],
+        ["Yoğun bakım alarm modülü", "kritik ritim bozukluğunu saptama"],
+        ["Ev tipi tansiyon takip cihazı", "günlük sağlık özeti hazırlama"],
+        ["Sürekli glikoz ölçer", "hipoglisemi uyarısı üretme"],
+        ["Dijital patoloji tarayıcısı", "tümör dokusunu sınıflandırma"],
+        ["Radyoloji görüntü istasyonu", "akciğer lezyonu tespit etme"],
+        ["Teledermatoloji kamerası", "cilt bulgusunu ön değerlendirme"],
+        ["Ev tipi spirometre", "solunum atağı riskini hesaplama"],
+        ["Akıllı işitme cihazı", "konuşma sesini iyileştirme"],
+        ["Rehabilitasyon hareket sensörü", "egzersiz biçimini değerlendirme"],
+        ["Hastane infüzyon pompası", "doz sapması uyarısı üretme"],
+        ["Uyku apnesi takip bandı", "solunum kesintisini belirleme"],
+        ["Acil servis triyaj tableti", "öncelik skoru çıkarma"],
+        ["Yaşlı bakım düşme algılayıcısı", "düşme olayını saptama"]
+      ]
+    },
+    "industrial": {
+      "data": "üretim telemetrisi",
+      "contexts": [
+        ["Robot kolu görüş sistemi", "parça konumunu belirleme"],
+        ["CNC titreşim sensörü", "takım aşınmasını kestirme"],
+        ["Montaj hattı kamerası", "ürün kusurunu saptama"],
+        ["Kestirimci bakım modülü", "arıza riskini hesaplama"],
+        ["Depo taşıma robotu", "raf konumunu tanıma"],
+        ["Kaynak kalite kamerası", "dikiş hatasını sınıflandırma"],
+        ["Endüstriyel kazan denetleyicisi", "sıcaklık sapmasını belirleme"],
+        ["Paketleme hattı tarayıcısı", "etiket doğruluğunu kontrol etme"],
+        ["Fabrika enerji sayacı", "tüketim anomalisini bulma"],
+        ["Otonom fabrika aracı", "engel rotası çıkarma"],
+        ["Üç boyutlu yazıcı monitörü", "baskı bozulmasını saptama"],
+        ["Kimyasal tank sensörü", "sızıntı riskini değerlendirme"],
+        ["Tekstil kalite kamerası", "kumaş hatasını bulma"],
+        ["Maden konveyör izleyicisi", "bant arızasını öngörme"],
+        ["Soğuk hava deposu kontrolörü", "ısı zincirini denetleme"]
+      ]
+    },
+    "transportation": {
+      "data": "ulaşım sensör verisi",
+      "contexts": [
+        ["Kavşak çarpışma uyarıcısı", "araç çakışma riskini hesaplama"],
+        ["Otobüs durağı bilgi ekranı", "varış süresini güncelleme"],
+        ["Bağlantılı araç kamerası", "şerit tehlikesini saptama"],
+        ["Demiryolu sinyal modülü", "hat işgalini denetleme"],
+        ["Metro yoğunluk sensörü", "yolcu akışını kestirme"],
+        ["Uyarlamalı trafik lambası", "ışık süresini planlama"],
+        ["Nakliye kamyonu yönlendiricisi", "teslimat rotasını güncelleme"],
+        ["Otopark doluluk kamerası", "boş yerleri belirleme"],
+        ["Yaya geçidi algılayıcısı", "geçiş riskini saptama"],
+        ["Feribot motor monitörü", "seyir arızasını öngörme"],
+        ["Bisiklet paylaşım istasyonu", "araç talebini tahmin etme"],
+        ["Elektronik geçiş tarayıcısı", "geçiş kaydını doğrulama"],
+        ["Havalimanı bagaj aracı", "bagaj rotasını planlama"],
+        ["Teslimat dronu yönlendiricisi", "uçuş koridorunu güncelleme"],
+        ["Yol yüzeyi kamerası", "çukur ve buzlanmayı saptama"]
+      ]
+    },
+    "public_safety": {
+      "data": "acil durum verisi",
+      "contexts": [
+        ["Orman yangını dronu", "alev bölgesini saptama"],
+        ["Deprem erken uyarı sensörü", "sarsıntı alarmı üretme"],
+        ["Afet çağrı merkezi modülü", "yardım talebini önceliklendirme"],
+        ["Kolluk vücut kamerası", "tehlikeli olayı belirleme"],
+        ["Taşkın alarm istasyonu", "su baskını riskini hesaplama"],
+        ["Arama kurtarma robotu", "enkazda insan izi bulma"],
+        ["Tehlikeli gaz dedektörü", "tahliye uyarısı üretme"],
+        ["Sahil güvenlik termal kamerası", "denizde insan saptama"],
+        ["Mahalle acil durum sireni", "uyarı bölgesini seçme"],
+        ["Heyelan izleme sensörü", "zemin hareketini değerlendirme"],
+        ["Bina tahliye kamerası", "çıkış yoğunluğunu belirleme"],
+        ["Kayıp kişi arama dronu", "görüntüde insan izi bulma"],
+        ["Yangın gözetleme kulesi", "duman oluşumunu saptama"],
+        ["Çığ güvenlik vericisi", "kazazede konumunu hesaplama"],
+        ["Acil haberleşme geçidi", "kritik mesajı yönlendirme"]
+      ]
+    },
+    "smart_city": {
+      "data": "belediye altyapı verisi",
+      "contexts": [
+        ["Hava kalitesi istasyonu", "kirlilik düzeyini özetleme"],
+        ["Akıllı sokak lambası", "aydınlatma düzeyini ayarlama"],
+        ["Atık kutusu doluluk sensörü", "toplama ihtiyacını belirleme"],
+        ["Şebeke su kaçağı sensörü", "boru arızasını saptama"],
+        ["Kent gürültü istasyonu", "gürültü haritası çıkarma"],
+        ["Belediye park sulama modülü", "sulama zamanını planlama"],
+        ["Köprü yapı sensörü", "yapısal titreşimi değerlendirme"],
+        ["Yaya meydanı yoğunluk kamerası", "kalabalık düzeyini hesaplama"],
+        ["Bölgesel ısıtma sayacı", "ısı talebini tahmin etme"],
+        ["Kamusal şarj istasyonu", "şarj sırasını planlama"],
+        ["Kanalizasyon taşma sensörü", "taşma riskini saptama"],
+        ["Belediye sayaç toplayıcısı", "tüketim özetini hazırlama"],
+        ["Kaldırım buzlanma sensörü", "don tehlikesini belirleme"],
+        ["Kent bilgi kiosku", "ziyaretçi sorgusunu yanıtlama"],
+        ["Belediye binası doluluk sensörü", "alan kullanımını özetleme"]
+      ]
+    },
+    "agriculture": {
+      "data": "tarımsal sensör verisi",
+      "contexts": [
+        ["Toprak nem sensörü", "sulama ihtiyacını hesaplama"],
+        ["Sürü izleme kamerası", "hayvan hastalığını saptama"],
+        ["Sera iklim denetleyicisi", "havalandırmayı ayarlama"],
+        ["Akıllı sulama vanası", "su akışını planlama"],
+        ["Ekin hastalığı dronu", "yaprak lezyonunu sınıflandırma"],
+        ["Arı kovanı ses sensörü", "koloni stresini belirleme"],
+        ["Kümes sıcaklık sensörü", "ısı riskini değerlendirme"],
+        ["Otonom traktör kamerası", "tarla engelini saptama"],
+        ["Don uyarı istasyonu", "gece don riskini hesaplama"],
+        ["Balık çiftliği oksijen sensörü", "oksijen düşüşünü saptama"],
+        ["Hasat robotu görüş sistemi", "olgun ürünü seçme"],
+        ["Zararlı böcek kapanı kamerası", "zararlı türünü tanıma"],
+        ["Tahıl silosu nem sensörü", "küflenme riskini belirleme"],
+        ["Koyun takip tasması", "sürüden ayrılmayı saptama"],
+        ["Bağ yaprak kamerası", "asma gelişimini değerlendirme"]
+      ]
+    },
+    "consumer": {
+      "data": "kişisel cihaz verisi",
+      "contexts": [
+        ["Akıllı ev sesli asistanı", "kullanıcı komutunu anlama"],
+        ["Artırılmış gerçeklik gözlüğü", "görüntü üstü nesneyi tanıma"],
+        ["Bulut oyun kumandası", "oyuncu hareketini yorumlama"],
+        ["Akıllı saat egzersiz modülü", "aktivite türünü belirleme"],
+        ["Kişisel ev güvenlik kamerası", "şüpheli hareketi saptama"],
+        ["Robot süpürge", "oda içi rotayı planlama"],
+        ["Akıllı televizyon uygulaması", "içerik önerisi hazırlama"],
+        ["Kişisel fotoğraf düzenleyicisi", "görüntüleri gruplandırma"],
+        ["Çeviri kulaklığı", "konuşmayı anlık çevirme"],
+        ["Ev tipi bebek monitörü", "ağlama sesini tanıma"],
+        ["Kişisel kamera dronu", "çekim hedefini takip etme"],
+        ["Akıllı tarif asistanı", "yemek adımını önerme"],
+        ["Ev termostatı", "konfor sıcaklığını ayarlama"],
+        ["Sanal gerçeklik başlığı", "baş hareketini işleme"],
+        ["Akıllı müzik hoparlörü", "çalma isteğini sınıflandırma"]
+      ]
+    },
+    "other": {
+      "data": "uygulama verisi",
+      "contexts": [
+        ["Hukuk bürosu belge sistemi", "sözleşme maddesini sınıflandırma"],
+        ["Üniversite dijital arşivi", "belge konusunu indeksleme"],
+        ["Medya altyazı servisi", "konuşmadan altyazı üretme"],
+        ["Perakende raf kamerası", "ürün yerleşimini denetleme"],
+        ["Banka işlem izleyicisi", "dolandırıcılık riskini hesaplama"],
+        ["Sigorta hasar sistemi", "başvuru görüntüsünü değerlendirme"],
+        ["Kütüphane tarama istasyonu", "basılı sayfayı sayısallaştırma"],
+        ["Spor analiz kamerası", "oyuncu hareketini çözümleme"],
+        ["İnşaat saha tarayıcısı", "ilerleme durumunu ölçme"],
+        ["Otel dijital danışmanı", "misafir isteğini yönlendirme"],
+        ["Restoran sipariş terminali", "sipariş niyetini yorumlama"],
+        ["Araştırma laboratuvarı mikroskobu", "hücre örüntüsünü sınıflandırma"],
+        ["Telekom ağ izleyicisi", "trafik anomalisini saptama"],
+        ["Çevrimiçi eğitim asistanı", "öğrenci yanıtını değerlendirme"],
+        ["Kültürel miras tarayıcısı", "yüzey bozulmasını belirleme"]
+      ]
+    }
+  }
+}

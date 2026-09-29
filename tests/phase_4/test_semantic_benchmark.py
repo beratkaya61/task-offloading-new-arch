@@ -167,6 +167,260 @@ def test_manifest_binds_corpus_and_packets_by_sha256() -> None:
     assert file_sha256(ROOT / corpus_info["path"]) == corpus_info["sha256"]
     for packet_info in manifest["packets"].values():
         assert file_sha256(ROOT / packet_info["path"]) == packet_info["sha256"]
+    round_1 = manifest["submission_rounds"]["pilot_round_1"]
+    assert round_1["adjudication_status"] == "not_started"
+    assert round_1["primary_disagreement_cells"] == 39
+    assert (
+        file_sha256(ROOT / round_1["protocol_snapshot_path"])
+        == round_1["protocol_snapshot_sha256"]
+    )
+    assert (
+        file_sha256(ROOT / round_1["submission_manifest_path"])
+        == round_1["submission_manifest_sha256"]
+    )
+    assert (
+        file_sha256(ROOT / round_1["agreement_path"])
+        == round_1["agreement_sha256"]
+    )
+    repeat = manifest["repeat_pilot"]
+    assert repeat["protocol_version"] == "1.1.0"
+    assert repeat["submission_status"] == "locked"
+    assert repeat["quality_gate_status"] == "failed"
+    assert repeat["main_240_annotation_allowed"] is False
+    assert file_sha256(ROOT / repeat["manifest_path"]) == repeat[
+        "manifest_sha256"
+    ]
+    for path_key, hash_key in (
+        ("submission_manifest_path", "submission_manifest_sha256"),
+        ("agreement_path", "agreement_sha256"),
+        ("quality_gate_path", "quality_gate_sha256"),
+    ):
+        assert file_sha256(ROOT / repeat[path_key]) == repeat[hash_key]
+
+    amendment = manifest["post_pilot_annotation_amendment"]
+    assert amendment["protocol_version"] == "1.3.0"
+    assert amendment["legacy_round_2_gate_overridden"] is False
+    assert (
+        amendment["human_collection_status"]
+        == "main_a_60_locked_no_additional_surveys_planned"
+    )
+    for path_key, hash_key in (
+        ("protocol_path", "protocol_sha256"),
+        ("design_path", "design_sha256"),
+        ("calibration_manifest_path", "calibration_manifest_sha256"),
+        ("main_corpus_manifest_path", "main_corpus_manifest_sha256"),
+        ("annotation_packet_manifest_path", "annotation_packet_manifest_sha256"),
+        ("main_submission_manifest_path", "main_submission_manifest_sha256"),
+    ):
+        assert file_sha256(ROOT / amendment[path_key]) == amendment[hash_key]
+
+
+def test_locked_round_1_submissions_match_manifest_and_remain_unadjudicated(
+    corpus: tuple[dict[str, Any], ...],
+) -> None:
+    round_dir = PILOT / "annotations" / "round_1"
+    manifest = load_json(round_dir / "submission_manifest.v1.json")
+    wrapper = load_json(ROOT / "schemas" / "human_annotation_record.schema.json")
+    semantic = load_json(ROOT / "schemas" / "semantic_requirements.schema.json")
+
+    assert manifest["primary_annotators"] == ["annotator_a", "annotator_b"]
+    assert manifest["diagnostic_annotators"] == ["annotator_c"]
+    assert manifest["diagnostic_excluded_from_primary_kappa"] is True
+    assert manifest["automatic_majority_vote"] is False
+    assert manifest["adjudication_status"] == "not_started"
+    for annotator, info in manifest["submissions"].items():
+        submission_path = ROOT / info["path"]
+        records = load_jsonl(submission_path)
+        assert file_sha256(submission_path) == info["sha256"]
+        assert submission_path.stat().st_size == info["byte_count"]
+        audit = audit_submission(
+            records,
+            corpus,
+            wrapper,
+            semantic,
+            annotator_id=annotator,
+        )
+        assert audit.is_valid, audit.issues
+
+    agreement = load_json(round_dir / "agreement.v1.json")
+    assert agreement["policy"]["adjudication_performed"] is False
+    assert agreement["policy"]["diagnostic_excluded_from_primary_kappa"] is True
+    assert agreement["primary_pairwise"]["task_count"] == 20
+    assert agreement["primary_disagreement_count"] == 39
+
+
+def test_round_2_packets_are_fresh_blind_and_bound_to_protocol_1_1(
+    corpus: tuple[dict[str, Any], ...],
+) -> None:
+    round_2 = PILOT / "round_2"
+    manifest = load_json(round_2 / "pilot_manifest.v1.json")
+    assert manifest["round_id"] == "pilot_round_2"
+    assert manifest["protocol"]["version"] == "1.1.0"
+    assert file_sha256(ROOT / manifest["protocol"]["path"]) == manifest[
+        "protocol"
+    ]["sha256"]
+    assert manifest["primary_annotators"] == ["annotator_a", "annotator_b"]
+    assert manifest["diagnostic_annotators"] == []
+    assert manifest["blindness"] == {
+        "round_1_answers_visible": False,
+        "other_annotator_answers_visible": False,
+        "round_1_disagreement_list_visible": False,
+    }
+    assert manifest["submission_status"] == "not_collected"
+
+    round_2_orders = []
+    for annotator, seed in (("annotator_a", 17389), ("annotator_b", 68443)):
+        info = manifest["packets"][annotator]
+        path = ROOT / info["path"]
+        packet = load_jsonl(path)
+        assert file_sha256(path) == info["sha256"]
+        assert packet == build_blind_packet(
+            corpus,
+            annotator_id=annotator,
+            seed=seed,
+            packet_version="1.1.0",
+            protocol_version="1.1.0",
+        )
+        assert not packet_issues(
+            packet,
+            corpus,
+            annotator_id=annotator,
+            packet_version="1.1.0",
+            protocol_version="1.1.0",
+        )
+        new_order = tuple(row["task_id"] for row in packet)
+        old_order = tuple(
+            row["task_id"]
+            for row in load_jsonl(PILOT / "packets" / f"{annotator}.v1.jsonl")
+        )
+        assert new_order != old_order
+        round_2_orders.append(new_order)
+
+        html = render_annotation_form(
+            packet,
+            annotator_id=annotator,
+            packet_sha256=info["sha256"],
+        )
+        assert '"form_version":"1.1.0"' in html
+        assert '"protocol_version":"1.1.0"' in html
+        assert '"initial_responses":{}' in html
+        assert 'confidence: [["", "Seçiniz"]' in html
+        assert "sınıf sayısal ms eşiğiyle uyuşmuyor" in html  # noqa: RUF001
+        assert "partial değil explicit seçilmelidir" in html
+        assert "APP.submission_slug ||" in html
+        assert "protocol-${APP.protocol_version}" in html
+        assert "connect-src 'none'" in html
+    assert round_2_orders[0] != round_2_orders[1]
+
+
+def test_round_2_submission_protocol_is_explicitly_bound(
+    corpus: tuple[dict[str, Any], ...],
+) -> None:
+    wrapper = load_json(ROOT / "schemas" / "human_annotation_record.schema.json")
+    semantic = load_json(ROOT / "schemas" / "semantic_requirements.schema.json")
+    records = submission_for(corpus, "annotator_a")
+    for record in records:
+        record["protocol_version"] = "1.1.0"
+
+    accepted = audit_submission(
+        records,
+        corpus,
+        wrapper,
+        semantic,
+        annotator_id="annotator_a",
+        expected_protocol_version="1.1.0",
+    )
+    assert accepted.is_valid, accepted.issues
+    rejected = audit_submission(
+        records,
+        corpus,
+        wrapper,
+        semantic,
+        annotator_id="annotator_a",
+        expected_protocol_version="1.0.0",
+    )
+    assert any("wrong protocol version" in issue for issue in rejected.issues)
+
+
+def test_locked_round_2_submissions_and_failed_quality_gate_are_bound(
+    corpus: tuple[dict[str, Any], ...],
+) -> None:
+    annotations = PILOT / "round_2" / "annotations"
+    manifest = load_json(annotations / "submission_manifest.v1.json")
+    wrapper = load_json(ROOT / "schemas" / "human_annotation_record.schema.json")
+    semantic = load_json(ROOT / "schemas" / "semantic_requirements.schema.json")
+
+    assert manifest["round_id"] == "pilot_round_2"
+    assert manifest["protocol_version"] == "1.1.0"
+    assert manifest["diagnostic_annotators"] == []
+    assert manifest["adjudication_status"] == "not_started"
+    for annotator, info in manifest["submissions"].items():
+        path = ROOT / info["path"]
+        records = load_jsonl(path)
+        assert file_sha256(path) == info["sha256"]
+        audit = audit_submission(
+            records,
+            corpus,
+            wrapper,
+            semantic,
+            annotator_id=annotator,
+            expected_protocol_version="1.1.0",
+        )
+        assert audit.is_valid, audit.issues
+
+    agreement = load_json(annotations / "agreement.v1.json")
+    assert agreement["policy"]["diagnostic_annotator"] is None
+    assert agreement["primary_disagreement_count"] == 26
+    assert agreement["primary_pairwise"]["exact_field_agreement"] == 0.8375
+    assert agreement["primary_pairwise"]["exact_record_agreement"] == 0.3
+
+    gate = load_json(annotations / "quality_gate.v1.json")
+    assert gate["status"] == "failed"
+    assert gate["main_240_annotation_allowed"] is False
+    assert len(gate["failed_checks"]) == 7
+    assert len(gate["insufficient_value_samples"]) == 2
+
+
+def test_protocol_1_1_server_audit_enforces_numeric_and_confidence_gates(
+    corpus: tuple[dict[str, Any], ...],
+) -> None:
+    wrapper = load_json(ROOT / "schemas" / "human_annotation_record.schema.json")
+    semantic = load_json(ROOT / "schemas" / "semantic_requirements.schema.json")
+    records = submission_for(corpus, "annotator_a")
+    for record in records:
+        record["protocol_version"] = "1.1.0"
+    target = next(record for record in records if record["task_id"] == "pilot_tr_011")
+    target["annotation"]["latency"] = {
+        "class": "relaxed",
+        "max_ms": 3,
+        "status": "explicit",
+        "evidence": ["3 saniye içinde"],
+        "confidence": 0.8,
+    }
+    target["annotation"]["abstained_fields"].remove("latency")
+
+    audit = audit_submission(
+        records,
+        corpus,
+        wrapper,
+        semantic,
+        annotator_id="annotator_a",
+        expected_protocol_version="1.1.0",
+    )
+    assert any("max_ms disagrees with evidence" in issue for issue in audit.issues)
+    assert any("confidence must be" in issue for issue in audit.issues)
+
+    for record in records:
+        record["protocol_version"] = "1.0.0"
+    legacy = audit_submission(
+        records,
+        corpus,
+        wrapper,
+        semantic,
+        annotator_id="annotator_a",
+        expected_protocol_version="1.0.0",
+    )
+    assert legacy.is_valid, legacy.issues
 
 
 def test_trace_conditioning_uses_only_aggregate_profile(
@@ -518,7 +772,7 @@ def test_offline_form_can_seed_a_partial_annotator_draft(
         packet_sha256="a" * 64,
         initial_responses=initial,
     )
-    assert '"form_version":"1.1.0"' in html
+    assert '"form_version":"1.2.0"' in html
     assert '"initial_responses"' in html
     assert '"value":"consumer"' in html
 

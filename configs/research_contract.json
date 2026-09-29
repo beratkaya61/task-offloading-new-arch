@@ -1,6 +1,6 @@
 {
-  "contract_version": "1.0.0",
-  "status": "frozen_for_phase_2",
+  "contract_version": "1.2.0",
+  "status": "amended_before_main_annotation",
   "title": {
     "tr": "İz Güdümlü MEC Sistemlerinde İnsan Doğrulamalı LLM Semantik Gereksinimleriyle Derin Pekiştirmeli Öğrenme Tabanlı Görev Aktarımı",
     "en": "Deep Reinforcement Learning-Based Task Offloading with Human-Validated LLM Semantic Requirements in Trace-Driven MEC Systems"
@@ -94,12 +94,18 @@
   "annotation": {
     "pilot_unique_items": 20,
     "main_unique_items": 240,
-    "independent_human_annotators": 2,
-    "both_annotate_every_main_item": true,
+    "independent_human_annotators_in_main_corpus": 1,
+    "historical_pilot_human_annotators": 3,
+    "both_annotate_every_main_item": false,
+    "primary_annotator_item_count": 60,
+    "new_secondary_annotator_item_count": 0,
+    "single_human_evaluation_item_count": 60,
+    "machine_labeled_development_item_count": 180,
     "blind_independent_pass": true,
-    "model_suggestions_visible": false,
-    "hidden_repeat_fraction": 0.05,
-    "adjudication": "consensus_after_raw_annotations_are_locked",
+    "model_suggestions_visible": "not_shown_to_human_annotators",
+    "model_suggestions_visible_on_human_evaluation": false,
+    "hidden_repeat_fraction": 0.0,
+    "adjudication": "existing_pilot_disagreements_only; annotator_c_is_diagnostic_evidence_not_automatic_majority",
     "raw_annotations_immutable": true,
     "minimum_field_kappa": 0.7,
     "target_field_kappa": 0.8,
@@ -120,12 +126,13 @@
       "llm_paraphrased",
       "adversarial"
     ],
-    "gold_source": "two_human_adjudicated",
+    "gold_source": "none_for_main_corpus_until_independent_second_labels_exist",
+    "evaluation_label_source": "60_task_annotator_a_single_human_reference",
+    "development_label_source": "180_task_deterministic_machine_weak_labels",
     "generation_model_may_define_gold": false,
-    "split_ratio": {
-      "train": 0.6,
-      "validation": 0.2,
-      "test": 0.2
+    "partitions": {
+      "machine_labeled_development": 180,
+      "single_human_evaluation": 60
     },
     "split_group_keys": [
       "scenario_family_id",
@@ -255,6 +262,9 @@
   "change_control": {
     "test_set_must_not_drive_changes": true,
     "post_freeze_change_requires_amendment": true,
-    "amendment_requires_reason_and_impact": true
+    "amendment_requires_reason_and_impact": true,
+    "active_annotation_amendment": "docs/ANNOTATION_PROTOCOL_AMENDMENT_1_3.md",
+    "amendment_reason": "Annotator B cannot take on additional main-corpus work; use the already collected A/B/C pilot evidence instead of requesting new B or C labels.",
+    "amendment_impact": "Annotator A labels 60 blind main-evaluation tasks. The main set is explicitly single-human reference data, not adjudicated gold. Existing B and C pilot labels remain evidence for agreement, sensitivity analysis, and disagreement diagnosis; no new B/C tasks are requested."
   }
 }

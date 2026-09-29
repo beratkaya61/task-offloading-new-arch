@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import re
 import unicodedata
 from collections import Counter
@@ -53,6 +54,12 @@ _SENSITIVE_PATTERNS: tuple[tuple[str, re.Pattern[str]], ...] = (
         re.compile(r"\b(?:[0-9a-f]{2}[:-]){5}[0-9a-f]{2}\b", re.IGNORECASE),
     ),
 )
+_LATENCY_NUMBER = re.compile(
+    r"(\d+(?:[.,]\d+)?)\s*(ms|milisaniye|saniye)", re.IGNORECASE
+)
+_PERCENT_PREFIX = re.compile(r"%\s*(\d+(?:[.,]\d+)?)")
+_PERCENT_SUFFIX = re.compile(r"(\d+(?:[.,]\d+)?)\s*%")
+_UNIT_SCORE = re.compile(r"\b(0[.,]\d+|1(?:[.,]0+)?)\b")
 
 
 @dataclass(frozen=True, slots=True)
@@ -266,7 +273,12 @@ def audit_corpus(
 
 
 def build_blind_packet(
-    corpus: Sequence[Mapping[str, Any]], *, annotator_id: str, seed: int
+    corpus: Sequence[Mapping[str, Any]],
+    *,
+    annotator_id: str,
+    seed: int,
+    packet_version: str = "1.0.0",
+    protocol_version: str = "1.0.0",
 ) -> tuple[dict[str, Any], ...]:
     """Project corpus rows onto the only fields an independent human may see."""
 
@@ -274,6 +286,8 @@ def build_blind_packet(
         raise ValueError(f"unsupported annotator id: {annotator_id}")
     if seed < 0:
         raise ValueError("seed must be >= 0")
+    if not packet_version or not protocol_version:
+        raise ValueError("packet and protocol versions cannot be empty")
     ordered = sorted(
         corpus,
         key=lambda item: hashlib.sha256(
@@ -282,8 +296,8 @@ def build_blind_packet(
     )
     return tuple(
         {
-            "packet_version": "1.0.0",
-            "protocol_version": "1.0.0",
+            "packet_version": packet_version,
+            "protocol_version": protocol_version,
             "annotator_id": annotator_id,
             "presentation_order": index,
             "task_id": item["task_id"],
@@ -301,6 +315,8 @@ def packet_issues(
     corpus: Sequence[Mapping[str, Any]],
     *,
     annotator_id: str,
+    packet_version: str | None = None,
+    protocol_version: str | None = None,
 ) -> tuple[str, ...]:
     """Detect missing tasks, ordering drift, and authoring/gold leakage."""
 
@@ -317,6 +333,13 @@ def packet_issues(
             continue
         if row["annotator_id"] != annotator_id:
             issues.append(f"packet row {index} has wrong annotator id")
+        if packet_version is not None and row["packet_version"] != packet_version:
+            issues.append(f"packet row {index} has wrong packet version")
+        if (
+            protocol_version is not None
+            and row["protocol_version"] != protocol_version
+        ):
+            issues.append(f"packet row {index} has wrong protocol version")
         if row["presentation_order"] != index:
             issues.append(f"packet row {index} has non-contiguous order")
         task_id = str(row["task_id"])
@@ -376,6 +399,137 @@ def _abstention_issues(annotation: Mapping[str, Any], task_id: str) -> list[str]
     return []
 
 
+def _locale_float(value: str) -> float:
+    return float(value.replace(",", "."))
+
+
+def _evidence_text(label: Mapping[str, Any]) -> str:
+    evidence = label.get("evidence")
+    if not isinstance(evidence, list):
+        return ""
+    return "\n".join(value for value in evidence if isinstance(value, str))
+
+
+def _percentage_values(label: Mapping[str, Any]) -> tuple[float, ...]:
+    text = _evidence_text(label)
+    values = {
+        _locale_float(match.group(1)) / 100
+        for pattern in (_PERCENT_PREFIX, _PERCENT_SUFFIX)
+        for match in pattern.finditer(text)
+    }
+    return tuple(sorted(values))
+
+
+def _numeric_matches(value: object, candidates: Sequence[float]) -> bool:
+    return isinstance(value, int | float) and any(
+        math.isclose(float(value), candidate, rel_tol=0, abs_tol=1e-9)
+        for candidate in candidates
+    )
+
+
+def _protocol_1_1_issues(
+    annotation: Mapping[str, Any], task_id: str
+) -> list[str]:
+    issues: list[str] = []
+    for field in ANNOTATION_FIELDS:
+        label = annotation.get(field)
+        if not isinstance(label, Mapping):
+            continue
+        if label.get("confidence") not in {0.5, 0.7, 0.9}:
+            issues.append(f"{task_id}.{field} confidence must be 0.5, 0.7, or 0.9")
+
+    latency = annotation.get("latency")
+    if isinstance(latency, Mapping) and latency.get("status") == "explicit":
+        stated_ms = tuple(
+            _locale_float(match.group(1))
+            * (1000 if match.group(2).casefold() == "saniye" else 1)
+            for match in _LATENCY_NUMBER.finditer(_evidence_text(latency))
+        )
+        maximum = latency.get("max_ms")
+        if stated_ms and maximum is None:
+            issues.append(f"{task_id}.latency numeric evidence requires max_ms")
+        if maximum is not None and not stated_ms:
+            issues.append(f"{task_id}.latency max_ms has no numeric evidence")
+        if maximum is not None and stated_ms and not _numeric_matches(
+            maximum, stated_ms
+        ):
+            issues.append(f"{task_id}.latency max_ms disagrees with evidence")
+        if isinstance(maximum, int | float):
+            expected = (
+                "hard_real_time"
+                if maximum < 50
+                else "real_time"
+                if maximum <= 200
+                else "interactive"
+                if maximum <= 1000
+                else "relaxed"
+            )
+            if latency.get("class") != expected:
+                issues.append(f"{task_id}.latency class disagrees with max_ms")
+
+    reliability = annotation.get("reliability")
+    if (
+        isinstance(reliability, Mapping)
+        and reliability.get("status") == "explicit"
+    ):
+        stated_probability = _percentage_values(reliability)
+        minimum_probability = reliability.get("min_success_probability")
+        if stated_probability and minimum_probability is None:
+            issues.append(
+                f"{task_id}.reliability percentage requires minimum probability"
+            )
+        if minimum_probability is not None and not stated_probability:
+            issues.append(
+                f"{task_id}.reliability minimum probability has no percentage evidence"
+            )
+        if (
+            minimum_probability is not None
+            and stated_probability
+            and not _numeric_matches(minimum_probability, stated_probability)
+        ):
+            issues.append(
+                f"{task_id}.reliability minimum probability disagrees with evidence"
+            )
+
+    accuracy = annotation.get("accuracy")
+    if isinstance(accuracy, Mapping) and accuracy.get("status") == "explicit":
+        stated_scores = set(_percentage_values(accuracy))
+        stated_scores.update(
+            _locale_float(match.group(1))
+            for match in _UNIT_SCORE.finditer(_evidence_text(accuracy))
+        )
+        minimum_score = accuracy.get("min_score")
+        if stated_scores and minimum_score is None:
+            issues.append(f"{task_id}.accuracy numeric evidence requires min_score")
+        if minimum_score is not None and not stated_scores:
+            issues.append(f"{task_id}.accuracy min_score has no numeric evidence")
+        if (
+            minimum_score is not None
+            and stated_scores
+            and not _numeric_matches(minimum_score, tuple(stated_scores))
+        ):
+            issues.append(f"{task_id}.accuracy min_score disagrees with evidence")
+        evidence = _evidence_text(accuracy)
+        metric = accuracy.get("metric")
+        if re.search(r"\bF1\b", evidence, re.IGNORECASE) and (
+            not isinstance(metric, str) or metric.casefold() != "f1"
+        ):
+            issues.append(f"{task_id}.accuracy F1 evidence requires metric=F1")
+        if isinstance(metric, str) and metric.casefold() not in evidence.casefold():
+            issues.append(f"{task_id}.accuracy metric is absent from evidence")
+
+    execution = annotation.get("execution_policy")
+    if isinstance(execution, Mapping) and execution.get("status") == "partial":
+        permissions = tuple(
+            execution.get(target) for target in ("device", "edge", "cloud")
+        )
+        if "unknown" not in permissions:
+            issues.append(
+                f"{task_id}.execution_policy partial requires an unknown target"
+            )
+    return issues
+
+
 def audit_submission(
     records: Sequence[Mapping[str, Any]],
     corpus: Sequence[Mapping[str, Any]],
@@ -383,6 +537,7 @@ def audit_submission(
     semantic_schema: Mapping[str, Any],
     *,
     annotator_id: str,
+    expected_protocol_version: str | None = None,
 ) -> SubmissionAudit:
     """Validate a completed independent-human submission before it is locked."""
 
@@ -404,6 +559,11 @@ def audit_submission(
             continue
         if record.get("annotator_id") != annotator_id:
             issues.append(f"submission record {index} has wrong annotator id")
+        if (
+            expected_protocol_version is not None
+            and record.get("protocol_version") != expected_protocol_version
+        ):
+            issues.append(f"submission record {index} has wrong protocol version")
         if record.get("task_content_sha256") != corpus_task_sha256(source):
             issues.append(f"submission record {index} has a stale task hash")
         annotation = record.get("annotation")
@@ -416,6 +576,8 @@ def audit_submission(
             issues.append(f"submission record {index} language disagrees")
         issues.extend(_evidence_issues(annotation, source, task_id))
         issues.extend(_abstention_issues(annotation, task_id))
+        if record.get("protocol_version") in {"1.1.0", "1.2.0", "1.3.0"}:
+            issues.extend(_protocol_1_1_issues(annotation, task_id))
 
     issues.extend(_schema_issues(semantic_records, semantic_schema, "annotation"))
     if len(seen) != len(set(seen)):

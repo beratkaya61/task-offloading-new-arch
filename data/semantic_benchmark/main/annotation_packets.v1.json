@@ -1,0 +1,54 @@
+{
+  "manifest_version": "1.0.0",
+  "created_on": "2026-09-29",
+  "protocol_version": "1.3.0",
+  "packet_version": "1.3.0",
+  "corpus": {
+    "path": "data/semantic_benchmark/main/tasks.v1.jsonl",
+    "sha256": "c045f48afeab9b4c95dc023ca2d4df9215205f10dba29d45d0e8e69f39f7270a",
+    "task_count": 240
+  },
+  "split": {
+    "path": "data/semantic_benchmark/main/split_manifest.v1.json",
+    "sha256": "2f59855ad9a1b86342e676f7435667a8a0cd4e62cd035cef2b430169d98420e3"
+  },
+  "preannotations": {
+    "path": "data/semantic_benchmark/main/preannotations/machine_development.v1.jsonl",
+    "sha256": "29df545c2b629fdf1af681ce4cb8a7477fc0c7516548fc0dc521e720837b37bc",
+    "record_count": 180,
+    "method": "deterministic_authoring_template_extractor_v1",
+    "is_human_annotation": false,
+    "is_ground_truth": false,
+    "evaluation_task_count": 0
+  },
+  "packets": {
+    "annotator_a_evaluation": {
+      "path": "data/semantic_benchmark/main/packets/annotator_a.evaluation.v1.3.jsonl",
+      "sha256": "447ad97c316ebc7bfe81b3d24676ca910255d7589fadb1e55ec55c6b2cc436b7",
+      "seed": 42001,
+      "task_count": 60
+    }
+  },
+  "forms": {
+    "annotator_a_evaluation": {
+      "local_ignored_path": "artifacts/semantic_annotation/main/annotator_a.blind_evaluation.protocol-1.3.0.html",
+      "sha256": "9f017da8c37a437009ef798d8f5efc9184617c4d230f148d6ef83978a19682cf",
+      "tracked_by_git": false,
+      "regenerate_with": "python scripts/prepare_main_annotation.py"
+    }
+  },
+  "workflow": {
+    "step_1": "annotator_a completes the blind 60-task evaluation form",
+    "step_2": "validate and lock A's single-human reference file",
+    "step_3": "report existing pilot A/B/C evidence separately",
+    "step_4": "do not request new tasks from annotator B or C"
+  },
+  "additional_annotator_release_status": "not_planned",
+  "human_label_claims": {
+    "a_evaluation": "single_human_reference_60",
+    "main_gold": "not_available",
+    "existing_pilot_evidence": "round_1_a_b_c_and_round_2_a_b",
+    "development": "machine_generated_weak_labels_180"
+  },
+  "main_annotation_status": "forms_prepared_not_collected"
+}
