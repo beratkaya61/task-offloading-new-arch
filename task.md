@@ -84,8 +84,14 @@ Bu dosya günlük ilerleme listesidir. Bilimsel kurallar için `TODO_ANTIGRAVITY
   yapma.
 - [x] Mevcut etiketçi anlaşmasını hesapla: Round 1 A/B ve A/B/C tanısal çiftleri,
   Round 2 A/B kalite kapısı sonuçları ayrı artifact'larda mevcut.
-- [ ] Sabit, rule, TF-IDF/logreg, küçük encoder, zero/few-shot LLM baselines.
-- [ ] Schema validity, exact match, F1, calibration, abstention, latency/cost ölç.
+- [x] Sabit profil, rule/keyword ve TF-IDF + lojistik regresyon baselines'larını
+  180 makine-zayıf geliştirme etiketiyle eğitip 60 kilitli tek-insan referansında
+  ölç; değerlendirme etiketlerini eğitim/ayar amacıyla kullanma.
+- [ ] Küçük encoder baseline'ını aynı split ve metrik sözleşmesiyle ölç.
+- [ ] Quadro RTX 4000 üzerinde zero/few-shot LLM baseline'larını ölç.
+- [x] Üç yerel baseline için schema validity, exact match, F1, calibration,
+  abstention, latency/cost ölç ve tahmin/config/kod SHA-256 bağlarını üret.
+- [ ] Küçük encoder ve LLM için aynı metrikleri tamamla.
 - [ ] Seçilen LLM/prompt/parser/cache sürümünü dondur.
 - [ ] Önceden tanımlı kalite kapısını geçir ve Faz 4 raporunu yaz.
 
@@ -159,8 +165,8 @@ Bu faz çekirdek tez kabul koşulu değildir. Yapılmazsa sonuçlar sentetik ve 
 
 ## Sıradaki tek iş
 
-**Faz 4:** İnsan etiketleme kapandı; yeni anket istenmeyecek. Şimdi sabit profil,
-rule/keyword, TF-IDF + lojistik regresyon ve küçük encoder semantik baseline'larını
-aynı split ve metriklerle kur. Ardından Quadro RTX 4000 üzerinde Qwen3-4B/8B
-zero-shot/few-shot karşılaştırma paketini hazırla. A'nın 180 geliştirme görevini
-doldurması gerekmez.
+**Faz 4:** İnsan etiketleme kapandı; yeni anket istenmeyecek. Sabit profil,
+rule/keyword ve TF-IDF + lojistik regresyon aynı 180/60 split ve ortak metriklerle
+tamamlandı. Şimdi küçük encoder baseline'ını kur; ardından bu bilgisayarda Qwen
+çalıştırmadan Quadro RTX 4000 için Qwen3-4B/8B zero-shot/few-shot karşılaştırma
+paketini hazırla. A'nın 180 geliştirme görevini doldurması gerekmez.

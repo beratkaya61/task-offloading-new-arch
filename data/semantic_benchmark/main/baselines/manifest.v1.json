@@ -1,0 +1,91 @@
+{
+  "manifest_version": "1.0.0",
+  "created_on": "2026-09-29",
+  "status": "completed_non_llm_baselines",
+  "inputs": {
+    "tasks": {
+      "path": "data/semantic_benchmark/main/tasks.v1.jsonl",
+      "sha256": "c045f48afeab9b4c95dc023ca2d4df9215205f10dba29d45d0e8e69f39f7270a"
+    },
+    "split": {
+      "path": "data/semantic_benchmark/main/split_manifest.v1.json",
+      "sha256": "2f59855ad9a1b86342e676f7435667a8a0cd4e62cd035cef2b430169d98420e3"
+    },
+    "training_labels": {
+      "path": "data/semantic_benchmark/main/preannotations/machine_development.v1.jsonl",
+      "sha256": "29df545c2b629fdf1af681ce4cb8a7477fc0c7516548fc0dc521e720837b37bc",
+      "claim": "machine_generated_weak_label"
+    },
+    "evaluation_references": {
+      "path": "data/semantic_benchmark/main/annotations/annotator_a.single_human_reference.v1.3.jsonl",
+      "sha256": "7eecd3d8efd42b1606911729cbd96706cc9b4b55560fb78fabb8a1f37dae3b08",
+      "claim": "single_human_reference_not_adjudicated_gold"
+    },
+    "reference_manifest": {
+      "path": "data/semantic_benchmark/main/annotations/submission_manifest.v1.json",
+      "sha256": "4f1c6bb982805b84f437d99eee253e2f2aa86bf2519dfea20a4316982b719bf0"
+    },
+    "schema": {
+      "path": "schemas/semantic_requirements.schema.json",
+      "sha256": "3a8b2833107e3775367ace368e5163f802fecaffdd33a0c35bf8b5de769d8a06"
+    },
+    "config": {
+      "path": "configs/semantic_baselines.v1.json",
+      "sha256": "3f8cdfdd35eb2c7fc281b7802ed5d13b9e838f6486c4e9dadc36c1b2a5090e58"
+    }
+  },
+  "implementation": {
+    "baselines": {
+      "path": "src/task_offloading/semantic/baselines.py",
+      "sha256": "43d9663a136c89b80cd55ec056fe2356ee3c859e82f61346428414ea7d11ab83"
+    },
+    "evaluation": {
+      "path": "src/task_offloading/semantic/evaluation.py",
+      "sha256": "fddfcbbab760269862531b04452e34ddb9c9631089a4a03d888df9de19308566"
+    },
+    "experiment": {
+      "path": "src/task_offloading/semantic/experiment.py",
+      "sha256": "e50ed7b1028cbd4702e43904fcf650955faf3668692761199b684d77f266f2aa"
+    },
+    "runner": {
+      "path": "scripts/run_semantic_baselines.py",
+      "sha256": "ac77116ce62be0a4e23950485a18715f245786708731473f689fa9f1dc122bc9"
+    }
+  },
+  "outputs": {
+    "results": {
+      "path": "data/semantic_benchmark/main/baselines/results.v1.json",
+      "sha256": "8b5c8b49afe426d3faeecf09d3795682c57617c489813bd4005f716b6fb351be"
+    },
+    "predictions": {
+      "constant_profile": {
+        "path": "data/semantic_benchmark/main/baselines/predictions/constant_profile.v1.jsonl",
+        "sha256": "285510eb22813648f40c270498271d32f92cd34d0b8c3a062a39101e80b1ee57",
+        "record_count": 60
+      },
+      "rule_keyword": {
+        "path": "data/semantic_benchmark/main/baselines/predictions/rule_keyword.v1.jsonl",
+        "sha256": "80fe29351c124101f8505c118abac59a5fc8cc59396be475fa43428bd7178a8d",
+        "record_count": 60
+      },
+      "tfidf_logistic_regression": {
+        "path": "data/semantic_benchmark/main/baselines/predictions/tfidf_logistic_regression.v1.jsonl",
+        "sha256": "9e9e6ef110beaaebd84fb089bc6db69b9439540cccda986339e1f3c8c14d6bcb",
+        "record_count": 60
+      }
+    }
+  },
+  "environment": {
+    "python": "3.11.0",
+    "numpy": "2.4.6",
+    "scikit_learn": "1.9.1"
+  },
+  "leakage_controls": {
+    "evaluation_labels_used_for_fit": false,
+    "visible_inputs_only": [
+      "task_text",
+      "user_policy_text"
+    ],
+    "authoring_metadata_used_by_rule_or_ml": false
+  }
+}

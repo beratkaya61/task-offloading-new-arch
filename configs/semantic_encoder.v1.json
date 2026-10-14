@@ -1,0 +1,37 @@
+{
+  "experiment_version": "1.0.0",
+  "created_on": "2026-09-29",
+  "training_partition": "machine_labeled_development",
+  "training_task_count": 180,
+  "training_label_claim": "machine_generated_weak_label",
+  "evaluation_partition": "single_human_evaluation",
+  "evaluation_task_count": 60,
+  "evaluation_label_claim": "single_human_reference_not_adjudicated_gold",
+  "evaluation_labels_may_be_used_for_training_or_tuning": false,
+  "visible_model_inputs": [
+    "task_text",
+    "user_policy_text"
+  ],
+  "model": {
+    "name": "frozen_multilingual_e5_small_logreg",
+    "model_id": "intfloat/multilingual-e5-small",
+    "revision": "0e60b8d9d2166d80387f86e3b48ec9ced55f4d15",
+    "source": "https://huggingface.co/intfloat/multilingual-e5-small",
+    "license": "MIT",
+    "encoder_frozen": true,
+    "embedding_dimension": 384,
+    "input_prefix": "query: ",
+    "normalized_embeddings": true,
+    "linear_probe": "balanced_logistic_regression_per_semantic_field",
+    "random_seed": 20260929,
+    "batch_size": 32,
+    "device": "cpu",
+    "cache_folder": "models/huggingface"
+  },
+  "limitations": [
+    "The encoder is not fine-tuned; only linear probes use the 180 weak labels.",
+    "The 60 evaluation labels are single-human references, not adjudicated gold.",
+    "The locked evaluation labels must not drive model or hyperparameter changes.",
+    "Model weights are downloaded to an ignored local cache and are not committed."
+  ]
+}

@@ -1,0 +1,277 @@
+{
+  "results_version": "1.0.0",
+  "benchmark_version": "1.0.0",
+  "training_label_claim": "machine_generated_weak_label",
+  "evaluation_label_claim": "single_human_reference_not_adjudicated_gold",
+  "evaluation_labels_used_for_training_or_tuning": false,
+  "model_count": 3,
+  "models": [
+    {
+      "model_name": "constant_profile",
+      "reference_claim": "single_human_reference_not_adjudicated_gold",
+      "task_count": 60,
+      "schema_validity": 1.0,
+      "exact_record_accuracy": 0.03333333333333333,
+      "exact_field_accuracy": 0.7583333333333333,
+      "micro_f1": 0.7583333333333333,
+      "macro_f1_across_fields": 0.26667785256906246,
+      "fields": {
+        "domain": {
+          "exact_semantic_accuracy": 0.11666666666666667,
+          "macro_f1": 0.029850746268656716,
+          "reference_class_count": 7
+        },
+        "latency": {
+          "exact_semantic_accuracy": 0.7666666666666667,
+          "macro_f1": 0.2893081761006289,
+          "reference_class_count": 3
+        },
+        "privacy": {
+          "exact_semantic_accuracy": 0.8166666666666667,
+          "macro_f1": 0.22477064220183487,
+          "reference_class_count": 4
+        },
+        "execution_policy": {
+          "exact_semantic_accuracy": 0.8666666666666667,
+          "macro_f1": 0.15476190476190477,
+          "reference_class_count": 6
+        },
+        "reliability": {
+          "exact_semantic_accuracy": 0.8833333333333333,
+          "macro_f1": 0.4690265486725664,
+          "reference_class_count": 2
+        },
+        "accuracy": {
+          "exact_semantic_accuracy": 0.8666666666666667,
+          "macro_f1": 0.18571428571428572,
+          "reference_class_count": 5
+        },
+        "energy_priority": {
+          "exact_semantic_accuracy": 0.85,
+          "macro_f1": 0.30630630630630634,
+          "reference_class_count": 3
+        },
+        "divisibility": {
+          "exact_semantic_accuracy": 0.9,
+          "macro_f1": 0.47368421052631576,
+          "reference_class_count": 2
+        }
+      },
+      "abstention": {
+        "accuracy": 0.8854166666666666,
+        "positive_reference_count": 365,
+        "precision": 0.8690476190476191,
+        "recall": 1.0,
+        "f1": 0.9299363057324841
+      },
+      "critical_privacy": {
+        "positive_reference_count": 7,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "critical_latency": {
+        "positive_reference_count": 0,
+        "precision": null,
+        "recall": null,
+        "f1": null
+      },
+      "calibration": {
+        "sample_count": 480,
+        "brier": 0.1272993827160494,
+        "ece_10_bin": 0.03749999999999979
+      },
+      "evidence_grounding_rate": 1.0,
+      "inference_latency_ms": {
+        "mean": 0.07876166666666666,
+        "median": 0.0597,
+        "p95": 0.13661999999999974,
+        "total": 4.725700000000001
+      },
+      "cost": {
+        "input_tokens": null,
+        "output_tokens": null,
+        "monetary_cost_usd": 0.0,
+        "note": "local non-LLM baseline; tokenizer cost is not applicable"
+      }
+    },
+    {
+      "model_name": "rule_keyword",
+      "reference_claim": "single_human_reference_not_adjudicated_gold",
+      "task_count": 60,
+      "schema_validity": 1.0,
+      "exact_record_accuracy": 0.35,
+      "exact_field_accuracy": 0.8979166666666667,
+      "micro_f1": 0.8979166666666667,
+      "macro_f1_across_fields": 0.7129141331738115,
+      "fields": {
+        "domain": {
+          "exact_semantic_accuracy": 0.7833333333333333,
+          "macro_f1": 0.7320548732313438,
+          "reference_class_count": 7
+        },
+        "latency": {
+          "exact_semantic_accuracy": 1.0,
+          "macro_f1": 1.0,
+          "reference_class_count": 3
+        },
+        "privacy": {
+          "exact_semantic_accuracy": 0.9166666666666666,
+          "macro_f1": 0.7792904290429042,
+          "reference_class_count": 4
+        },
+        "execution_policy": {
+          "exact_semantic_accuracy": 0.9,
+          "macro_f1": 0.6044444444444445,
+          "reference_class_count": 6
+        },
+        "reliability": {
+          "exact_semantic_accuracy": 0.8833333333333333,
+          "macro_f1": 0.47747074931540956,
+          "reference_class_count": 2
+        },
+        "accuracy": {
+          "exact_semantic_accuracy": 0.8833333333333333,
+          "macro_f1": 0.4344242424242424,
+          "reference_class_count": 5
+        },
+        "energy_priority": {
+          "exact_semantic_accuracy": 0.9166666666666666,
+          "macro_f1": 0.8717067583046963,
+          "reference_class_count": 3
+        },
+        "divisibility": {
+          "exact_semantic_accuracy": 0.9,
+          "macro_f1": 0.803921568627451,
+          "reference_class_count": 2
+        }
+      },
+      "abstention": {
+        "accuracy": 0.9354166666666667,
+        "positive_reference_count": 365,
+        "precision": 0.9771428571428571,
+        "recall": 0.936986301369863,
+        "f1": 0.9566433566433566
+      },
+      "critical_privacy": {
+        "positive_reference_count": 7,
+        "precision": 0.75,
+        "recall": 0.42857142857142855,
+        "f1": 0.5454545454545454
+      },
+      "critical_latency": {
+        "positive_reference_count": 0,
+        "precision": null,
+        "recall": null,
+        "f1": null
+      },
+      "calibration": {
+        "sample_count": 480,
+        "brier": 0.1347916666666667,
+        "ece_10_bin": 0.23749999999999982
+      },
+      "evidence_grounding_rate": 1.0,
+      "inference_latency_ms": {
+        "mean": 0.427885,
+        "median": 0.4087,
+        "p95": 0.634915,
+        "total": 25.673100000000005
+      },
+      "cost": {
+        "input_tokens": null,
+        "output_tokens": null,
+        "monetary_cost_usd": 0.0,
+        "note": "local non-LLM baseline; tokenizer cost is not applicable"
+      }
+    },
+    {
+      "model_name": "tfidf_logistic_regression",
+      "reference_claim": "single_human_reference_not_adjudicated_gold",
+      "task_count": 60,
+      "schema_validity": 1.0,
+      "exact_record_accuracy": 0.26666666666666666,
+      "exact_field_accuracy": 0.8791666666666667,
+      "micro_f1": 0.8791666666666667,
+      "macro_f1_across_fields": 0.6986109118852961,
+      "fields": {
+        "domain": {
+          "exact_semantic_accuracy": 0.6333333333333333,
+          "macro_f1": 0.6176291029232206,
+          "reference_class_count": 7
+        },
+        "latency": {
+          "exact_semantic_accuracy": 1.0,
+          "macro_f1": 1.0,
+          "reference_class_count": 3
+        },
+        "privacy": {
+          "exact_semantic_accuracy": 0.9166666666666666,
+          "macro_f1": 0.7792904290429042,
+          "reference_class_count": 4
+        },
+        "execution_policy": {
+          "exact_semantic_accuracy": 0.9,
+          "macro_f1": 0.6044444444444445,
+          "reference_class_count": 6
+        },
+        "reliability": {
+          "exact_semantic_accuracy": 0.8833333333333333,
+          "macro_f1": 0.47747074931540956,
+          "reference_class_count": 2
+        },
+        "accuracy": {
+          "exact_semantic_accuracy": 0.8833333333333333,
+          "macro_f1": 0.4344242424242424,
+          "reference_class_count": 5
+        },
+        "energy_priority": {
+          "exact_semantic_accuracy": 0.9166666666666666,
+          "macro_f1": 0.8717067583046963,
+          "reference_class_count": 3
+        },
+        "divisibility": {
+          "exact_semantic_accuracy": 0.9,
+          "macro_f1": 0.803921568627451,
+          "reference_class_count": 2
+        }
+      },
+      "abstention": {
+        "accuracy": 0.9354166666666667,
+        "positive_reference_count": 365,
+        "precision": 0.9771428571428571,
+        "recall": 0.936986301369863,
+        "f1": 0.9566433566433566
+      },
+      "critical_privacy": {
+        "positive_reference_count": 7,
+        "precision": 0.75,
+        "recall": 0.42857142857142855,
+        "f1": 0.5454545454545454
+      },
+      "critical_latency": {
+        "positive_reference_count": 0,
+        "precision": null,
+        "recall": null,
+        "f1": null
+      },
+      "calibration": {
+        "sample_count": 480,
+        "brier": 0.1366611027458779,
+        "ece_10_bin": 0.15697661803800883
+      },
+      "evidence_grounding_rate": 1.0,
+      "inference_latency_ms": {
+        "mean": 18.995351666666668,
+        "median": 19.317149999999998,
+        "p95": 31.738009999999996,
+        "total": 1139.7210999999998
+      },
+      "cost": {
+        "input_tokens": null,
+        "output_tokens": null,
+        "monetary_cost_usd": 0.0,
+        "note": "local non-LLM baseline; tokenizer cost is not applicable"
+      }
+    }
+  ]
+}

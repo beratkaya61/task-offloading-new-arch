@@ -345,3 +345,34 @@ Eski repo doğrudan taşınmayacaktır. Fizik hataları regresyon testine, eski 
   `7eecd3d8efd42b1606911729cbd96706cc9b4b55560fb78fabb8a1f37dae3b08`
   SHA-256 ile `single_human_reference` olarak kilitlendi. Bu kayıt gold diye
   sunulmaz; ek A/B/C anketi planlanmaz.
+
+## 17. Faz 4 yerel semantik baseline kararları
+
+- Sabit profil, görünür metinle çalışan Türkçe rule/keyword ayrıştırıcı ve
+  karakter TF-IDF + lojistik regresyon baseline'ları aynı sözleşmeyle kuruldu.
+  Yalnız `task_text` ve `user_policy_text` modele açıktır; design metadata,
+  provenance, grouping, ağ durumu ve insan referansı model girdisi değildir.
+- Modeller yalnız 180 `machine_generated_weak_label` geliştirme kaydıyla fit
+  edilir. Kilitli 60 `single_human_reference` kaydı modellerin tahminleri
+  üretildikten sonra yüklenir ve yalnız değerlendirmede kullanılır.
+- Dondurulan ilk sonuçlarda schema validity üç modelde de `1.0` oldu. Sabit
+  profil/rule/TF-IDF için sırasıyla macro-F1 `0.266678 / 0.712914 / 0.698611`,
+  tam alan doğruluğu `0.758333 / 0.897917 / 0.879167` ve tam kayıt doğruluğu
+  `0.033333 / 0.350000 / 0.266667` ölçüldü.
+- Yüksek tam-alan doğruluğu tek başına başarı kanıtı değildir: referansta
+  `not_stated` alanları yaygındır. Bu nedenle macro-F1, alan bazlı sonuçlar,
+  abstention ve kritik gereksinim recall'u birlikte okunur. 60 referansta
+  kritik latency pozitif örneği bulunmadığından bu recall tanımsızdır; Faz 4
+  sınırlılığı olarak korunur.
+- Config, girdi, şema, uygulama, tahmin ve sonuç SHA-256 bağları
+  `data/semantic_benchmark/main/baselines/manifest.v1.json` içindedir. Çalıştırma
+  `scripts/run_semantic_baselines.py` ile tekrarlanır.
+- Qwen bu bilgisayarda çalıştırılmaz. Sıradaki işler aynı değerlendirme
+  sözleşmesiyle küçük encoder baseline'ı ve Quadro RTX 4000'e taşınabilir,
+  cache'li Qwen3-4B/8B zero-shot/few-shot deney paketidir.
+- Küçük encoder için MIT lisanslı `intfloat/multilingual-e5-small`, commit
+  `0e60b8d9d2166d80387f86e3b48ec9ced55f4d15` ile seçildi. Encoder dondurulur,
+  model kartının doğrusal sınıflandırma önerisine uygun `query:` önekli 384 boyutlu
+  normalize embedding üzerinde dengeli lojistik başlıklar fit edilir. Kod, config
+  ve model indirmeyen testler hazırdır; mevcut makinede paket indeksi kurulumu
+  tamamlanmadığı için gerçek encoder sonucu henüz üretilmiş sayılmaz.
