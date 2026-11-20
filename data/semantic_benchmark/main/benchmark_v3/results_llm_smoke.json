@@ -1,0 +1,108 @@
+{
+  "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+  "extractor": "llm_fewshot_Qwen2.5-1.5B-Instruct",
+  "shots": 4,
+  "decoding": "greedy",
+  "few_shot_source": "development split, machine weak labels",
+  "evaluation_labels_used_for_training_or_tuning": false,
+  "calibration_note": "constant confidence; ECE/Brier not interpretable",
+  "unparsable_outputs": 0,
+  "out_of_vocabulary_fields": 0,
+  "sets": {
+    "human60_original": {
+      "task_count": 3,
+      "exact_record_accuracy": 0.0,
+      "macro_f1_across_fields": 0.7916666666666666,
+      "critical_privacy": {
+        "positive_reference_count": 0,
+        "precision": null,
+        "recall": null,
+        "f1": null
+      },
+      "abstention_f1": 0.8823529411764706,
+      "inference_latency_ms_mean": 13475.659666666666,
+      "fields_macro_f1": {
+        "domain": 1.0,
+        "latency": 1.0,
+        "privacy": 0.3333333333333333,
+        "execution_policy": 0.0,
+        "reliability": 1.0,
+        "accuracy": 1.0,
+        "energy_priority": 1.0,
+        "divisibility": 1.0
+      },
+      "intervals": {
+        "llm_fewshot_Qwen2.5-1.5B-Instruct": {
+          "exact_record_accuracy": {
+            "value": 0.0,
+            "ci95": [
+              0.0,
+              0.0
+            ],
+            "diff_vs_baseline": {
+              "value": -1.0,
+              "ci95": [
+                -1.0,
+                -1.0
+              ],
+              "p_value_two_sided": 0.0
+            }
+          },
+          "exact_field_accuracy": {
+            "value": 0.7916666666666666,
+            "ci95": [
+              0.75,
+              0.875
+            ],
+            "diff_vs_baseline": {
+              "value": -0.20833333333333337,
+              "ci95": [
+                -0.25,
+                -0.125
+              ],
+              "p_value_two_sided": 0.0
+            }
+          },
+          "macro_f1_across_fields": {
+            "value": 0.7916666666666667,
+            "ci95": [
+              0.75,
+              0.875
+            ],
+            "diff_vs_baseline": {
+              "value": -0.20833333333333326,
+              "ci95": [
+                -0.25,
+                -0.125
+              ],
+              "p_value_two_sided": 0.0
+            }
+          }
+        },
+        "rule_keyword": {
+          "exact_record_accuracy": {
+            "value": 1.0,
+            "ci95": [
+              1.0,
+              1.0
+            ]
+          },
+          "exact_field_accuracy": {
+            "value": 1.0,
+            "ci95": [
+              1.0,
+              1.0
+            ]
+          },
+          "macro_f1_across_fields": {
+            "value": 1.0,
+            "ci95": [
+              1.0,
+              1.0
+            ]
+          }
+        }
+      }
+    }
+  }
+}

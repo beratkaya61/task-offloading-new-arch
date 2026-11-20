@@ -1,0 +1,235 @@
+{
+  "results_version": "1.0.0",
+  "reference": "data/semantic_benchmark/main/reference_variants/annotator_a.protocol_normalized.v1.3.1.jsonl",
+  "reference_sha256": "76a19232cc68bba32dfbccd4bfcfad5c9082a9ce2c68b7db7999cd968c94a7c5",
+  "reference_claim": "single_human_reference_protocol_normalized",
+  "perturbed_tasks_sha256": "a85064a791c8835612f8792e99961711234b507e9202bdb0a6ce82790c8e2d31",
+  "perturbed_set_claim": "machine_generated_label_preserving_paraphrase",
+  "train_and_test_paraphrase_pools_disjoint": true,
+  "evaluation_labels_used_for_training_or_tuning": false,
+  "augmented_variants_per_task": 2,
+  "models": {
+    "constant_profile": {
+      "training_task_count": 180,
+      "sets": {
+        "original_wording": {
+          "exact_record_accuracy": 0.03333333333333333,
+          "exact_field_accuracy": 0.7583333333333333,
+          "macro_f1_across_fields": 0.25293865113627695,
+          "critical_privacy_recall": 0.0,
+          "fields_macro_f1": {
+            "domain": 0.029850746268656716,
+            "latency": 0.2893081761006289,
+            "privacy": 0.22477064220183487,
+            "execution_policy": 0.15476190476190477,
+            "reliability": 0.31268436578171094,
+            "accuracy": 0.23214285714285715,
+            "energy_priority": 0.30630630630630634,
+            "divisibility": 0.47368421052631576
+          }
+        },
+        "test_paraphrase": {
+          "exact_record_accuracy": 0.03333333333333333,
+          "exact_field_accuracy": 0.7583333333333333,
+          "macro_f1_across_fields": 0.25293865113627695,
+          "critical_privacy_recall": 0.0,
+          "fields_macro_f1": {
+            "domain": 0.029850746268656716,
+            "latency": 0.2893081761006289,
+            "privacy": 0.22477064220183487,
+            "execution_policy": 0.15476190476190477,
+            "reliability": 0.31268436578171094,
+            "accuracy": 0.23214285714285715,
+            "energy_priority": 0.30630630630630634,
+            "divisibility": 0.47368421052631576
+          }
+        }
+      }
+    },
+    "rule_keyword": {
+      "training_task_count": 180,
+      "sets": {
+        "original_wording": {
+          "exact_record_accuracy": 0.38333333333333336,
+          "exact_field_accuracy": 0.9083333333333333,
+          "macro_f1_across_fields": 0.7804914447511231,
+          "critical_privacy_recall": 0.42857142857142855,
+          "fields_macro_f1": {
+            "domain": 0.7320548732313438,
+            "latency": 1.0,
+            "privacy": 0.7792904290429042,
+            "execution_policy": 0.6044444444444445,
+            "reliability": 0.8791801510248112,
+            "accuracy": 0.5733333333333333,
+            "energy_priority": 0.8717067583046963,
+            "divisibility": 0.803921568627451
+          }
+        },
+        "test_paraphrase": {
+          "exact_record_accuracy": 0.23333333333333334,
+          "exact_field_accuracy": 0.8645833333333334,
+          "macro_f1_across_fields": 0.40316351196973305,
+          "critical_privacy_recall": 0.0,
+          "fields_macro_f1": {
+            "domain": 0.7320548732313438,
+            "latency": 0.6527777777777778,
+            "privacy": 0.22477064220183487,
+            "execution_policy": 0.15476190476190477,
+            "reliability": 0.4488095238095238,
+            "accuracy": 0.23214285714285715,
+            "energy_priority": 0.30630630630630634,
+            "divisibility": 0.47368421052631576
+          }
+        }
+      }
+    },
+    "tfidf_logistic_regression": {
+      "training_task_count": 180,
+      "sets": {
+        "original_wording": {
+          "exact_record_accuracy": 0.3,
+          "exact_field_accuracy": 0.8895833333333333,
+          "macro_f1_across_fields": 0.7661882234626076,
+          "critical_privacy_recall": 0.42857142857142855,
+          "fields_macro_f1": {
+            "domain": 0.6176291029232206,
+            "latency": 1.0,
+            "privacy": 0.7792904290429042,
+            "execution_policy": 0.6044444444444445,
+            "reliability": 0.8791801510248112,
+            "accuracy": 0.5733333333333333,
+            "energy_priority": 0.8717067583046963,
+            "divisibility": 0.803921568627451
+          }
+        },
+        "test_paraphrase": {
+          "exact_record_accuracy": 0.25,
+          "exact_field_accuracy": 0.85625,
+          "macro_f1_across_fields": 0.48100684357964496,
+          "critical_privacy_recall": 0.14285714285714285,
+          "fields_macro_f1": {
+            "domain": 0.7459437621202327,
+            "latency": 0.5258525852585259,
+            "privacy": 0.29828042328042326,
+            "execution_policy": 0.37654320987654316,
+            "reliability": 0.4456456456456457,
+            "accuracy": 0.4009009009009009,
+            "energy_priority": 0.4753086419753087,
+            "divisibility": 0.5795795795795795
+          }
+        }
+      }
+    },
+    "tfidf_logistic_regression_augmented": {
+      "training_task_count": 512,
+      "sets": {
+        "original_wording": {
+          "exact_record_accuracy": 0.36666666666666664,
+          "exact_field_accuracy": 0.9041666666666667,
+          "macro_f1_across_fields": 0.7784474253889923,
+          "critical_privacy_recall": 0.42857142857142855,
+          "fields_macro_f1": {
+            "domain": 0.7157027183342972,
+            "latency": 1.0,
+            "privacy": 0.7792904290429042,
+            "execution_policy": 0.6044444444444445,
+            "reliability": 0.8791801510248112,
+            "accuracy": 0.5733333333333333,
+            "energy_priority": 0.8717067583046963,
+            "divisibility": 0.803921568627451
+          }
+        },
+        "test_paraphrase": {
+          "exact_record_accuracy": 0.23333333333333334,
+          "exact_field_accuracy": 0.8583333333333333,
+          "macro_f1_across_fields": 0.5481516965886117,
+          "critical_privacy_recall": 0.0,
+          "fields_macro_f1": {
+            "domain": 0.7459437621202327,
+            "latency": 0.8717067583046963,
+            "privacy": 0.22477064220183487,
+            "execution_policy": 0.37487019730010385,
+            "reliability": 0.5818181818181819,
+            "accuracy": 0.503030303030303,
+            "energy_priority": 0.4534440983039114,
+            "divisibility": 0.6296296296296297
+          }
+        }
+      }
+    },
+    "e5_small_logreg": {
+      "training_task_count": 180,
+      "sets": {
+        "original_wording": {
+          "exact_record_accuracy": 0.3333333333333333,
+          "exact_field_accuracy": 0.8895833333333333,
+          "macro_f1_across_fields": 0.757693893923048,
+          "critical_privacy_recall": 0.42857142857142855,
+          "fields_macro_f1": {
+            "domain": 0.6911585146879264,
+            "latency": 1.0,
+            "privacy": 0.7627777777777777,
+            "execution_policy": 0.6044444444444445,
+            "reliability": 0.7542087542087542,
+            "accuracy": 0.5733333333333333,
+            "energy_priority": 0.8717067583046963,
+            "divisibility": 0.803921568627451
+          }
+        },
+        "test_paraphrase": {
+          "exact_record_accuracy": 0.2,
+          "exact_field_accuracy": 0.8458333333333333,
+          "macro_f1_across_fields": 0.5183093480878084,
+          "critical_privacy_recall": 0.0,
+          "fields_macro_f1": {
+            "domain": 0.7036714145847272,
+            "latency": 0.6875,
+            "privacy": 0.22477064220183487,
+            "execution_policy": 0.3365079365079365,
+            "reliability": 0.5333333333333333,
+            "accuracy": 0.5733333333333333,
+            "energy_priority": 0.30303030303030304,
+            "divisibility": 0.7843278217109992
+          }
+        }
+      }
+    },
+    "e5_small_logreg_augmented": {
+      "training_task_count": 512,
+      "sets": {
+        "original_wording": {
+          "exact_record_accuracy": 0.3333333333333333,
+          "exact_field_accuracy": 0.8916666666666667,
+          "macro_f1_across_fields": 0.7587481868523409,
+          "critical_privacy_recall": 0.42857142857142855,
+          "fields_macro_f1": {
+            "domain": 0.7133807369101487,
+            "latency": 1.0,
+            "privacy": 0.7489898989898989,
+            "execution_policy": 0.6044444444444445,
+            "reliability": 0.7542087542087542,
+            "accuracy": 0.5733333333333333,
+            "energy_priority": 0.8717067583046963,
+            "divisibility": 0.803921568627451
+          }
+        },
+        "test_paraphrase": {
+          "exact_record_accuracy": 0.2,
+          "exact_field_accuracy": 0.8479166666666667,
+          "macro_f1_across_fields": 0.5631856516716377,
+          "critical_privacy_recall": 0.14285714285714285,
+          "fields_macro_f1": {
+            "domain": 0.7036714145847272,
+            "latency": 0.6875,
+            "privacy": 0.27725366876310276,
+            "execution_policy": 0.5179738562091503,
+            "reliability": 0.6140533056420906,
+            "accuracy": 0.5733333333333333,
+            "energy_priority": 0.30303030303030304,
+            "divisibility": 0.8286693318103941
+          }
+        }
+      }
+    }
+  }
+}
