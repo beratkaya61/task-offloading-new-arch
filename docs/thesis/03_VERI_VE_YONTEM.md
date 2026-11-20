@@ -54,7 +54,7 @@ Köken bazında: `adversarial` 60, `llm_assisted_synthetic` 60, `standard_derive
 
 Karşılaştırılan yöntemler: (i) **sabit profil** (eğitimdeki en sık profil); (ii) **kural/anahtar kelime** ayrıştırıcısı; (iii) **TF-IDF + lojistik regresyon** (karakter 3–5-gram, alan başına sınıf-dengeli model); (iv) **donuk `intfloat/multilingual-e5-small` + lojistik regresyon**; (v) **ince ayarlı `multilingual-e5-small`** (alan başına doğrusal başlık). Öğrenen yöntemler hem yalnız geliştirme metinleriyle hem de genişletilmiş eğitim setiyle eğitilmiştir.
 
-İnce ayar hiperparametreleri herhangi bir değerlendirme sonucu görülmeden sabitlenmiştir: `random_seed=20260929`, `epochs=4`, `batch_size=16`, `learning_rate=3e-05`, `max_length=128`. Değerlendirme etiketleri hiçbir yöntemin eğitiminde veya ayarında kullanılmamıştır.
+İnce ayar hiperparametreleri herhangi bir değerlendirme sonucu görülmeden sabitlenmiştir: `random_seed=20260929`, `epochs=4`, `batch_size=16`, `learning_rate=3e-05`, `max_length=128`, `training_strategy=standard`, `backbone_learning_rate=5e-06`, `head_learning_rate=0.0001`, `warmup_epochs=1`, `unfreeze_last_layers=2`, `max_class_weight=5.0`. Değerlendirme etiketleri hiçbir yöntemin eğitiminde veya ayarında kullanılmamıştır.
 
 ## 3.7 Değerlendirme ölçütleri ve istatistik
 
@@ -82,7 +82,7 @@ Belirsizlik, görev düzeyinde 1000 tekrarlı bootstrap ile %95 yüzdelik güven
 | UCI MEC-859 | 0,1 MB | CC-BY-4.0 | 4.000 ölçülmüş yürütme süresi; Raspberry Pi 4B yerel cihaz, MacBookPro1 / Ubuntu VM / MacBookPro2 sırasıyla `edge_0..2`. Ortalama süreler (s): macbook_pro_1 0,108, macbook_pro_2 0,348, raspberry_pi_4b 1,017, ubuntu_virtualbox_vm 0,427 |
 | BUPT Edge-Computing | 29,0 MB | yerel akademik kullanım | 476.419 kabul edilen istek kaydı; görev geliş deseni ve uplink/downlink bit büyüklükleri. Kronolojik bölme: ayın 24'ünden önceki günler eğitim, sonrası test |
 | EUA | 34,0 MB | MIT | Avustralya genelinde 4.748 kullanıcı ve 95.562 edge aday konumu; en yakın üç sitenin mesafesi radyo bağlantısını belirler |
-| NEP-large (Full trace) | 5,89 GB | yalnız araştırma, paylaşım yasak | toplam 685.506.639 satırdan 592.724.139 tanesi kabul politikasından geçmiştir; **henüz ortama bağlanmamıştır**; yalnız bütünlük ve kabul profili mevcuttur |
+| NEP-large (Full trace) | 5,89 GB | yalnız araştırma, paylaşım yasak | toplam 685.506.639 satırdan 592.724.139 tanesi kabul politikasından geçmiştir; edge yük ve RTT dağılımları ortama bağlanmıştır |
 
 Ölçülmemiş, açıkça kalibrasyon varsayımı olan değerler:
 

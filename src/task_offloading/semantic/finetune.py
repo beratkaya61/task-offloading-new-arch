@@ -67,13 +67,31 @@ class FineTunedEncoderBaseline:
         batch_size: int = 16,
         learning_rate: float = 3e-5,
         max_length: int = 128,
+        training_strategy: str = "standard",
+        backbone_learning_rate: float = 5e-6,
+        head_learning_rate: float = 1e-4,
+        warmup_epochs: int = 1,
+        unfreeze_last_layers: int = 2,
+        max_class_weight: float = 5.0,
     ) -> None:
+        if training_strategy not in {"standard", "gradual"}:
+            raise ValueError("training_strategy must be 'standard' or 'gradual'")
+        if training_strategy == "gradual" and not 0 <= warmup_epochs < epochs:
+            raise ValueError("gradual warmup_epochs must be in [0, epochs)")
+        if unfreeze_last_layers < 1:
+            raise ValueError("unfreeze_last_layers must be >= 1")
         self._cache = str(cache_folder)
         self._seed = random_seed
         self._epochs = epochs
         self._batch = batch_size
         self._lr = learning_rate
         self._max_length = max_length
+        self._training_strategy = training_strategy
+        self._backbone_lr = backbone_learning_rate
+        self._head_lr = head_learning_rate
+        self._warmup_epochs = warmup_epochs
+        self._unfreeze_last_layers = unfreeze_last_layers
+        self._max_class_weight = max_class_weight
         self._classes: dict[str, list[str]] = {}
         self._model: _MultiHead | None = None
         self._tokenizer: Any = None
@@ -120,15 +138,27 @@ class FineTunedEncoderBaseline:
             target = torch.tensor([index[label] for label in labels])
             counts = torch.bincount(target, minlength=len(classes)).float()
             targets[field] = target
-            weights[field] = len(labels) / (len(classes) * counts.clamp(min=1.0))
+            value = len(labels) / (len(classes) * counts.clamp(min=1.0))
+            weights[field] = (
+                value.clamp(max=self._max_class_weight)
+                if self._training_strategy == "gradual"
+                else value
+            )
         model = _MultiHead(
             backbone,
             int(backbone.config.hidden_size),
             {field: len(self._classes[field]) for field in ANNOTATION_FIELDS},
         )
-        optimizer = torch.optim.AdamW(
-            model.parameters(), lr=self._lr, weight_decay=0.01
-        )
+        if self._training_strategy == "gradual":
+            for parameter in model.backbone.parameters():
+                parameter.requires_grad = False
+            optimizer = torch.optim.AdamW(
+                model.heads.parameters(), lr=self._head_lr, weight_decay=0.01
+            )
+        else:
+            optimizer = torch.optim.AdamW(
+                model.parameters(), lr=self._lr, weight_decay=0.01
+            )
         losses = {
             field: nn.CrossEntropyLoss(weight=weights[field])
             for field in ANNOTATION_FIELDS
@@ -136,6 +166,36 @@ class FineTunedEncoderBaseline:
         generator = torch.Generator().manual_seed(self._seed)
         model.train()
         for epoch in range(self._epochs):
+            if (
+                self._training_strategy == "gradual"
+                and epoch == self._warmup_epochs
+            ):
+                encoder = getattr(model.backbone, "encoder", None)
+                layers = getattr(encoder, "layer", None)
+                if layers is None:
+                    raise RuntimeError(
+                        "gradual strategy requires backbone.encoder.layer"
+                    )
+                for layer in layers[-self._unfreeze_last_layers :]:
+                    for parameter in layer.parameters():
+                        parameter.requires_grad = True
+                optimizer = torch.optim.AdamW(
+                    [
+                        {
+                            "params": model.heads.parameters(),
+                            "lr": self._head_lr,
+                        },
+                        {
+                            "params": (
+                                parameter
+                                for parameter in model.backbone.parameters()
+                                if parameter.requires_grad
+                            ),
+                            "lr": self._backbone_lr,
+                        },
+                    ],
+                    weight_decay=0.01,
+                )
             order = torch.randperm(len(tasks), generator=generator)
             total = 0.0
             started = time.perf_counter()

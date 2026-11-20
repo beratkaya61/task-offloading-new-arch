@@ -1,0 +1,86 @@
+{
+  "model_id": "Qwen/Qwen2.5-1.5B-Instruct",
+  "sample_seed": 20261120,
+  "sampled": 200,
+  "kept": 188,
+  "rejected": 12,
+  "filters": [
+    "numbers preserved exactly",
+    "length ratio 0.5-2.0",
+    "text changed"
+  ],
+  "rejected_examples": [
+    {
+      "task_id": "ctest_main_tr_018_01",
+      "field": "task_text",
+      "original": "Solunum atağı riskini hesaplama için yaklaşık 4,1 kbitlik klinik sensör verisi, ev tipi spirometre tarafından işlenir. İşlenen ham kayıt kısıtlı veridir. İsteklerin en az %98'i başarıyla tamamlanmalıdır. Cihaz veya yakın edge kullanılabilir; genel bulut kullanılamaz.",
+      "rewritten": "Solunum atağı riskini hesaplama için yaklaşık 4,1 kbitlik klinik sensör verisi, ev tipi spirometre tarafından işlenir. İşlenen ham kayıt kısıtlı veridir. İsteklerin en az %98'i başarıyla tamamlanmalıdır. Cihaz veya yakın edge kullanılabilir; genel bulut kullanılamaz."
+    },
+    {
+      "task_id": "ctest_main_tr_066_06",
+      "field": "task_text",
+      "original": "Şerit tehlikesini saptama için ulaşım sensör verisi, bağlantılı araç kamerası tarafından işlenir. Görev cihaz, yakın edge veya bulutta çalıştırılabilir. Veri parçaları bağımsız ve paralel işlenebilir. Sonucun F1 skoru en az 0,93 olmalıdır.",
+      "rewritten": "Veri tabanı analizinde kullanılan bir teknik olarak, bir araçın durumunu belirleyen bir sensor verisini kullanır. Bu veriler, araçlar arasında iletişim kurmak için kullanılan bağlantıya dayanır. Bu sistem, araçların durumu hakkında bilgi vermektedir. \n\nBu sistem, araçların durumu hakkında bilgi vermektedir. Ayrıca, bu sistem, araçların durumu hakkında bilgi vermektedir. \n\nVeri tabanı analizinde kullanılan bir teknik olarak, bir araçın durumunu belirleyen bir sensor verisini kullanır. Bu veriler, araçlar arasında iletişim kurmak için kullanılan bağlantıya dayanır. Bu sistem, araçların durumu hakkında bilgi vermektedir. \n\nSonuçların F1 skorunun en az 0,93 olması gerekmektedir. Bu, sistemin doğru bir şekilde görev yapma durumuna sahip olduğunu gösterir."
+    },
+    {
+      "task_id": "ctest_main_tr_066_09",
+      "field": "task_text",
+      "original": "Şerit tehlikesini saptama için ulaşım sensör verisi, bağlantılı araç kamerası tarafından işlenir. Cihaz veya yakın edge kullanılabilir; genel bulut kullanılamaz. Yanıt anlık verilmelidir. Dört saniyelik gecikme tamamen kabul edilebilir.",
+      "rewritten": "Veri analizinde kullanılan ulaşım sensorlerinin verileri, cihazlar veya yakın bir edge kullanılarak işlenir. Bu durumda, genel bulut kullanılamaz. Yanıt anlık olarak alınmalıdır. Gecikme süresi tam olarak 4 saniye olmalıdır."
+    },
+    {
+      "task_id": "ctest_main_tr_085_04",
+      "field": "user_policy_text",
+      "original": "Pil tüketimini azaltmak birinci önceliktir.",
+      "rewritten": "1. Kullanım enerji kaybı azaltmak için.\n2. Üretim faaliyetlerinin etkili bir şekilde sınırlanması gerekmektedir.\n3. Bazı ürünlerin üretim sürecinde kullanılan enerji belirsizlikleri olabilir.\n4. Bu durumda, enerji kaybı azaltma stratejileri önemlidir.\n5. Bazı ürünlerin üretim sürecinde kullanılan enerji belirsizliği nedeniyle, enerji kaybı azaltma stratejileri önemlidir."
+    },
+    {
+      "task_id": "ctest_main_tr_110_07",
+      "field": "task_text",
+      "original": "Zemin hareketini değerlendirme için acil durum verisi, heyelan izleme sensörü tarafından işlenir. Yanıt anlık verilmelidir. Dört saniyelik gecikme tamamen kabul edilebilir. Görev cihaz, yakın edge veya bulutta çalıştırılabilir.",
+      "rewritten": "Zemin hareketini değerlendirmek için gereklidir. Heyelan izleme sensörünün işlevi, yanıt anlık olarak alınması gerekmektedir. Gecikme süresi 4 saniye arasında kabul edilebilir. Görev cihazı, yakınlarda veya çevrede çalıştırılabilir."
+    },
+    {
+      "task_id": "ctest_main_tr_146_04",
+      "field": "user_policy_text",
+      "original": "İsteklerin en az %99'u başarıyla tamamlanmalıdır.",
+      "rewritten": "İhtiyacınızın %99'ini tamamlamak için istekleriniz, herhangi bir hata olmadan ve belirli süre zarfında, tam olarak karşılanmalıdır."
+    },
+    {
+      "task_id": "ctest_main_tr_168_07",
+      "field": "user_policy_text",
+      "original": "Pil tüketimini azaltmak birinci önceliktir.",
+      "rewritten": "1. Kullanım enerji kaybı azaltmak için.\n2. Üretim faaliyetlerinin etkili bir şekilde sınırlanması gerekmektedir.\n3. Bazı ürünlerin üretim sürecinde kullanılan enerji belirsizlikleri olabilir.\n4. Bu durumda, enerji kaybı azaltma stratejileri önemlidir.\n5. Bazı ürünlerin üretim sürecinde kullanılan enerji belirsizliği nedeniyle, enerji kaybı azaltma stratejileri önemlidir."
+    },
+    {
+      "task_id": "ctest_main_tr_176_01",
+      "field": "user_policy_text",
+      "original": "Pil tüketimini azaltmak birinci önceliktir.",
+      "rewritten": "1. Kullanım enerji kaybı azaltmak için.\n2. Üretim faaliyetlerinin etkili bir şekilde sınırlanması gerekmektedir.\n3. Bazı ürünlerin üretim sürecinde kullanılan enerji belirsizlikleri olabilir.\n4. Bu durumda, enerji kaybı azaltma stratejileri önemlidir.\n5. Bazı ürünlerin üretim sürecinde kullanılan enerji belirsizliği nedeniyle, enerji kaybı azaltma stratejileri önemlidir."
+    },
+    {
+      "task_id": "ctest_main_tr_177_04",
+      "field": "user_policy_text",
+      "original": "Pil tüketimini azaltmak birinci önceliktir.",
+      "rewritten": "1. Kullanım enerji kaybı azaltmak için.\n2. Üretim faaliyetlerinin etkili bir şekilde sınırlanması gerekmektedir.\n3. Bazı ürünlerin üretim sürecinde kullanılan enerji belirsizlikleri olabilir.\n4. Bu durumda, enerji kaybı azaltma stratejileri önemlidir.\n5. Bazı ürünlerin üretim sürecinde kullanılan enerji belirsizliği nedeniyle, enerji kaybı azaltma stratejileri önemlidir."
+    },
+    {
+      "task_id": "ctest_main_tr_188_09",
+      "field": "user_policy_text",
+      "original": "Pil tüketimini azaltmak birinci önceliktir. Görev parçaları birbirinden bağımsız işlenebilir.",
+      "rewritten": "1. Kullanım durumu kontrolü:\n   - Uygun kullanım durumunu kontrol etmek önemlidir.\n   \n2. Kullanıcı talepleri karşılamak:\n   - Kullanıcı taleplerini tam olarak karşılayabilmek önemlidir.\n   \n3. Ürünlerinizi güncellemek:\n   - Ürünlerinizi en son sürümüne güncelleyebilirsiniz.\n   \n4. Hizmetlerinizinizi güncellemek:\n   - Hizmetlerinizinizi en son sürümüne güncelleyebilirsiniz.\n   \n5. Müşterilerinizinize özel hizmetler sunma:\n   - Müşterilerinizinize özel hizmetler sunabilirsiniz.\n   \n6. Kullanıcıların size güvenli olmalarına yardımcı olması:\n   - Kullanıcıların size güvenli olmalarına yardımcı olabilirsiniz.\n   \n7. Ürünlerinizi kullanıcılarla paylaşımı:\n   - Ürünlerinizi kullanıcılar"
+    },
+    {
+      "task_id": "ctest_main_tr_196_03",
+      "field": "task_text",
+      "original": "Görüntüleri gruplandırma için kişisel cihaz verisi, kişisel fotoğraf düzenleyicisi tarafından işlenir. Enerji tüketimi ile yanıt süresi dengelenmelidir. Bağlantı kesintilerine karşı yüksek güvenilirlik sağlanmalıdır. Sonuç en geç 500 ms içinde hazır olmalıdır.",
+      "rewritten": "Sure, here is the translated and reformatted version of the Turkish text:\n\n**Original Text:** \nGörüntüleri gruplandırma için kişisel cihaz verisi, kişisel fotoğraf düzenleyicisi tarafından işlenir. Enerji tüketimi ile yanıt süresi dengelenmelidir. Bağlantı kesintilerine karşı yüksek güvenilirlik sağlanmalıdır. Sonuç en geç 500 ms içinde hazır olmalıdır.\n\n**Reformatted Version:**\nİçeriklerini gruplayabilmek için kişisel cihaz verileri, kişisel fotoğraf düzenleme yazılımı tarafından işleme sunulur. Bu işlem enerji tüketimiyle birlikte, yanıt süresinin dengeli olması gerekmektedir. Bağlantı kesintilerine karşı yüksek güvenilirlik sağlama konusunda önerebilirsiniz. Sonuçta en az 500 ms içinde oluşturulması gereken bir sonuç oluşturmak için bu durumun değerlendirilmesi önem"
+    },
+    {
+      "task_id": "ctest_main_tr_237_02",
+      "field": "user_policy_text",
+      "original": "Sonuç en geç 80 ms içinde hazır olmalıdır. Enerji tüketimi ile yanıt süresi dengelenmelidir. Görev parçaları birbirinden bağımsız işlenebilir.",
+      "rewritten": "Sonuç en az 75 ms içinde hazır olmalıdır. Enerji tüketimi ile yanıt süresi dengelenmelidir. Görevler birbirinden bağımsız olarak çalışabilir."
+    }
+  ]
+}

@@ -68,14 +68,20 @@ class FewShotLlmBaseline:
         shots: int = 4,
         max_new_tokens: int = 260,
         threads: int = 16,
+        label_encoding: str = "signatures",
     ) -> None:
-        self.name = f"llm_fewshot_{model_id.split('/')[-1]}"
+        if label_encoding not in {"signatures", "codes"}:
+            raise ValueError("label_encoding must be 'signatures' or 'codes'")
+        suffix = "" if label_encoding == "signatures" else f"_codes{shots}shot"
+        self.name = f"llm_fewshot_{model_id.split('/')[-1]}{suffix}"
         self._cache = str(cache_folder)
         self._model_id = model_id
         self._shots = shots
         self._max_new_tokens = max_new_tokens
         self._threads = threads
+        self._label_encoding = label_encoding
         self._vocabulary: dict[str, list[str]] = {}
+        self._codebook: dict[str, dict[str, str]] = {}
         self._examples: list[tuple[str, dict[str, list[Any]]]] = []
         self._model: Any = None
         self._tokenizer: Any = None
@@ -98,6 +104,10 @@ class FewShotLlmBaseline:
                 _signature_label(semantic_signature(a, field)) for a in annotations
             )
             self._vocabulary[field] = sorted(counts)
+            self._codebook[field] = {
+                label: f"c{index}"
+                for index, label in enumerate(self._vocabulary[field])
+            }
         ranked = sorted(
             zip(tasks, annotations, strict=True),
             key=lambda pair: (
@@ -149,9 +159,31 @@ class FewShotLlmBaseline:
             "Her alanın izin verilen değerleri (JSON listesi olarak, birebir kopyala):",
         ]
         for field in ANNOTATION_FIELDS:
-            options = "; ".join(self._vocabulary[field])
+            if self._label_encoding == "codes":
+                options = "; ".join(
+                    f"{code}={label}"
+                    for label, code in self._codebook[field].items()
+                )
+            else:
+                options = "; ".join(self._vocabulary[field])
             lines.append(f"- {field} ({_FIELD_HELP[field]}): {options}")
+        if self._label_encoding == "codes":
+            lines.append(
+                "Yanıtta her alan için yalnız ilgili kısa kodu yaz; "
+                "örnek biçim: {\"domain\":\"c0\",\"latency\":\"c1\",...}."
+            )
         return "\n".join(lines)
+
+    def _encoded_example(self, labels: Mapping[str, list[Any]]) -> dict[str, Any]:
+        if self._label_encoding != "codes":
+            return dict(labels)
+        encoded: dict[str, str] = {}
+        for field in ANNOTATION_FIELDS:
+            label = json.dumps(
+                labels[field], ensure_ascii=False, separators=(",", ":")
+            )
+            encoded[field] = self._codebook[field][label]
+        return encoded
 
     def _messages(self, text: str) -> list[dict[str, str]]:
         messages = [{"role": "system", "content": self._system_prompt()}]
@@ -160,7 +192,9 @@ class FewShotLlmBaseline:
             messages.append(
                 {
                     "role": "assistant",
-                    "content": json.dumps(labels, ensure_ascii=False),
+                    "content": json.dumps(
+                        self._encoded_example(labels), ensure_ascii=False
+                    ),
                 }
             )
         messages.append({"role": "user", "content": f"Metin: {text}"})
@@ -181,11 +215,22 @@ class FewShotLlmBaseline:
             parsed = {}
         for field in ANNOTATION_FIELDS:
             value = parsed.get(field)
-            label = (
-                json.dumps(value, ensure_ascii=False, separators=(",", ":"))
-                if isinstance(value, list)
-                else None
-            )
+            if self._label_encoding == "codes":
+                code = f"c{value}" if isinstance(value, int) else str(value)
+                label = next(
+                    (
+                        candidate
+                        for candidate, candidate_code in self._codebook[field].items()
+                        if candidate_code == code
+                    ),
+                    None,
+                )
+            else:
+                label = (
+                    json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+                    if isinstance(value, list)
+                    else None
+                )
             if label is not None and label in self._vocabulary[field]:
                 signatures[field] = _label_signature(label)
                 continue
