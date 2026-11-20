@@ -51,7 +51,7 @@ def action_is_available(
 
     if (
         config.mask_semantic_permissions
-        and action.tier not in task.requirements.allowed_tiers
+        and action.tier not in task.policy_requirements.allowed_tiers
     ):
         return False
     if action.tier is ExecutionTier.DEVICE:
@@ -238,8 +238,11 @@ def transition(
             achieved_accuracy=0.0,
         )
 
+    # Violations are judged against the evaluation truth; the mask only knows
+    # what the semantic extractor believed.
     semantic_disallowed = action.tier not in task.requirements.allowed_tiers
-    if config.mask_semantic_permissions and semantic_disallowed:
+    masked_by_belief = action.tier not in task.policy_requirements.allowed_tiers
+    if config.mask_semantic_permissions and masked_by_belief:
         return _failure_result(
             state,
             task,

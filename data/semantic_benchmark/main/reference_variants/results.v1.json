@@ -1,0 +1,310 @@
+{
+  "results_version": "1.0.0",
+  "reference_claim": "single_human_reference_not_adjudicated_gold",
+  "normalized_reference_sha256": "76a19232cc68bba32dfbccd4bfcfad5c9082a9ce2c68b7db7999cd968c94a7c5",
+  "subset_sizes": {
+    "original_reference_all_60": 60,
+    "protocol_normalized_all_60": 60,
+    "protocol_normalized_without_policy_text": 31,
+    "protocol_normalized_with_policy_text": 29
+  },
+  "evaluation_labels_used_for_training_or_tuning": false,
+  "models": {
+    "constant_profile": {
+      "prediction_path": "data/semantic_benchmark/main/baselines/predictions/constant_profile.v1.jsonl",
+      "prediction_sha256": "285510eb22813648f40c270498271d32f92cd34d0b8c3a062a39101e80b1ee57",
+      "variants": {
+        "original_reference_all_60": {
+          "task_count": 60,
+          "exact_record_accuracy": 0.03333333333333333,
+          "exact_field_accuracy": 0.7583333333333333,
+          "macro_f1_across_fields": 0.26667785256906246,
+          "critical_privacy_recall": 0.0,
+          "fields": {
+            "domain": 0.11666666666666667,
+            "latency": 0.7666666666666667,
+            "privacy": 0.8166666666666667,
+            "execution_policy": 0.8666666666666667,
+            "reliability": 0.8833333333333333,
+            "accuracy": 0.8666666666666667,
+            "energy_priority": 0.85,
+            "divisibility": 0.9
+          }
+        },
+        "protocol_normalized_all_60": {
+          "task_count": 60,
+          "exact_record_accuracy": 0.03333333333333333,
+          "exact_field_accuracy": 0.7583333333333333,
+          "macro_f1_across_fields": 0.25293865113627695,
+          "critical_privacy_recall": 0.0,
+          "fields": {
+            "domain": 0.11666666666666667,
+            "latency": 0.7666666666666667,
+            "privacy": 0.8166666666666667,
+            "execution_policy": 0.8666666666666667,
+            "reliability": 0.8833333333333333,
+            "accuracy": 0.8666666666666667,
+            "energy_priority": 0.85,
+            "divisibility": 0.9
+          }
+        },
+        "protocol_normalized_without_policy_text": {
+          "task_count": 31,
+          "exact_record_accuracy": 0.0,
+          "exact_field_accuracy": 0.7137096774193549,
+          "macro_f1_across_fields": 0.2571193958045738,
+          "critical_privacy_recall": 0.0,
+          "fields": {
+            "domain": 0.0967741935483871,
+            "latency": 0.7741935483870968,
+            "privacy": 0.8064516129032258,
+            "execution_policy": 0.8064516129032258,
+            "reliability": 0.8387096774193549,
+            "accuracy": 0.8064516129032258,
+            "energy_priority": 0.7741935483870968,
+            "divisibility": 0.8064516129032258
+          }
+        },
+        "protocol_normalized_with_policy_text": {
+          "task_count": 29,
+          "exact_record_accuracy": 0.06896551724137931,
+          "exact_field_accuracy": 0.8060344827586207,
+          "macro_f1_across_fields": 0.44408399437533735,
+          "critical_privacy_recall": 0.0,
+          "fields": {
+            "domain": 0.13793103448275862,
+            "latency": 0.7586206896551724,
+            "privacy": 0.8275862068965517,
+            "execution_policy": 0.9310344827586207,
+            "reliability": 0.9310344827586207,
+            "accuracy": 0.9310344827586207,
+            "energy_priority": 0.9310344827586207,
+            "divisibility": 1.0
+          }
+        }
+      }
+    },
+    "rule_keyword": {
+      "prediction_path": "data/semantic_benchmark/main/baselines/predictions/rule_keyword.v1.jsonl",
+      "prediction_sha256": "80fe29351c124101f8505c118abac59a5fc8cc59396be475fa43428bd7178a8d",
+      "variants": {
+        "original_reference_all_60": {
+          "task_count": 60,
+          "exact_record_accuracy": 0.35,
+          "exact_field_accuracy": 0.8979166666666667,
+          "macro_f1_across_fields": 0.7129141331738115,
+          "critical_privacy_recall": 0.42857142857142855,
+          "fields": {
+            "domain": 0.7833333333333333,
+            "latency": 1.0,
+            "privacy": 0.9166666666666666,
+            "execution_policy": 0.9,
+            "reliability": 0.8833333333333333,
+            "accuracy": 0.8833333333333333,
+            "energy_priority": 0.9166666666666666,
+            "divisibility": 0.9
+          }
+        },
+        "protocol_normalized_all_60": {
+          "task_count": 60,
+          "exact_record_accuracy": 0.38333333333333336,
+          "exact_field_accuracy": 0.9083333333333333,
+          "macro_f1_across_fields": 0.7804914447511231,
+          "critical_privacy_recall": 0.42857142857142855,
+          "fields": {
+            "domain": 0.7833333333333333,
+            "latency": 1.0,
+            "privacy": 0.9166666666666666,
+            "execution_policy": 0.9,
+            "reliability": 0.95,
+            "accuracy": 0.9,
+            "energy_priority": 0.9166666666666666,
+            "divisibility": 0.9
+          }
+        },
+        "protocol_normalized_without_policy_text": {
+          "task_count": 31,
+          "exact_record_accuracy": 0.7096774193548387,
+          "exact_field_accuracy": 0.9637096774193549,
+          "macro_f1_across_fields": 0.947576035076035,
+          "critical_privacy_recall": 0.5,
+          "fields": {
+            "domain": 0.7741935483870968,
+            "latency": 1.0,
+            "privacy": 0.9354838709677419,
+            "execution_policy": 1.0,
+            "reliability": 1.0,
+            "accuracy": 1.0,
+            "energy_priority": 1.0,
+            "divisibility": 1.0
+          }
+        },
+        "protocol_normalized_with_policy_text": {
+          "task_count": 29,
+          "exact_record_accuracy": 0.034482758620689655,
+          "exact_field_accuracy": 0.8491379310344828,
+          "macro_f1_across_fields": 0.5581804516678467,
+          "critical_privacy_recall": 0.3333333333333333,
+          "fields": {
+            "domain": 0.7931034482758621,
+            "latency": 1.0,
+            "privacy": 0.896551724137931,
+            "execution_policy": 0.7931034482758621,
+            "reliability": 0.896551724137931,
+            "accuracy": 0.7931034482758621,
+            "energy_priority": 0.8275862068965517,
+            "divisibility": 0.7931034482758621
+          }
+        }
+      }
+    },
+    "tfidf_logistic_regression": {
+      "prediction_path": "data/semantic_benchmark/main/baselines/predictions/tfidf_logistic_regression.v1.jsonl",
+      "prediction_sha256": "9e9e6ef110beaaebd84fb089bc6db69b9439540cccda986339e1f3c8c14d6bcb",
+      "variants": {
+        "original_reference_all_60": {
+          "task_count": 60,
+          "exact_record_accuracy": 0.26666666666666666,
+          "exact_field_accuracy": 0.8791666666666667,
+          "macro_f1_across_fields": 0.6986109118852961,
+          "critical_privacy_recall": 0.42857142857142855,
+          "fields": {
+            "domain": 0.6333333333333333,
+            "latency": 1.0,
+            "privacy": 0.9166666666666666,
+            "execution_policy": 0.9,
+            "reliability": 0.8833333333333333,
+            "accuracy": 0.8833333333333333,
+            "energy_priority": 0.9166666666666666,
+            "divisibility": 0.9
+          }
+        },
+        "protocol_normalized_all_60": {
+          "task_count": 60,
+          "exact_record_accuracy": 0.3,
+          "exact_field_accuracy": 0.8895833333333333,
+          "macro_f1_across_fields": 0.7661882234626076,
+          "critical_privacy_recall": 0.42857142857142855,
+          "fields": {
+            "domain": 0.6333333333333333,
+            "latency": 1.0,
+            "privacy": 0.9166666666666666,
+            "execution_policy": 0.9,
+            "reliability": 0.95,
+            "accuracy": 0.9,
+            "energy_priority": 0.9166666666666666,
+            "divisibility": 0.9
+          }
+        },
+        "protocol_normalized_without_policy_text": {
+          "task_count": 31,
+          "exact_record_accuracy": 0.5483870967741935,
+          "exact_field_accuracy": 0.9435483870967742,
+          "macro_f1_across_fields": 0.9323467331279831,
+          "critical_privacy_recall": 0.5,
+          "fields": {
+            "domain": 0.6129032258064516,
+            "latency": 1.0,
+            "privacy": 0.9354838709677419,
+            "execution_policy": 1.0,
+            "reliability": 1.0,
+            "accuracy": 1.0,
+            "energy_priority": 1.0,
+            "divisibility": 1.0
+          }
+        },
+        "protocol_normalized_with_policy_text": {
+          "task_count": 29,
+          "exact_record_accuracy": 0.034482758620689655,
+          "exact_field_accuracy": 0.8318965517241379,
+          "macro_f1_across_fields": 0.5440559476995926,
+          "critical_privacy_recall": 0.3333333333333333,
+          "fields": {
+            "domain": 0.6551724137931034,
+            "latency": 1.0,
+            "privacy": 0.896551724137931,
+            "execution_policy": 0.7931034482758621,
+            "reliability": 0.896551724137931,
+            "accuracy": 0.7931034482758621,
+            "energy_priority": 0.8275862068965517,
+            "divisibility": 0.7931034482758621
+          }
+        }
+      }
+    },
+    "frozen_multilingual_e5_small_logreg": {
+      "prediction_path": "data/semantic_benchmark/main/baselines/encoder/predictions.v1.jsonl",
+      "prediction_sha256": "22d7aea6a3a14ba6f033c7141294318da73e042272e5da4f7f9e8343b04803ee",
+      "variants": {
+        "original_reference_all_60": {
+          "task_count": 60,
+          "exact_record_accuracy": 0.3,
+          "exact_field_accuracy": 0.8791666666666667,
+          "macro_f1_across_fields": 0.7040054712346252,
+          "critical_privacy_recall": 0.42857142857142855,
+          "fields": {
+            "domain": 0.7166666666666667,
+            "latency": 1.0,
+            "privacy": 0.9,
+            "execution_policy": 0.9,
+            "reliability": 0.8166666666666667,
+            "accuracy": 0.8833333333333333,
+            "energy_priority": 0.9166666666666666,
+            "divisibility": 0.9
+          }
+        },
+        "protocol_normalized_all_60": {
+          "task_count": 60,
+          "exact_record_accuracy": 0.3333333333333333,
+          "exact_field_accuracy": 0.8895833333333333,
+          "macro_f1_across_fields": 0.757693893923048,
+          "critical_privacy_recall": 0.42857142857142855,
+          "fields": {
+            "domain": 0.7166666666666667,
+            "latency": 1.0,
+            "privacy": 0.9,
+            "execution_policy": 0.9,
+            "reliability": 0.8833333333333333,
+            "accuracy": 0.9,
+            "energy_priority": 0.9166666666666666,
+            "divisibility": 0.9
+          }
+        },
+        "protocol_normalized_without_policy_text": {
+          "task_count": 31,
+          "exact_record_accuracy": 0.6129032258064516,
+          "exact_field_accuracy": 0.9475806451612904,
+          "macro_f1_across_fields": 0.9270105588855588,
+          "critical_privacy_recall": 0.5,
+          "fields": {
+            "domain": 0.7096774193548387,
+            "latency": 1.0,
+            "privacy": 0.9354838709677419,
+            "execution_policy": 1.0,
+            "reliability": 0.9354838709677419,
+            "accuracy": 1.0,
+            "energy_priority": 1.0,
+            "divisibility": 1.0
+          }
+        },
+        "protocol_normalized_with_policy_text": {
+          "task_count": 29,
+          "exact_record_accuracy": 0.034482758620689655,
+          "exact_field_accuracy": 0.8275862068965517,
+          "macro_f1_across_fields": 0.5336650204953777,
+          "critical_privacy_recall": 0.3333333333333333,
+          "fields": {
+            "domain": 0.7241379310344828,
+            "latency": 1.0,
+            "privacy": 0.8620689655172413,
+            "execution_policy": 0.7931034482758621,
+            "reliability": 0.8275862068965517,
+            "accuracy": 0.7931034482758621,
+            "energy_priority": 0.8275862068965517,
+            "divisibility": 0.7931034482758621
+          }
+        }
+      }
+    }
+  }
+}

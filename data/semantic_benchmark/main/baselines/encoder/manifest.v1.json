@@ -1,0 +1,90 @@
+{
+  "manifest_version": "1.0.0",
+  "created_on": "2026-09-29",
+  "status": "completed_frozen_encoder_baseline",
+  "model": {
+    "model_id": "intfloat/multilingual-e5-small",
+    "requested_revision": "0e60b8d9d2166d80387f86e3b48ec9ced55f4d15",
+    "license": "MIT",
+    "source": "https://huggingface.co/intfloat/multilingual-e5-small",
+    "encoder_frozen": true,
+    "cache_path": "models/huggingface",
+    "cache_committed_to_git": false
+  },
+  "inputs": {
+    "tasks.v1.jsonl": {
+      "path": "data/semantic_benchmark/main/tasks.v1.jsonl",
+      "sha256": "c045f48afeab9b4c95dc023ca2d4df9215205f10dba29d45d0e8e69f39f7270a"
+    },
+    "split_manifest.v1.json": {
+      "path": "data/semantic_benchmark/main/split_manifest.v1.json",
+      "sha256": "2f59855ad9a1b86342e676f7435667a8a0cd4e62cd035cef2b430169d98420e3"
+    },
+    "machine_development.v1.jsonl": {
+      "path": "data/semantic_benchmark/main/preannotations/machine_development.v1.jsonl",
+      "sha256": "29df545c2b629fdf1af681ce4cb8a7477fc0c7516548fc0dc521e720837b37bc"
+    },
+    "annotator_a.single_human_reference.v1.3.jsonl": {
+      "path": "data/semantic_benchmark/main/annotations/annotator_a.single_human_reference.v1.3.jsonl",
+      "sha256": "7eecd3d8efd42b1606911729cbd96706cc9b4b55560fb78fabb8a1f37dae3b08"
+    },
+    "submission_manifest.v1.json": {
+      "path": "data/semantic_benchmark/main/annotations/submission_manifest.v1.json",
+      "sha256": "4f1c6bb982805b84f437d99eee253e2f2aa86bf2519dfea20a4316982b719bf0"
+    },
+    "semantic_requirements.schema.json": {
+      "path": "schemas/semantic_requirements.schema.json",
+      "sha256": "3a8b2833107e3775367ace368e5163f802fecaffdd33a0c35bf8b5de769d8a06"
+    },
+    "semantic_encoder.v1.json": {
+      "path": "configs/semantic_encoder.v1.json",
+      "sha256": "fcb9bd3a4a42a31cd2b2551a319ee6bbf3d4452ac13444f429ab9b1b90fd3e61"
+    }
+  },
+  "implementation": {
+    "baselines.py": {
+      "path": "src/task_offloading/semantic/baselines.py",
+      "sha256": "43d9663a136c89b80cd55ec056fe2356ee3c859e82f61346428414ea7d11ab83"
+    },
+    "encoder.py": {
+      "path": "src/task_offloading/semantic/encoder.py",
+      "sha256": "56afdbd48c145663e795c01513708f3d1e2bdd6ed7fcc9751c0f9acc2cbafd39"
+    },
+    "evaluation.py": {
+      "path": "src/task_offloading/semantic/evaluation.py",
+      "sha256": "fddfcbbab760269862531b04452e34ddb9c9631089a4a03d888df9de19308566"
+    },
+    "experiment.py": {
+      "path": "src/task_offloading/semantic/experiment.py",
+      "sha256": "e50ed7b1028cbd4702e43904fcf650955faf3668692761199b684d77f266f2aa"
+    },
+    "run_semantic_encoder.py": {
+      "path": "scripts/run_semantic_encoder.py",
+      "sha256": "3085cea452eff230975254000532e20938ea6fd2cf5d03d33599ba611eb615cc"
+    }
+  },
+  "outputs": {
+    "predictions": {
+      "path": "data/semantic_benchmark/main/baselines/encoder/predictions.v1.jsonl",
+      "sha256": "22d7aea6a3a14ba6f033c7141294318da73e042272e5da4f7f9e8343b04803ee",
+      "record_count": 60
+    },
+    "results": {
+      "path": "data/semantic_benchmark/main/baselines/encoder/results.v1.json",
+      "sha256": "0440218c017889150ef5b26f7f215c7ddb34ee4c3929abf45f73b572b5b50e6a"
+    }
+  },
+  "environment": {
+    "python": "3.11.5",
+    "numpy": "2.4.6",
+    "sentence_transformers": "6.3.0"
+  },
+  "leakage_controls": {
+    "evaluation_labels_loaded_after_predictions": true,
+    "visible_inputs_only": [
+      "task_text",
+      "user_policy_text"
+    ],
+    "authoring_metadata_used": false
+  }
+}

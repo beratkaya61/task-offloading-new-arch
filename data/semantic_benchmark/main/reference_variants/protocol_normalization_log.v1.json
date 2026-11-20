@@ -1,0 +1,47 @@
+{
+  "log_version": "1.0.0",
+  "source_reference_sha256": "7eecd3d8efd42b1606911729cbd96706cc9b4b55560fb78fabb8a1f37dae3b08",
+  "rules": {
+    "R1_reliability_threshold": "docs/ANNOTATION_PROTOCOL.md 5.5: >= 0.999 is mission_critical",
+    "R2_metric_spelling": "docs/ANNOTATION_PROTOCOL.md 5.6: metric=F1"
+  },
+  "model_predictions_consulted": false,
+  "change_count": 5,
+  "changes": [
+    {
+      "task_id": "main_tr_065",
+      "rule": "R1_reliability_threshold",
+      "field": "reliability.tier",
+      "from": "high",
+      "to": "mission_critical"
+    },
+    {
+      "task_id": "main_tr_066",
+      "rule": "R1_reliability_threshold",
+      "field": "reliability.tier",
+      "from": "high",
+      "to": "mission_critical"
+    },
+    {
+      "task_id": "main_tr_095",
+      "rule": "R1_reliability_threshold",
+      "field": "reliability.tier",
+      "from": "high",
+      "to": "mission_critical"
+    },
+    {
+      "task_id": "main_tr_095",
+      "rule": "R2_metric_spelling",
+      "field": "accuracy.metric",
+      "from": "f1",
+      "to": "F1"
+    },
+    {
+      "task_id": "main_tr_096",
+      "rule": "R1_reliability_threshold",
+      "field": "reliability.tier",
+      "from": "high",
+      "to": "mission_critical"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+# Checksum-bound research artifacts must be byte-identical on every OS.
+* text=auto eol=lf
+*.zip binary
+*.7z binary
+*.png binary
+*.pdf binary

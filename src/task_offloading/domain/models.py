@@ -115,6 +115,22 @@ class Task:
     output_bits: float
     compute_cycles: float
     requirements: TaskRequirements = field(default_factory=TaskRequirements)
+    believed_requirements: TaskRequirements | None = None
+    """Requirements produced by a semantic extractor and visible to the policy.
+
+    ``requirements`` is the evaluation truth (for example the human reference).
+    When an imperfect extractor is studied, its output goes here: action masks
+    use the believed values while constraint violations are always judged
+    against ``requirements``.  ``None`` means the policy sees the truth.
+    """
+
+    @property
+    def policy_requirements(self) -> TaskRequirements:
+        """Requirements the decision maker may observe and mask with."""
+
+        if self.believed_requirements is None:
+            return self.requirements
+        return self.believed_requirements
 
     def __post_init__(self) -> None:
         if not self.task_id:
