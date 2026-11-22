@@ -10,19 +10,48 @@
 
 > **Kanıt durumu:** Semantik benchmark v3.2, NEP-v2 exact/noisy/independent offloading deneyleri, EUA entity holdout, iki-domain holdout, dört source-layer counterfactual ve Phase 10 reproducibility/quality gate tamamlandı. Ana PPO koşulları 5 independent training seed × 150.000 step; her değerlendirme 60 episode × 64 task = 3.840 paired decision içeriyor. Sonuçlar gerçek testbed değil, provenance-korumalı **trace-driven-hybrid simulation** sonucudur. Bu sınırı makale ve tez boyunca koruyacağım.
 
+> **Terminology convention:** Literatürde yerleşik teknik terimleri anlam kaybını
+> önlemek için English biçimleriyle kullanıyorum. Türkçe metin bu terimlerin ne
+> yaptığını açıklıyor; ancak terimin kendisini çevirmiyorum. Örneğin “kesin kısıt
+> ihlali” yerine **hard constraint violation**, “güven aralığı” yerine
+> **confidence interval (CI)** ve “eylem maskeleme” yerine **action masking**
+> kullanıyorum.
+
+| Standard technical term | Bu belgedeki anlamı |
+|---|---|
+| `task offloading` | Bir task'in `local`, `edge` veya `cloud` üzerinde çalıştırılmasına karar verme problemi |
+| `semantic extractor` / `semantic requirement contract` | Natural-language task text'ten sekiz alanlı, denetlenebilir requirement yapısı çıkaran katman ve çıktısı |
+| `task success rate` | Physical completion ile semantic QoS/constraint koşullarının birlikte sağlanma oranı |
+| `hard constraint violation rate` | Privacy veya execution prohibition gibi kesin kuralların ihlal oranı |
+| `confidence calibration` / `fallback` | Raw confidence'ı development data ile düzeltme ve düşük confidence durumunda alternatif profile geçme |
+| `action masking` / `penalty` | Invalid action'ı seçimden kaldırma veya reward içinde cezalandırma yaklaşımları |
+| `holdout` / `ablation` / `counterfactual` | Genelleme için grubu testte tutma, bileşen çıkarma ve frozen policy altında evaluation distribution değiştirme deneyleri |
+| `paired bootstrap`, `95% CI`, `Holm correction` | Aynı evaluation events üzerinde uncertainty ve multiple-testing kontrolü |
+| `tail latency`, `policy collapse`, `decision overhead` | Uç gecikmeler, tek action'a yığılma ve policy inference süresi |
+
 ## 1. Yönetici özeti
 
 Bu çalışmada doğal dille verilen bir IoT/MEC görevini doğrudan LLM'ye “local, edge veya cloud seç” diyerek çözdürmüyorum. Önce görev metninden sekiz alanlı ve denetlenebilir bir **semantic requirement contract** çıkarıyorum. Ardından bu sözleşmeyi BUPT, NEP, UCI ve EUA kaynaklarıyla koşullandırılan ortak fizik çekirdeğine veriyor; offloading kararını güçlü bir greedy heuristic veya PPO ile alıyorum. Semantic extractor; network state, reward, oracle veya doğru action'ı görmüyor. Bu izolasyon sayesinde dil anlama hatası ile karar politikası hatasını ayrı ölçebiliyorum.
+
+Pratikte izlediğim end-to-end işlem sırası şöyledir:
+
+1. Natural-language task text'i alıyorum.
+2. `Semantic extractor` ile sekiz alanlı `semantic requirement contract` üretiyorum.
+3. Raw prediction, calibrated confidence, model revision ve parser output'unu PPO training başlamadan önce donduruyorum.
+4. BUPT, NEP, UCI ve EUA katmanlarından provenance-korumalı physical events oluşturuyorum.
+5. Aynı events üzerinde fixed, random, greedy ve PPO policy ailelerini karşılaştırıyorum.
+6. `Task success rate`, `hard constraint violation rate`, latency, queue, throughput, energy, fairness, `policy collapse` ve `decision overhead` metriklerini ölçüyorum.
+7. Exact/noisy preview, independent paraphrase, entity/domain holdout ve source-layer counterfactual deneyleriyle sonucun ne kadar genellenebildiğini test ediyorum.
 
 Çalışmanın ana bulguları şunlardır:
 
 1. **Model büyüklüğü tek başına kalite sağlamadı.** Single-human-60 özgün metinde macro-F1; rule için `%78,0`, TF-IDF(+data) için `%78,2`, frozen E5(+data) için `%76,3`, fine-tuned E5 için `%70,2`, Qwen2.5-1.5B 4-shot için `%48,3` oldu. Independent-188 paraphrase setinde TF-IDF(+data) `%80,9` ile en iyi makine yöntemi olurken Qwen `%42,0` kaldı.
 2. **Asıl ayrım paraphrase robustness altında oluştu.** Rule, makine yeniden yazımında `%40,3` macro-F1'e düştü; TF-IDF(+data) `%67,9` elde etti. Görülmemiş kompozisyonel ifadelerde rule `%47,5`, TF-IDF(+data) `%73,6`, frozen E5(+data) `%70,9` oldu.
-3. **Doğru semantik bilgi NEP-v2 sistem sonucunu belirgin artırdı.** Exact-preview koşulunda reference semantics, no-semantic'e göre success'i PPO'da `+15,03` percentage point [%95 CI `+13,85; +16,27`], greedy'de `+12,94` point [%95 CI `+11,77; +14,12`] artırdı.
-4. **Extractor quality downstream safety'yi doğrudan etkiledi.** PPO'da rule-paraphrase `%14,18` hard violation üretirken TF-IDF(+data) `%4,08`, frozen E5(+data) `%5,03`, single-human reference `%0,00` üretti. Rule yerine TF-IDF kullanımı hard violation'ı `10,10` point azalttı.
+3. **Doğru semantik bilgi NEP-v2 sistem sonucunu belirgin artırdı.** Exact-preview koşulunda reference semantics, no-semantic'e göre `task success rate` değerini PPO'da `+15,03` percentage point [95% CI `+13,85; +16,27`], greedy'de `+12,94` point [95% CI `+11,77; +14,12`] artırdı.
+4. **Extractor quality downstream safety'yi doğrudan etkiledi.** PPO'da rule-paraphrase `%14,18` `hard constraint violation rate` üretirken TF-IDF(+data) `%4,08`, frozen E5(+data) `%5,03`, single-human reference `%0,00` üretti. Rule yerine TF-IDF kullanımı `hard constraint violation rate` değerini `10,10` point azalttı.
 5. **PPO, güçlü greedy baseline'ı geçmedi.** Reference koşulunda greedy `%91,7`, PPO `%91,2` success verdi. Noisy-preview ve domain holdout'ta da PPO üstünlüğü desteklenmedi. Bu negative result gizlenmiyor; makalenin dürüst deneysel sonucudur.
 6. **Semantic state policy collapse'ı azalttı.** No-semantic PPO'nun max-action share değeri `%99,7` iken reference PPO'da `%72,3` oldu. Buna rağmen greedy daha düşük latency, energy/success ve decision overhead sağladı.
-7. **Ana yön genelleme kontrollerinde korundu.** EUA entity holdout'ta semantic PPO avantajı `+15,03` point, iki-domain holdout'ta `+13,41` point oldu; her iki koşulda reference hard violation `%0,00` kaldı.
+7. **Ana yön generalization kontrollerinde korundu.** EUA entity holdout'ta semantic PPO avantajı `+15,03` point, two-domain holdout'ta `+13,41` point oldu; her iki koşulda reference `hard constraint violation rate` `%0,00` kaldı.
 8. **Calibration/fallback evrensel bir güvenlik garantisi değildir.** Development-only isotonic calibration confidence ölçümünü bazı modellerde iyileştirdi; fakat fallback yalnız PPO/TF-IDF koşulunda önceden tanımlı başarı-güvenlik kapısını geçti. H3 bu nedenle desteklenmedi.
 
 Bugün savunabildiğim ana sonuç şudur:
@@ -40,7 +69,7 @@ Bugün savunabildiğim ana sonuç şudur:
 | Faz 7: generalization/source ablation | **Tamamlandı** | Temporal, entity, scenario-family proxy, domain holdout ve source counterfactual | Claim sınırlarını tez metninde korumak |
 | Faz 8: GNN/recurrent/partial offloading | **Koşullu; aktif backlog değil** | Bu karmaşıklıkları zorunlu kılan kanıt yok | Ancak yeni hipotez ve adil ablation bütçesi açılırsa |
 | Faz 9: physical testbed/emulation | **Opsiyonel** | Simülasyon testbed diye sunulmuyor | Yapılırsa ayrı sim-to-real çalışma |
-| Faz 10: tez/makale ve reproducibility | **Current-PC core tamamlandı** | Frozen suite/evidence, tek-komut rehber, Phase 10 raporu; 264 test + Ruff + strict mypy | Kullanıcının manuel commit'i; Quadro extension opsiyonel |
+| Faz 10: tez/makale ve reproducibility | **Current-PC core tamamlandı** | Frozen suite/evidence, tek-komut rehber, Phase 10 raporu; 264 test + Ruff + strict mypy; publication-core commit `03dee8e` | Quadro extension opsiyonel |
 
 Bu bilgisayarda çekirdek deneyler tamamlandı. Quadro RTX 4000 üzerinde Qwen3-4B/8B, seçili koşullarda 10-seed genişletmesi veya ek model-scale analizi makaleyi güçlendirebilir; fakat ana bilimsel sonucu bloke eden zorunlu işler değildir.
 
@@ -69,12 +98,20 @@ Alt sorularım şunlardır:
 
 ![Araştırma mimarisi ve semantic isolation](docs/advisor_assets/research_architecture.png)
 
+![End-to-end system and experimental flow](docs/advisor_assets/end_to_end_system_flow.png)
+
+İkinci flow diagram, offline semantic preparation ile trace-driven decision,
+shared physics core ve evaluation/publication katmanlarını uçtan uca gösterir.
+`Believed requirements` policy input'udur; `reference requirements` ise outcome
+scoring için ayrı tutulur. Böylece semantic extraction error sistem sonucunda
+gizlenmeden ölçülür.
+
 Mimari şu güvenilirlik ilkelerine dayanır:
 
 1. **Semantic isolation:** Extractor yalnız task text ve varsa user policy text görür. Network state, reward, oracle ve correct action gizlidir.
 2. **Frozen interface/cache:** Çıktı sekiz alanlı JSON contract'tır. Model revision, prompt, parser, raw/calibrated confidence ve predictions PPO'dan önce sürümlenir.
 3. **Shared physics:** Fixed, random, greedy ve PPO aynı deterministic transition core, queue, latency, energy, reliability ve accuracy denklemlerini kullanır.
-4. **Hard/soft ayrımı:** Explicit execution prohibitions action mask ile kapatılır. Energy priority gibi tercihler reward bileşenidir. Invalid action masking'in policy-gradient yöntemlerinde teorik olarak geçerli ve pratikte önemli olduğu gösterilmiştir [11].
+4. **Hard vs. soft constraints:** Explicit execution prohibitions `action masking` ile kapatılır. Energy priority gibi tercihler reward bileşenidir. Invalid action masking'in policy-gradient yöntemlerinde teorik olarak geçerli ve pratikte önemli olduğu gösterilmiştir [11].
 5. **Belief/truth ayrımı:** Policy ve mask `believed_requirements` kullanır; success/violation gerçek reference requirements ile ölçülür. Böylece yanlış semantics'in zararı gizlenmez.
 6. **Uncertainty provenance:** Raw confidence ile development-only calibrated confidence ayrı artifact olarak tutulur; legacy/raw cache “calibrated” diye adlandırılmaz [12].
 7. **Paired evaluation:** İki yöntem aynı tasks ve exogenous events üzerinde karşılaştırılır; policy dışı varyans azaltılır.
@@ -88,7 +125,7 @@ Bu ayrıştırma STEPS'in semantic contract yaklaşımı ve AgentVNE'nin natural
 | `domain` | healthcare, industry, transportation, public safety vb. | Domain error slice ve holdout; tek başına action emri değil |
 | `latency` | Deadline class ve varsa numeric value | Deadline miss ve suitability |
 | `privacy` | Sensitivity level | Privacy raporu; execution policy ile birleştiğinde hard restriction |
-| `execution_policy` | İzinli/yasak local-edge-cloud locations | Action mask üreten temel hard constraint |
+| `execution_policy` | İzinli/yasak local-edge-cloud locations | `Action masking` üreten temel hard constraint |
 | `reliability` | best-effort/high/mission-critical veya numeric target | Node/link reliability suitability |
 | `accuracy` | Required result quality | Node/model accuracy suitability |
 | `energy_priority` | Energy-saving preference veya açık budget | Soft reward; explicit budget varsa constraint |
@@ -185,7 +222,7 @@ PPO'yu greedy'ye göre otomatik üstün kabul etmiyorum. Greedy exact preview ku
 | Metrik | Yanıtladığı soru | Yorum kuralı |
 |---|---|---|
 | Task success rate | Completion ve semantic QoS birlikte sağlandı mı? | Birincil end-to-end metric; reward tek başına raporlanmaz |
-| Hard violation rate | Privacy/execution prohibition ihlal edildi mi? | Success'ten ayrı, safety-critical metric |
+| Hard constraint violation rate | Privacy/execution prohibition ihlal edildi mi? | Task success rate'ten ayrı, safety-critical metric |
 | Deadline/reliability/accuracy violation | Hangi soft/QoS boyut kırılıyor? | Aggregate success'in nedenini açıklar |
 | Completion/drop/rejection | Task fiziksel olarak tamamlandı mı? | Semantic failure ile physical loss ayrılır |
 | Mean, p50, p95, p99 latency | Ortalama ve tail latency nedir? | Interactive/real-time workload için tail şarttır |
@@ -197,7 +234,7 @@ PPO'yu greedy'ye göre otomatik üstün kabul etmiyorum. Greedy exact preview ku
 | Reward component decomposition | Kazanç hangi cost bileşeninden geliyor? | Reward hacking veya dominant penalty riskini gösterir |
 | Decision overhead mean/p95 | Policy seçiminin compute cost'u nedir? | Physical latency'ye eklenmez; host diagnostic'tir |
 
-### 6.3 İstatistik protokolü
+### 6.3 Statistical protocol
 
 - Semantic tables task-level 1.000 bootstrap; system tables episode-level 2.000 paired bootstrap ile `%95 confidence interval (CI)` verir.
 - PPO ana sonuçları 5 independent training seed içerir; seed standard deviation ayrıca raporlanır.
@@ -321,7 +358,7 @@ Exact-preview reference koşulunda PPO − greedy success farkı `−0,5` point 
 | Greedy / TF-IDF | `−0,36 [−0,78; +0,08]` | `−0,05 [−0,29; +0,16]` | Geçmedi |
 | Greedy / frozen E5 | `−1,61 [−2,14; −1,12]` | `+0,26 [+0,00; +0,52]` | Geçmedi |
 
-### 9.3 Action mask versus penalty
+### 9.3 Action masking versus penalty
 
 Reference mask-PPO − penalty-PPO hard violation farkı `0,00 [0,00; 0,00]`, success farkı `−0,18 [−0,36; −0,02]` oldu. İki yaklaşım da hard violation'ı sıfırladığı için “mask daha düşük violation üretir” yön hipotezi desteklenmedi. Bunun anlamı mask'in gereksiz olduğu değil; bu deney rejiminde penalty baseline'ın da reference conditions altında sıfır ihlale ulaşmasıdır.
 
@@ -435,10 +472,11 @@ Savunulabilir katkı birleşimi şudur:
 
 | İş | Tamamlanma kanıtı | Durum |
 |---|---|---|
-| Advisor Markdown/DOCX ve figürlerini son artifact'lerle eşitlemek | Visible-text parity ve 4 embedded figure doğrulandı | **Tamamlandı** |
+| Advisor Markdown/DOCX ve figürlerini son artifact'lerle eşitlemek | Visible-text parity ve 5 embedded figure doğrulandı | **Tamamlandı** |
 | Result/config/data/model/seed bağlarını dondurmak | Versioned suite, SHA-256 evidence manifest ve staged commands | **Tamamlandı** |
 | Repository-wide kalite kapısı | 264 pytest; Ruff temiz; strict mypy 111 source file/0 issue | **Tamamlandı** |
 | Phase 10 kapanışını raporlamak | `phase_reports/PHASE_10_REPRODUCIBILITY_AND_QUALITY.md` | **Tamamlandı** |
+| Publication core'u version control altında dondurmak | Git commit `03dee8e` | **Tamamlandı** |
 
 ### 14.4 Quadro makinesine bırakılabilecek opsiyonel işler
 
@@ -544,6 +582,7 @@ En güçlü pozitif sonuç, doğru semantics'in no-semantic'e göre success'i gr
 - Phase 7 artifact gate her koşulda 5 PPO run ve run başına 3.840 decision şartını fail-closed doğrular.
 - Büyük raw traces ve model weights repoya alınmaz; source identity/checksum, acceptance rules ve derived aggregate profiles sürümlenir.
 - Bu belge canonical Markdown'dur. DOCX aynı kaynaktan üretilir; text parity ve embedded figure count build sırasında otomatik doğrulanır.
-- Final repository-wide sonuç: `264 passed`; Ruff `All checks passed`; strict mypy `111 source file, 0 issue`. Publication read-only verify `issues=[]`; danışman DOCX parity kontrolü dört embedded figure ile geçti.
+- Final repository-wide sonuç: `264 passed`; Ruff `All checks passed`; strict mypy `111 source file, 0 issue`. Publication read-only verify `issues=[]`; danışman DOCX parity kontrolü beş embedded figure ile geçti.
+- Publication core commit: `03dee8e824cbf1291cbcf29997f8613868742241`.
 
 > **Literatür notu:** 2026 preprint'lerinin venue/status bilgisi makale submission öncesinde yeniden doğrulanmalıdır. Kaynak numaraları bu belgede makale yazımına geçişi kolaylaştırmak için sabit tutulmuştur.

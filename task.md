@@ -201,7 +201,7 @@ Bu faz çekirdek tez kabul koşulu değildir. Yapılmazsa sonuçlar sentetik ve 
 
 **Current-PC publication core tamamlandı:** Faz 4–7 kanıtları, danışman MD/DOCX,
 sonuç/figür/config–code–data–seed dondurması, read-only publication verification ve
-nihai kalite kapısı tamamlandı. Sıradaki zorunlu depo işlemi kullanıcının manuel
-commit'idir; otomatik commit atılmayacaktır. Quadro Qwen3-4B/8B, 10-seed
+nihai kalite kapısı tamamlandı; publication core `03dee8e` commit'iyle version
+control altında donduruldu. Quadro Qwen3-4B/8B, 10-seed
 genişletmesi, GNN/recurrent/partial offloading ve testbed ana yolu bloke etmeyen
 opsiyonel veya koşullu işlerdir.

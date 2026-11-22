@@ -496,11 +496,12 @@ kaydı olarak korunur.
   dondurur. Varsayılan publication verification `issues=[]` ile geçti.
 - Repository-wide final gate: `264 passed`; Ruff `All checks passed`; strict mypy
   `src tests scripts` için `111 source file, 0 issue`.
-- Canonical advisor Markdown ile DOCX visible-text parity ve dört embedded figure
+- Canonical advisor Markdown ile DOCX visible-text parity ve beş embedded figure
   doğrulandı. Negative results, threats to validity ve claim sınırları belgede
   açıkça korunur.
 - Resmî kanıt ve clean-checkout rehberi sırasıyla
   `phase_reports/PHASE_10_REPRODUCIBILITY_AND_QUALITY.md` ve
   `REPRODUCIBILITY.md` içindedir.
-- Bu bilgisayardaki zorunlu publication core tamamlandı. Kullanıcı manuel commit
-  atacaktır; Quadro Qwen3-4B/8B, 10-seed extension ve testbed opsiyoneldir.
+- Bu bilgisayardaki zorunlu publication core tamamlandı ve `03dee8e` commit'iyle
+  version control altında donduruldu; Quadro Qwen3-4B/8B, 10-seed extension ve
+  testbed opsiyoneldir.

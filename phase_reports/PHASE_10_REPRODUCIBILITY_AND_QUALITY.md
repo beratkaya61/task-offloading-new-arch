@@ -71,7 +71,7 @@ evidence version artırılmalıdır.
 | Lint | `python -m ruff check .` | **All checks passed** |
 | Strict typing | `python -m mypy --strict src tests scripts` | **111 source file, 0 issue** |
 | Publication structure/evidence | `scripts/reproduce_publication.py` | **Geçti; `issues=[]`** |
-| Advisor parity | `scripts/build_advisor_report.py --verify-only` | **Geçti; 4 embedded figure** |
+| Advisor parity | `scripts/build_advisor_report.py --verify-only` | **Geçti; 5 embedded figure** |
 
 Test paketi; simulator invariants/oracle/parity, provenance/split leakage,
 semantic parsing/calibration/cache, system metrics, statistical contrasts,
@@ -116,7 +116,7 @@ değil, frozen-policy evaluation-distribution counterfactual'larıdır.
 
 ## 7. Sonraki işlem
 
-Bu bilgisayarda zorunlu deneysel ve yazılımsal kapanış tamamlanmıştır. Kalan tek
-depo işlemi kullanıcının farkları inceleyip **manuel commit** oluşturmasıdır; bu
-rapor hazırlanırken otomatik commit atılmamıştır. Quadro RTX 4000 işleri daha sonra
-opsiyonel extension olarak ele alınabilir ve mevcut danışman teslimini bloke etmez.
+Bu bilgisayarda zorunlu deneysel ve yazılımsal kapanış tamamlanmış ve publication
+core `03dee8e` commit'iyle version control altında dondurulmuştur. Quadro RTX 4000
+işleri daha sonra opsiyonel extension olarak ele alınabilir ve mevcut danışman
+teslimini bloke etmez.

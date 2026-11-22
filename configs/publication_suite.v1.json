@@ -181,6 +181,10 @@
       "outputs": [
         {"path": "TEZ_DANISMANI_MEVCUT_DURUM_VE_LITERATUR_OZETI.md", "kind": "report"},
         {"path": "TEZ_DANISMANI_MEVCUT_DURUM_VE_LITERATUR_OZETI.docx", "kind": "document"},
+        {"path": "docs/advisor_assets/research_architecture.png", "kind": "figure"},
+        {"path": "docs/advisor_assets/end_to_end_system_flow.png", "kind": "figure"},
+        {"path": "docs/advisor_assets/semantic_macro_f1.png", "kind": "figure"},
+        {"path": "docs/advisor_assets/offloading_success_and_violations.png", "kind": "figure"},
         {"path": "docs/advisor_assets/generalization_and_sources.png", "kind": "figure"}
       ]
     },
