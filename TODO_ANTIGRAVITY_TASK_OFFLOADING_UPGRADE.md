@@ -141,19 +141,30 @@ Kutunun işaretlenmesi akademik iddia değildir; rapordaki kanıt akademik iddia
 
 ## 7. Definition of Done
 
-- [ ] Tez sorusu ve hipotezleri dondurulmuş.
-- [ ] Semantik ground truth iki etiketçi ve anlaşma analiziyle mevcut.
-- [ ] LLM semantik çıkarıcı bağımsız benchmark’ta ölçülmüş ve cache’lenmiş.
+- [x] Tez sorusu ve hipotezleri dondurulmuş.
+- [ ] Ana 60 semantik kayıt iki etiketçiyle adjudicated gold değildir. Tek-insan
+  referansı kilitli, pilot A/B/C anlaşma analizleri mevcuttur; bu madde ancak
+  ikinci uzman çalışması yapılırsa tamamlanabilir ve mevcut ana yolu bloke etmez.
+- [x] LLM semantik çıkarıcı kilitli human-60 üzerinde ölçülmüş/cache'lenmiş;
+  bağımsız 188 için ortak semantic ve greedy/PPO offloading değerlendirmesi
+  tamamlanmıştır. Fine-tuned E5 independent checkpoint eksikliği ayrı sınırlamadır.
 - [x] Tek fizik çekirdeği oracle/parity/invariant testlerini geçiyor.
-- [ ] Veri manifesti, lisans, checksum, alan kökeni ve sızıntısız split var.
-- [ ] Güçlü sabit/sezgisel/oracle baselines tamam.
-- [ ] Semantiksiz/rule/ML/LLM/human-oracle politika karşılaştırmaları tamam.
-- [ ] En az 5 seed, %95 CI, planlı test ve effect size mevcut.
-- [ ] p95/p99, DMR, enerji, constraint, fairness, overhead ve collapse raporlu.
-- [ ] Sentetik ve hibrit trace sonuçlarının sınırları ayrı yazılmış; testbed yapılırsa ayrı ek doğrulama olarak raporlanmış.
-- [ ] GNN/partial/resource allocation iddiaları yalnız gerçekten uygulanmışsa başlıkta.
-- [ ] Bütün deneyler tek komut/config ve sürümlü manifestlerle yeniden üretilebilir.
-- [ ] Negative results ve threats to validity tezde açıkça bulunuyor.
+- [x] Veri manifesti, lisans, checksum, alan kökeni ve sızıntısız split var.
+- [x] Güçlü sabit/sezgisel/oracle baselines v1'de ve NEP-v2 nihai iz katmanında
+  aynı fizik çekirdeğiyle tamamlandı.
+- [x] Semantiksiz/rule/ML/LLM/single-human-reference politika karşılaştırmaları
+  tamam; insan referansı `oracle` değil erişilebilir semantic upper bound'dır.
+- [x] v1 ve NEP-v2 için 5 seed, %95 bootstrap GA, eşleştirilmiş test ve effect
+  size mevcut; nihai ana kontrastların Holm düzeltmesi tamamlandı.
+- [x] p50/p95/p99, queue, throughput/drop, total/per-success energy, constraints,
+  action entropy/collapse, load fairness ve decision overhead nihai NEP-v2
+  tablolarında raporlandı. Tek-source fairness'in yorumlanamazlığı açıklandı.
+- [x] Sentetik ve hibrit trace sonuçlarının sınırları ayrı yazılmış; testbed
+  yapılırsa ayrı ek doğrulama olarak raporlanacak.
+- [x] GNN/partial/resource allocation uygulanmadığı için başlıkta veya katkı
+  iddiasında kullanılmıyor; bunlar koşullu genişletmedir.
+- [x] Bütün deneyler tek komut/config ve sürümlü manifestlerle yeniden üretilebilir.
+- [x] Negative results ve threats to validity tezde açıkça bulunuyor.
 
 ## 8. Faz 0 kararı
 
@@ -165,7 +176,11 @@ Eski repo doğrudan taşınmayacaktır. Fizik hataları regresyon testine, eski 
 - İlk sistem: 20 cihaz, 3 edge, 1 cloud; olay indeksli 512 karar.
 - İlk eylem uzayı: `local / edge_0 / edge_1 / edge_2 / cloud`.
 - Semantik schema: `schemas/semantic_requirements.schema.json`.
-- Ground truth protokolü: 20 pilot + 240 ana Türkçe görev, iki gerçek insan, tam çift-kör etiketleme ve adjudication.
+- Ground truth için ilk plan: 20 pilot + 240 ana Türkçe görev, iki gerçek insan,
+  tam çift-kör etiketleme ve adjudication. Bu tarihsel plan, annotator B'nin ana
+  turu tamamlayamaması nedeniyle protokol `1.3.0` ile yürürlüğe girmeden önce
+  değiştirilmiştir: ana kanıt 60 `single_human_reference`, 180 makine-zayıf
+  development etiketi ve ayrı pilot anlaşma analizidir; gold iddiası yapılmaz.
 - Trace kaynakları doğal ortak olay gibi birleştirilmeyecek; final benchmark `trace-driven-hybrid` diye adlandırılacak.
 - BUPT yalnız resmî research-use beyanı ve no-redistribution sınırıyla yerel
   deneylere açılır. İlk kararda erişime bağlı olan NEP daha sonra NEP-large/full
@@ -376,3 +391,116 @@ Eski repo doğrudan taşınmayacaktır. Fizik hataları regresyon testine, eski 
   normalize embedding üzerinde dengeli lojistik başlıklar fit edilir. Kod, config
   ve model indirmeyen testler hazırdır; mevcut makinede paket indeksi kurulumu
   tamamlanmadığı için gerçek encoder sonucu henüz üretilmiş sayılmaz.
+
+## 18. 20–21 Kasım 2026 kanıt eşitlemesi
+
+Bu bölüm, yukarıdaki tarihsel Faz 4 durumunu yeni commit ve dondurulmuş sonuçlarla
+günceller. Bölüm 17'deki “encoder henüz üretilmedi” ve “bu bilgisayarda Qwen
+çalıştırılmaz” ifadeleri artık güncel iş durumunu temsil etmez; tarihsel karar
+kaydı olarak korunur.
+
+- Sızıntısı giderilmiş semantik benchmark v3 tamamlandı. İnsan-60 özgün sette
+  rule, TF-IDF(+veri), E5-donuk(+veri) ve E5-ince-ayar(+veri) macro-F1 değerleri
+  sırasıyla `%78,0 / %78,2 / %76,3 / %70,2`; görülmemiş kompozisyonel ifadede
+  `%47,5 / %73,6 / %70,9 / %73,0` oldu. Kanıt:
+  `phase_reports/SEMANTIC_RESULTS_V3.md`.
+- Qwen2.5-1.5B 4-shot CPU baseline tamamlandı. İnsan-60 özgün/paraphrase
+  macro-F1 `%48,3 / %43,7`; ortalama süre yaklaşık `14,7 / 16,0` saniye/görev.
+  Sonuç S3(a)'yı desteklemedi, S3(b) gecikme hipotezini destekledi.
+- Offloading v1, 60 bölüm × 64 görev ve 5 PPO tohumu ile tamamlandı. İnsan
+  referanslı PPO, semantiksiz PPO'ya göre başarıyı `+15,2` yüzde puanı artırdı;
+  TF-IDF paraphrase + fallback `%87,7` başarı ve `%0` hard ihlal verdi. PPO'nun
+  greedy'yi geçmesi şimdilik desteklenmedi. Kanıt:
+  `phase_reports/OFFLOADING_RESULTS_V1.md`.
+- NEP full-trace aggregate quantile profili üretildi:
+  `configs/data_profiles/nep_quantiles_v1.json`. Profil 276.084.449 geçerli CPU
+  satırı ve 330.710.309 geçerli RTT satırından türetildi; ham satır içermez.
+- Sonuç sonrası tüm yeni iyileştirmeler confirmatory v2'den ayrıldı ve
+  `docs/EXPLORATORY_IMPROVEMENT_PROTOCOL_V1.md` altında önceden donduruldu.
+- Yerel LLM genişletmesinde pinned `Qwen/Qwen3-0.6B` non-thinking smoke teknik
+  olarak geçti: 3 özgün örnekte parse/OOV hatası yok, fakat ortalama yaklaşık
+  289 saniye/görev. Küçük örnek kalite kanıtı değildir; tam CPU koşusu
+  uygulanabilir bulunmadı. Quadro Qwen3-4B/8B deneyi opsiyonel genişletmedir.
+
+## 19. Danışman raporu ve güncel kapanış hedefi
+
+- Danışmana sunulacak güncel yöntem/literatür/sonuç belgesi
+  `TEZ_DANISMANI_MEVCUT_DURUM_VE_LITERATUR_OZETI.md` olarak 21 Kasım 2026'da
+  yeniden yazıldı. Yöntem ve metrik gerekçeleri numaralı birincil literatür
+  atıflarıyla, sonuçlar tablo ve yeniden üretilebilir şekillerle açıklandı.
+- Faz 4 ana semantik benchmark'ı, bağımsız 188 paraphrase sağlamlık genişletmesi,
+  Faz 5/6 NEP-v2 ve Faz 7 trace/entity/domain/source-layer deneyleri resmî
+  raporlarıyla tamamlanmıştır. Danışman MD/DOCX belgesi bu kanıtla eşitlenmiş,
+  Faz 10 reproducibility/nihai kalite kapısı kapatılmıştır.
+- Ana yayın iddiası “LLM ile ilk edge scheduling” değildir. Güncel ve savunulabilir
+  çerçeve, paraphrase dayanıklılığı ve kalibrasyonu ölçülen semantik kısıt
+  katmanının aynı MEC olaylarında başarı/hard-ihlal etkisini nedensel olarak
+  ayırmasıdır.
+
+## 20. 21 Kasım 2026 NEP-v2 Faz 5/6 kapanışı
+
+- Bağımsız 188 için constant/rule/TF-IDF/E5/Qwen2.5 ortak semantic tablosu ve
+  Qwen dahil greedy/PPO downstream etkisi üretildi. TF-IDF(+data) independent
+  macro-F1 `%80,91`, Qwen2.5 4-shot `%42,03` oldu; küçük LLM güçlü ML
+  baseline'ını geçmedi.
+- Development-only isotonic calibration uygulandı; raw ve calibrated prediction
+  provenance ayrıldı. Fallback threshold evaluation set üzerinde ayarlanmadı.
+- NEP-v2 exact-preview ve `sigma=0.5` noisy-preview koşuları 5 PPO seed × 150.000
+  step ile tamamlandı. H1, H2 ve H6 desteklendi; H3, H4 ve H5 desteklenmedi.
+- Reference semantics exact-preview'da success'i no-semantic'e göre PPO'da
+  `+15,03`, greedy'de `+12,94` yüzde puan artırdı. PPO'nun güçlü greedy
+  baseline'ı geçtiği iddiası desteklenmedi.
+- p50/p99, queue wait, throughput/drop, total/per-success energy, reward
+  decomposition, action entropy/collapse, Jain load fairness ve decision
+  overhead ortak tabloları tamamlandı. Tek source-device nedeniyle source-success
+  fairness mekanik olarak 1'dir ve user-fairness kanıtı değildir.
+- Reward ağırlıkları için dondurulmuş trajectories üzerinde `0,5×/2×` post-hoc
+  sensitivity tamamlandı; bunun PPO retraining sensitivity olmadığı belirtildi.
+- Resmî kapanış kanıtları
+  `phase_reports/PHASE_5_BASELINES_ORACLE_NEP_V2.md` ve
+  `phase_reports/PHASE_6_PPO_SEMANTIC_ABLATION_NEP_V2.md` içindedir.
+
+## 21. 22 Kasım 2026 Faz 7 genelleme kapanışı
+
+- Dondurulmuş protokol `configs/generalization_protocol.v1.json` ile BUPT
+  kronolojik split, EUA disjoint 80/20 entity split, disjoint
+  scenario/paraphrase-family proxy ve iki-domain holdout değerlendirildi.
+- Entity ve domain holdout yeni 5 PPO seed × 150.000 step retraining kullanır.
+  PPO-reference − PPO-no-semantic success farkı entity'de `+15,03` puan
+  [%95 CI `+13,82; +16,25`], domain'de `+13,41` puandır
+  [%95 CI `+12,37; +14,51`]; iki durumda da reference hard violation `%0,00`dır.
+- Domain holdout'ta PPO-reference, güçlü greedy-reference'dan `−0,52` puan
+  düşüktür [%95 CI `−0,98; −0,08`, Holm `p=0,023`]; PPO üstünlüğü iddiası yine
+  desteklenmez.
+- Frozen `v2_nep` checkpoint'leriyle NEP, UCI compute heterogeneity, BUPT
+  workload variability ve EUA topology variability source-layer
+  counterfactual'ları tamamlandı. En büyük shift UCI heterogeneity çıkarıldığında
+  PPO-reference success'te `−8,92` puandır; bunlar retraining sensitivity veya
+  nedensel kaynak katkısı değildir.
+- Application kanıtı gerçek deployed application-ID holdout değil, disjoint
+  scenario/paraphrase-family proxy'sidir. Domain sonucu frozen extractor yerine
+  reference semantics koşullu policy generalization kanıtıdır.
+- Resmî kanıt `phase_reports/PHASE_7_GENERALIZATION_RESULTS.md`; ayrıntılı entity
+  ve domain tabloları ilgili `OFFLOADING_RESULTS_V2_NEP_*_HOLDOUT.md`
+  raporlarındadır. Phase 7 kalite kapısı 9 test, Ruff ve strict mypy ile geçti.
+
+## 22. 22 Kasım 2026 Faz 10 reproducibility ve kalite kapanışı
+
+- `configs/publication_suite.v1.json`, current-PC zorunlu stages ile
+  `quadro_optional` genişletmeyi ayırır. Varsayılan
+  `scripts/reproduce_publication.py` read-only doğrulama yapar; training yalnız
+  explicit `--execute`, frozen overwrite ise ayrıca `--allow-frozen-overwrite`
+  gerektirir.
+- `configs/publication_evidence.v1.json`; runtime versions ile config, code, data
+  manifests, results, reports, figures ve advisor document SHA-256 bağlarını
+  dondurur. Varsayılan publication verification `issues=[]` ile geçti.
+- Repository-wide final gate: `264 passed`; Ruff `All checks passed`; strict mypy
+  `src tests scripts` için `111 source file, 0 issue`.
+- Canonical advisor Markdown ile DOCX visible-text parity ve dört embedded figure
+  doğrulandı. Negative results, threats to validity ve claim sınırları belgede
+  açıkça korunur.
+- Resmî kanıt ve clean-checkout rehberi sırasıyla
+  `phase_reports/PHASE_10_REPRODUCIBILITY_AND_QUALITY.md` ve
+  `REPRODUCIBILITY.md` içindedir.
+- Bu bilgisayardaki zorunlu publication core tamamlandı. Kullanıcı manuel commit
+  atacaktır; Quadro Qwen3-4B/8B, 10-seed extension ve testbed opsiyoneldir.

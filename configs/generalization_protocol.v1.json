@@ -1,0 +1,59 @@
+{
+  "protocol_version": "1.0.0",
+  "frozen_on": "2026-11-21",
+  "experiment_seed": 20261120,
+  "purpose": "Phase 7 trace, entity, scenario-family, domain and physical-source generalization checks",
+  "temporal_holdout": {
+    "source": "BUPT Edge Computing Dataset",
+    "train_rule": "calendar day < 24",
+    "test_rule": "calendar day >= 24",
+    "status": "already enforced by trace_hybrid.load_bupt_windows"
+  },
+  "entity_holdout": {
+    "source": "EUA observed user-location rows",
+    "entity_key": "stable privacy-minimum cached row position",
+    "split": "seeded permutation, 80% train / 20% test",
+    "seed": 20261120,
+    "requires_policy_retraining": true
+  },
+  "application_proxy_holdout": {
+    "source": "main semantic corpus",
+    "group_keys": [
+      "grouping.scenario_family_id",
+      "grouping.paraphrase_family_id"
+    ],
+    "rule": "development and evaluation families are disjoint",
+    "claim_limit": "scenario-family proxy; not a real deployed application-id holdout"
+  },
+  "domain_holdout": {
+    "selection_rule": "two domains sampled without replacement from the sorted eight-domain list before the run",
+    "seed": 20261120,
+    "heldout_domains": [
+      "public_safety",
+      "transportation"
+    ],
+    "training_rule": "exclude held-out domains from PPO semantic training items",
+    "test_rule": "evaluate only held-out-domain compositional tasks",
+    "semantic_source": "single-human-reference-derived label-by-construction requirements",
+    "claim_limit": "policy-domain generalization conditional on reference semantics; frozen extractors were not retrained leave-domain-out"
+  },
+  "physical_source_ablations": {
+    "policy": "load the same v2_nep checkpoints; change one evaluation source layer at a time",
+    "conditions": [
+      "without_nep_background",
+      "without_uci_heterogeneity",
+      "without_bupt_variability",
+      "without_eua_variability"
+    ],
+    "replacement_fit_rule": "BUPT replacements use train windows only; EUA fixed topology uses a seeded 80% fit partition",
+    "claim_limit": "evaluation-distribution counterfactual, not policy retraining sensitivity"
+  },
+  "statistics": {
+    "training_seeds": 5,
+    "ppo_timesteps_per_seed": 150000,
+    "test_episodes": 60,
+    "tasks_per_episode": 64,
+    "paired_bootstrap_resamples": 2000,
+    "confidence_interval": 0.95
+  }
+}

@@ -18,7 +18,7 @@ import json
 import re
 import time
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 import torch
@@ -59,7 +59,14 @@ def main() -> None:
     rng = np.random.default_rng(SAMPLE_SEED)
     chosen = sorted(rng.choice(len(tasks), size=SAMPLE_SIZE, replace=False).tolist())
     tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, cache_dir=str(ROOT / "models" / "huggingface"))
-    model = AutoModelForCausalLM.from_pretrained(MODEL_ID, cache_dir=str(ROOT / "models" / "huggingface"), dtype=torch.bfloat16)
+    model = cast(
+        Any,
+        AutoModelForCausalLM.from_pretrained(
+            MODEL_ID,
+            cache_dir=str(ROOT / "models" / "huggingface"),
+            dtype=torch.bfloat16,
+        ),
+    )
     model.eval()
 
     def rewrite(text: str) -> str:

@@ -157,9 +157,11 @@ def main() -> None:
         raise ValueError("IMPROVEMENT_MODE must be e5, llm or all")
     started = time.perf_counter()
     split = load_json_object(MAIN / "split_manifest.v1.json")
-    tasks = ordered_subset(
-        load_jsonl(MAIN / "tasks.v1.jsonl"),
-        list(split["machine_labeled_development"]["task_ids"]),
+    tasks = list(
+        ordered_subset(
+            load_jsonl(MAIN / "tasks.v1.jsonl"),
+            list(split["machine_labeled_development"]["task_ids"]),
+        )
     )
     labels = {
         row["task_id"]: row["annotation"]

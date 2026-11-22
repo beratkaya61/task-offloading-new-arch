@@ -33,7 +33,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 from statistics import fmean
-from typing import Any
+from typing import Any, Literal
 from zipfile import ZipFile
 
 import numpy as np
@@ -155,6 +155,106 @@ class PhysicalPools:
     train_windows: tuple[WorkloadWindow, ...]
     test_windows: tuple[WorkloadWindow, ...]
     user_edge_distances_m: np.ndarray  # shape (users, 3), nearest first
+
+
+PhysicalAblation = Literal[
+    "none",
+    "without_uci_heterogeneity",
+    "without_bupt_variability",
+    "without_eua_variability",
+]
+
+
+def split_eua_entity_holdout(
+    pools: PhysicalPools,
+    *,
+    seed: int,
+    train_share: float = 0.8,
+) -> tuple[PhysicalPools, PhysicalPools]:
+    """Return disjoint train/test pools of observed EUA user locations.
+
+    The cached pool intentionally contains no raw identifiers.  Its stable row
+    position is therefore the entity key used by this local-only benchmark.
+    The seeded permutation is recorded by the experiment manifest.
+    """
+
+    if not 0.0 < train_share < 1.0:
+        raise ValueError("train_share must be strictly between zero and one")
+    count = len(pools.user_edge_distances_m)
+    if count < 2:
+        raise ValueError("at least two EUA user locations are required")
+    indices = np.random.default_rng(seed).permutation(count)
+    cut = min(max(round(count * train_share), 1), count - 1)
+    train = pools.user_edge_distances_m[indices[:cut]].copy()
+    test = pools.user_edge_distances_m[indices[cut:]].copy()
+    return (
+        replace(pools, user_edge_distances_m=train),
+        replace(pools, user_edge_distances_m=test),
+    )
+
+
+def ablate_physical_pools(
+    pools: PhysicalPools,
+    ablation: PhysicalAblation,
+    *,
+    fit_seed: int,
+) -> PhysicalPools:
+    """Remove one measured/observed physical source layer at evaluation time.
+
+    Array/window counts are preserved so paired RNG streams keep the same draw
+    structure.  Replacement values are fitted only from training windows or a
+    seeded 80% EUA fit partition, never from the held-out BUPT test windows.
+    """
+
+    if ablation == "none":
+        return pools
+    if ablation == "without_uci_heterogeneity":
+        pooled_mean = fmean(pools.host_mean_turnaround_s.values())
+        host_means = {host: pooled_mean for host in pools.host_mean_turnaround_s}
+        samples = np.full_like(pools.device_turnaround_s, pooled_mean, dtype=float)
+        return replace(
+            pools,
+            device_turnaround_s=samples,
+            host_mean_turnaround_s=host_means,
+        )
+    if ablation == "without_bupt_variability":
+        if not pools.train_windows:
+            raise ValueError("BUPT ablation requires training windows")
+        train_gaps = [value for w in pools.train_windows for value in w.interarrival_s]
+        train_inputs = [value for w in pools.train_windows for value in w.input_bits]
+        train_outputs = [value for w in pools.train_windows for value in w.output_bits]
+        workload_means = (
+            fmean(train_gaps),
+            fmean(train_inputs),
+            fmean(train_outputs),
+        )
+
+        def smooth(window: WorkloadWindow) -> WorkloadWindow:
+            return WorkloadWindow(
+                source=f"{window.source}|without_bupt_variability",
+                interarrival_s=tuple(
+                    workload_means[0] for _ in window.interarrival_s
+                ),
+                input_bits=tuple(workload_means[1] for _ in window.input_bits),
+                output_bits=tuple(workload_means[2] for _ in window.output_bits),
+            )
+
+        return replace(
+            pools,
+            train_windows=tuple(smooth(w) for w in pools.train_windows),
+            test_windows=tuple(smooth(w) for w in pools.test_windows),
+        )
+    if ablation == "without_eua_variability":
+        count = len(pools.user_edge_distances_m)
+        if count < 2:
+            raise ValueError("EUA ablation requires at least two user locations")
+        fit_indices = np.random.default_rng(fit_seed).permutation(count)[
+            : max(1, round(count * 0.8))
+        ]
+        median = np.median(pools.user_edge_distances_m[fit_indices], axis=0)
+        fixed = np.repeat(median[None, :], count, axis=0)
+        return replace(pools, user_edge_distances_m=fixed)
+    raise ValueError(f"unknown physical ablation: {ablation}")
 
 
 # --------------------------------------------------------------------- loaders
@@ -513,11 +613,14 @@ def build_episode(
 __all__ = [
     "ACTIONS",
     "HybridConfig",
+    "PhysicalAblation",
     "PhysicalPools",
     "SemanticItem",
     "WorkloadWindow",
+    "ablate_physical_pools",
     "annotation_to_requirements",
     "build_episode",
     "load_nep_layer",
     "load_physical_pools",
+    "split_eua_entity_holdout",
 ]

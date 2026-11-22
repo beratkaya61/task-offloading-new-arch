@@ -109,8 +109,8 @@ class TaskOffloadingEnv(gym.Env[dict[str, NDArray[np.float32]], int]):
             for item in scenario.initial_state.devices
         }
         count = len(self._actions)
-        self.action_space = spaces.Discrete(count)  # type: ignore[assignment]
-        self.observation_space = spaces.Dict(  # type: ignore[assignment]
+        self.action_space = spaces.Discrete(count)
+        self.observation_space = spaces.Dict(
             {
                 "task": spaces.Box(0.0, 1.0, (TASK_FEATURES,), np.float32),
                 "requirements": spaces.Box(
@@ -328,6 +328,7 @@ class TaskOffloadingEnv(gym.Env[dict[str, NDArray[np.float32]], int]):
         self._terminated = self._index >= len(self.scenario.tasks)
         info = self._info()
         info["outcome"] = result.outcome
+        info["reward_components"] = result.reward_components
         return self._observation(), float(result.reward), self._terminated, False, info
 
 

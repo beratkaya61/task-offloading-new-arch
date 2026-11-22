@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -22,6 +23,8 @@ MODELS = {
     "e5_frozen_lr": "E5-small donuk + LR",
     "e5_frozen_lr_augmented": "E5-small donuk + LR (+veri)",
     "e5_finetuned_augmented": "E5-small ince ayar (+veri)",
+    "e5_finetuned_augmented_v31_raw": "E5-small ince ayar v3.1 (raw cache)",
+    "llm_fewshot_Qwen2.5-1.5B-Instruct": "Qwen2.5-1.5B-Instruct 4-shot",
 }
 SETS = {
     "human60_original": "İnsan referansı (n=60), orijinal ifade",
@@ -35,6 +38,10 @@ SETS = {
         "test cümleleri kural ve eğitim verisiyle aynı şablondan, kanıt değildir"
     ),
     "compositional600_paraphrase": "Kompozisyonel (n=600), görülmemiş ifade",
+    "independent_paraphrase": (
+        "Bağımsız makine paraphrase (n=188), etiket değişmezliği varsayımı — "
+        "metinler insan tarafından yeniden etiketlenmedi"
+    ),
 }
 FIELDS = (
     "domain",
@@ -66,11 +73,15 @@ def _diff(entry: dict[str, Any]) -> str:
 
 
 def main() -> None:
-    data = json.loads(RESULTS.read_text(encoding="utf-8"))
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--results", type=Path, default=RESULTS)
+    parser.add_argument("--output", type=Path, default=OUTPUT)
+    args = parser.parse_args()
+    data = json.loads(args.results.read_text(encoding="utf-8"))
     point = data["point_estimates"]
     intervals = data["intervals"]
     lines = [
-        "# Semantik Çıkarım Benchmark'ı v3 — Yayın Tabloları",
+        f"# Semantik Çıkarım Benchmark'ı — {data['results_version']}",
         "",
         "Değerler yüzde olarak verilmiştir; köşeli parantez içinde görev düzeyinde "
         "1000 tekrarlı bootstrap ile %95 güven aralığı (GA) yer alır. *Fark* "
@@ -88,15 +99,18 @@ def main() -> None:
         "",
     ]
     for set_key, set_name in SETS.items():
+        if set_key not in intervals:
+            continue
         lines += [
             f"## {set_name}",
             "",
             "| Yöntem | Eğitim n | Tam kayıt doğruluğu | Macro-F1 | Macro-F1 farkı (vs kural) "
-            "| Kritik gizlilik P / R / F1 (n+) | Abstention F1 | ECE ↓ | ms/görev |",
-            "|---|---:|---:|---:|---|---:|---:|---:|---:|",
+            "| Kritik gizlilik P / R / F1 (n+) | Abstention F1 | ECE raw→cal ↓ "
+            "| Brier raw→cal ↓ | ms/görev |",
+            "|---|---:|---:|---:|---|---:|---:|---:|---:|---:|",
         ]
         for name, label in MODELS.items():
-            if name not in point:
+            if name not in point or set_key not in point[name]["sets"]:
                 continue
             p = point[name]["sets"][set_key]
             ci = intervals[set_key][name]
@@ -109,6 +123,9 @@ def main() -> None:
                 f"{pct(cp['precision'])} / {pct(cp['recall'])} / {pct(cp['f1'])} "
                 f"({cp['positive_reference_count']})"
             )
+            raw_calibration = p.get("calibration_raw", p["calibration"])
+            latency = p.get("inference_latency_ms_mean")
+            latency_text = "not recorded" if latency is None else f"{latency:.2f}"
             lines.append(
                 f"| {label} | {point[name]['training_task_count']} | "
                 f"{_ci(ci['exact_record_accuracy'])} | "
@@ -116,8 +133,11 @@ def main() -> None:
                 f"{_diff(ci['macro_f1_across_fields'])} | "
                 f"{critical} | "
                 f"{100 * p['abstention_f1']:.1f} | "
+                f"{raw_calibration['ece_10_bin']:.3f}→"
                 f"{p['calibration']['ece_10_bin']:.3f} | "
-                f"{p['inference_latency_ms_mean']:.2f} |"
+                f"{raw_calibration['brier']:.3f}→"
+                f"{p['calibration']['brier']:.3f} | "
+                f"{latency_text} |"
             )
         lines += [
             "",
@@ -127,7 +147,7 @@ def main() -> None:
             "|---|" + "---:|" * len(FIELDS),
         ]
         for name, label in MODELS.items():
-            if name not in point:
+            if name not in point or set_key not in point[name]["sets"]:
                 continue
             fields = point[name]["sets"][set_key]["fields_macro_f1"]
             lines.append(
@@ -136,7 +156,8 @@ def main() -> None:
                 + " |"
             )
         lines.append("")
-    OUTPUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    args.output.write_text("\n".join(lines) + "\n", encoding="utf-8")
     sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[union-attr]
     print("\n".join(lines))
 

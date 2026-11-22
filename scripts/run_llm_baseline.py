@@ -6,7 +6,8 @@ labels).  Results are scored exactly like ``run_semantic_benchmark_v3.py`` and
 compared with the rule baseline on the same tasks (paired bootstrap).
 
 Environment: ``LLM_SETS`` (comma list, default human60 sets), ``LLM_LIMIT``
-(smoke test: first N tasks per set), ``LLM_MODEL`` (HF model id).
+(smoke test: first N tasks per set), ``LLM_MODEL`` (HF model id), and optional
+``LLM_REVISION`` (immutable Hugging Face commit hash).
 """
 
 from __future__ import annotations
@@ -45,15 +46,26 @@ def main() -> None:
     limit = int(os.environ.get("LLM_LIMIT", "0"))
     subset = os.environ.get("LLM_SUBSET") == "200"
     model_id = os.environ.get("LLM_MODEL", DEFAULT_MODEL_ID)
+    model_revision = os.environ.get("LLM_REVISION") or None
     split = load_json_object(MAIN / "split_manifest.v1.json")
     dev = ordered_subset(load_jsonl(MAIN / "tasks.v1.jsonl"), list(split["machine_labeled_development"]["task_ids"]))
     weak = {r["task_id"]: r["annotation"] for r in load_jsonl(MAIN / "preannotations" / "machine_development.v1.jsonl")}
     schema = load_json_object(ROOT / "schemas" / "semantic_requirements.schema.json")
-    model = FewShotLlmBaseline(cache_folder=ROOT / "models" / "huggingface", model_id=model_id)
+    load_started = time.perf_counter()
+    print(
+        f"loading model={model_id} revision={model_revision or 'main'}",
+        flush=True,
+    )
+    model = FewShotLlmBaseline(
+        cache_folder=ROOT / "models" / "huggingface",
+        model_id=model_id,
+        revision=model_revision,
+    )
     model.fit(dev, [weak[t["task_id"]] for t in dev])
+    print(f"model and shared prefix ready ({time.perf_counter() - load_started:.1f}s)", flush=True)
     results: dict[str, Any] = {}
     for set_name in sets:
-        tasks = load_jsonl(V3 / f"eval_{set_name}.tasks.jsonl")
+        tasks = list(load_jsonl(V3 / f"eval_{set_name}.tasks.jsonl"))
         if subset and set_name.startswith("compositional600"):
             # Pre-registered subset: same draw as build_independent_paraphrases.
             chosen = np.random.default_rng(20261120).choice(len(tasks), size=200, replace=False)
@@ -65,7 +77,7 @@ def main() -> None:
         predictions = []
         for index, task in enumerate(tasks, 1):
             predictions.append(model.predict(task))
-            if index % 10 == 0:
+            if index % 10 == 0 or len(tasks) <= 10:
                 print(f"{set_name}: {index}/{len(tasks)} ({time.perf_counter() - started:.0f}s)", flush=True)
         suffix = f".limit{limit}" if limit else (".subset200" if subset and set_name.startswith("compositional600") else "")
         write_jsonl(
@@ -95,10 +107,16 @@ def main() -> None:
         }
         ci = intervals[model.name]["macro_f1_across_fields"]
         print(f"{set_name}: macroF1={ci['value']:.3f} CI={ci['ci95']} diff_vs_rule={ci['diff_vs_baseline']['value']:+.3f} exact={full['exact_record_accuracy']:.3f}", flush=True)
+    result_name = (
+        f"results_{model.name}"
+        f"{'_smoke' if limit else ''}_{'_'.join(sets)}"
+        f"{'_subset200' if subset else ''}.json"
+    )
     write_json_atomic(
-        V3 / f"results_llm{'_smoke' if limit else ''}_{'_'.join(sets)}{'_subset200' if subset else ''}.json",
+        V3 / result_name,
         {
             "model_id": model_id,
+            "requested_revision": model_revision,
             "extractor": model.name,
             "shots": 4,
             "decoding": "greedy",

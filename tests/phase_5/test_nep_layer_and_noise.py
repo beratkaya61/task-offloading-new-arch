@@ -4,18 +4,22 @@
 from __future__ import annotations
 
 import dataclasses
+from typing import Any
 
 import numpy as np
 
 from task_offloading.domain import ExecutionTier, TaskRequirements
 from task_offloading.env import TaskOffloadingEnv
 from task_offloading.sim import PhysicsConfig
+from task_offloading.sim.scenario import Scenario
 from task_offloading.sim.trace_hybrid import (
     HybridConfig,
     PhysicalPools,
     SemanticItem,
     WorkloadWindow,
+    ablate_physical_pools,
     build_episode,
+    split_eua_entity_holdout,
 )
 from tests.phase_2.helpers import two_step_scenario
 
@@ -42,14 +46,14 @@ def _pools() -> PhysicalPools:
 
 
 ITEMS = [SemanticItem("a", TaskRequirements(), TaskRequirements())]
-NEP = {
+NEP: dict[str, Any] = {
     "nep_percentiles": (0.01, 0.5, 0.99),
     "nep_edge_load_quantiles": (0.2, 0.5, 0.8),
     "nep_rtt_ms_quantiles": (20.0, 40.0, 80.0),
 }
 
 
-def _episode(config: HybridConfig) -> object:
+def _episode(config: HybridConfig) -> Scenario:
     return build_episode(
         rng=np.random.default_rng(1),
         pools=_pools(),
@@ -64,11 +68,11 @@ def test_nep_disabled_reproduces_base_episode_and_enabled_slows_edges() -> None:
     again = _episode(HybridConfig())
     assert base == again
     with_nep = _episode(HybridConfig(**NEP))
-    assert with_nep.tasks == base.tasks  # type: ignore[attr-defined]
-    assert with_nep.events == base.events  # type: ignore[attr-defined]
+    assert with_nep.tasks == base.tasks
+    assert with_nep.events == base.events
     for plain, loaded in zip(
-        base.initial_state.servers,  # type: ignore[attr-defined]
-        with_nep.initial_state.servers,  # type: ignore[attr-defined]
+        base.initial_state.servers,
+        with_nep.initial_state.servers,
         strict=True,
     ):
         if plain.spec.tier is ExecutionTier.EDGE:
@@ -92,3 +96,63 @@ def test_preview_noise_is_shared_and_zero_noise_is_exact() -> None:
     assert first != clean
     # Physics is not affected by the noise.
     assert exact.step(1)[1] == noisy_a.step(1)[1]
+
+
+def test_step_exposes_reward_components_for_registered_decomposition() -> None:
+    env = TaskOffloadingEnv(two_step_scenario(), PhysicsConfig())
+    env.reset(seed=0)
+    _, reward, _, _, info = env.step(1)
+    components = info["reward_components"]
+    assert reward == components.reward(env.config.reward_weights)
+
+
+def test_entity_holdout_is_disjoint_deterministic_and_complete() -> None:
+    pools = dataclasses.replace(
+        _pools(),
+        user_edge_distances_m=np.arange(90, dtype=float).reshape(30, 3) + 10.0,
+    )
+    train, test = split_eua_entity_holdout(pools, seed=17)
+    train_again, test_again = split_eua_entity_holdout(pools, seed=17)
+    assert np.array_equal(train.user_edge_distances_m, train_again.user_edge_distances_m)
+    assert np.array_equal(test.user_edge_distances_m, test_again.user_edge_distances_m)
+    assert len(train.user_edge_distances_m) == 24
+    assert len(test.user_edge_distances_m) == 6
+    train_rows = {tuple(row) for row in train.user_edge_distances_m}
+    test_rows = {tuple(row) for row in test.user_edge_distances_m}
+    assert train_rows.isdisjoint(test_rows)
+
+
+def test_physical_source_ablations_remove_only_selected_variability() -> None:
+    first = WorkloadWindow(
+        source="a",
+        interarrival_s=(0.01, 0.03),
+        input_bits=(100.0, 300.0),
+        output_bits=(10.0, 30.0),
+    )
+    second = WorkloadWindow(
+        source="b",
+        interarrival_s=(0.02, 0.04),
+        input_bits=(200.0, 400.0),
+        output_bits=(20.0, 40.0),
+    )
+    pools = dataclasses.replace(
+        _pools(),
+        train_windows=(first,),
+        test_windows=(second,),
+        user_edge_distances_m=np.arange(90, dtype=float).reshape(30, 3) + 10.0,
+    )
+
+    uci = ablate_physical_pools(
+        pools, "without_uci_heterogeneity", fit_seed=1
+    )
+    assert len(set(uci.host_mean_turnaround_s.values())) == 1
+    assert np.unique(uci.device_turnaround_s).size == 1
+
+    bupt = ablate_physical_pools(pools, "without_bupt_variability", fit_seed=1)
+    assert bupt.train_windows[0].input_bits == (200.0, 200.0)
+    assert bupt.test_windows[0].input_bits == (200.0, 200.0)
+    assert bupt.test_windows[0].output_bits == (20.0, 20.0)
+
+    eua = ablate_physical_pools(pools, "without_eua_variability", fit_seed=1)
+    assert len(eua.user_edge_distances_m) == len(pools.user_edge_distances_m)
+    assert np.unique(eua.user_edge_distances_m, axis=0).shape[0] == 1

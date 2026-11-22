@@ -84,7 +84,9 @@ def test_nonfinite_values_are_rejected() -> None:
 @pytest.mark.parametrize("values", [[], [1.0], [[]]])
 def test_fit_requires_nonempty_matrix(values: list[object]) -> None:
     with pytest.raises(ValueError, match="two-dimensional"):
-        TrainOnlyStandardizer().fit(values, ("feature",), split=DataSplit.TRAIN)
+        TrainOnlyStandardizer().fit(
+            np.asarray(values, dtype=float), ("feature",), split=DataSplit.TRAIN
+        )
 
 
 def test_unfitted_normalizer_cannot_transform() -> None:

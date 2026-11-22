@@ -17,22 +17,31 @@ Başlangıç belgeleri:
 - [Hesaplama donanımı envanteri](docs/COMPUTE_INVENTORY.md)
 - [Faz bazlı görev listesi](task.md)
 - [Bilimsel ve mimari sözleşme](TODO_ANTIGRAVITY_TASK_OFFLOADING_UPGRADE.md)
+- [Publication reproducibility rehberi](REPRODUCIBILITY.md)
+- [Faz 7 generalization/source sonuçları](phase_reports/PHASE_7_GENERALIZATION_RESULTS.md)
+- [Danışman mevcut durum belgesi](TEZ_DANISMANI_MEVCUT_DURUM_VE_LITERATUR_OZETI.md)
 
-Mevcut durum: Faz 0–3 tamamlandı. Son doğrulamada 180/180 test, Ruff ve strict
-mypy geçti; toplam branch coverage yüzde 92'dir. Gymnasium ile event replay aynı
-fizik çekirdeğini kullanır ve parity testi geçmiştir. Faz 3'te veri manifesti,
-alan kökeni sözlüğü, checksum/statü kapıları, train-only normalizer ve sızıntı
-denetimli split sistemi kuruldu. BUPT'nin commit ile sabitlenmiş 482.687 satırlık
-artifact'ı için checksum, şema profili ve mahremiyet-minimum adaptör doğrulandı.
-UCI MEC 859'un 4.000 ölçümü ile EUA'nın commit-sabit 100.310 seçili koordinat
-kaydı da `schema_validated` durumundadır. Erişimle alınan 5,89 GB
-`Full_trace.7z`, 2026-09-18'de NEP-large/full olarak tanımlandı; SHA-256, tam
-üye CRC ve 685.506.639 satırlık profil geçti. Soy/değer kabul politikası
-592.724.139 satırı analize açıp 92.782.500 satırı onarmadan reddeder. NEP artık
-`schema_validated` durumundadır. Bütün raw artifact'lar
-repo dışında `D:\task_offloading_datasets` altında tutulur; Git'e yalnız küçük
-şema/checksum/profil kanıtları girer.
-Sıradaki ana iş Faz 4 semantik benchmark'tır. Eski kaynak kod taşınmamıştır.
+Mevcut durum: Faz 0–7'nin çekirdek bilimsel işleri tamamlandı. Leakage-free
+semantic v3.2, development-only calibration, NEP-v2 exact/noisy/independent
+offloading, 5-seed PPO, complete system metrics, Holm-corrected H1–H6,
+EUA-entity/domain holdout ve dört source-layer counterfactual üretildi. Çalışma
+gerçek testbed değil, provenance-preserving multi-source trace-driven-hybrid
+simulation olarak sınırlandırılır. Faz 10'da publication/reproducibility paketi
+ve final quality gate tamamlandı: 264 test, repository-wide Ruff ve strict mypy
+kapıları geçti; frozen evidence read-only olarak doğrulanır. Quadro Qwen3-4B/8B
+ve 10-seed extension ana yolu bloke etmeyen opsiyonel işlerdir.
+
+Varsayılan publication verify training başlatmaz:
+
+```powershell
+./.venv/Scripts/python.exe scripts/reproduce_publication.py
+```
+
+Komut; frozen evidence SHA-256, metadata, finite values, 5 run/condition ve run
+başına 3.840 decision sözleşmesini doğrular. Uzun training yalnız explicit
+`--execute` ile başlar. Raw artifacts repo dışında
+`D:\task_offloading_datasets` altında tutulur; Git'e source/checksum/profile ve
+küçük türetilmiş kanıtlar girer.
 
 ## Faz 4 pilot etiketleme akışı
 

@@ -118,3 +118,33 @@ kullanılmaz. Raporlama üç parçalıdır:
 Her aday için development seçimi, seçilmeyen adaylar ve compute bütçesi saklanır.
 Son tabloda eski ve yeni yöntemler yan yana verilir; yalnız iyileşen koşullar seçilip
 raporlanmaz. Confirmatory v2 ile exploratory improvement sonuçları açıkça ayrılır.
+
+## 7. Yerel küçük-LLM karşılaştırması — 21 Kasım 2026 eki
+
+Bu ek, aşağıdaki modellerin yeni sonuçları görülmeden önce kaydedilmiştir. Amaç,
+Quadro RTX 4000 makinesine erişim yokken CPU üzerinde çalışabilen açık ağırlıklı
+modellerin Türkçe, sekiz alanlı bounded-contract çıkarımındaki doğruluk/gecikme
+dengesini ölçmektir. Bu deney `PREREGISTRATION_V2` hipotezlerini değiştirmez ve
+**exploratory** olarak raporlanır.
+
+Sabitlenen ek modeller:
+
+1. `Qwen/Qwen3-0.6B`, revision
+   `c1899de289a04d12100db370d81485cdf75e47ca`: düşük parametre ve yerel CPU
+   maliyeti adayı. Qwen3 model
+   kartında varsayılan reasoning çıktısı bulunduğu için tek JSON ve karşılaştırılabilir
+   gecikme gerektiren bu görevde belgelenmiş `enable_thinking=False` modu kullanılır.
+2. `utter-project/EuroLLM-1.7B-Instruct`, revision
+   `a25c7fa65fc2a644e6270b8940dbe295b51da681`: Türkçeyi açıkça kapsayan,
+   Apache-2.0 lisanslı Avrupa odaklı multilingual instruction model adayı.
+
+Her iki model de mevcut `Qwen/Qwen2.5-1.5B-Instruct` ile aynı dört development
+örneğini, aynı uzun signature sözlüğünü, greedy decoding'i, maksimum 260 yeni tokenı
+ve aynı `human60_original` / `human60_paraphrase` setlerini kullanır. Test etiketleri
+prompt, model, threshold veya decoding seçmekte kullanılmaz. İlk üç kayıtlık smoke
+yalnız teknik uyumluluk kapısıdır; doğruluk kapısı değildir.
+
+Birincil metrik sekiz alan ortalama macro-F1'dir. Tam kayıt doğruluğu, kritik
+gizlilik precision/recall/F1, abstention F1, geçersiz alan sayısı, ayrıştırılamayan
+çıktı sayısı ve görev başına CPU latency birlikte raporlanır. Başarısız veya zayıf
+model sonucu saklanır; yalnız iyi sonuç veren modeller seçilerek raporlanmaz.

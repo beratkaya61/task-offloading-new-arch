@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from task_offloading.semantic.benchmark import ANNOTATION_FIELDS
-from task_offloading.semantic.llm import FewShotLlmBaseline
+from task_offloading.semantic.llm import FewShotLlmBaseline, _chat_template_options
 
 
 def _coded_model() -> FewShotLlmBaseline:
@@ -46,3 +46,17 @@ def test_unknown_label_encoding_is_rejected() -> None:
         FewShotLlmBaseline(
             cache_folder=Path("models/huggingface"), label_encoding="unknown"
         )
+
+
+def test_qwen3_uses_documented_non_thinking_mode() -> None:
+    assert _chat_template_options("Qwen/Qwen3-0.6B") == {
+        "enable_thinking": False
+    }
+    assert _chat_template_options("Qwen/Qwen3-1.7B") == {
+        "enable_thinking": False
+    }
+
+
+def test_other_model_families_keep_native_chat_template() -> None:
+    assert _chat_template_options("Qwen/Qwen2.5-1.5B-Instruct") == {}
+    assert _chat_template_options("utter-project/EuroLLM-1.7B-Instruct") == {}

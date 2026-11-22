@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any, cast
 
 import pytest
 
@@ -26,4 +27,6 @@ def test_invalid_improvement_configuration_is_rejected(
     kwargs: dict[str, object], message: str
 ) -> None:
     with pytest.raises(ValueError, match=message):
-        FineTunedEncoderBaseline(cache_folder=Path("models/huggingface"), **kwargs)
+        FineTunedEncoderBaseline(
+            cache_folder=Path("models/huggingface"), **cast(Any, kwargs)
+        )

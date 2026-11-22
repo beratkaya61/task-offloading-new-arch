@@ -75,8 +75,8 @@ def main() -> None:
     all_tasks = load_jsonl(TASKS)
     development_ids = list(split["machine_labeled_development"]["task_ids"])
     evaluation_ids = list(split["single_human_evaluation"]["task_ids"])
-    development = ordered_subset(all_tasks, development_ids)
-    evaluation = ordered_subset(all_tasks, evaluation_ids)
+    development = list(ordered_subset(all_tasks, development_ids))
+    evaluation = list(ordered_subset(all_tasks, evaluation_ids))
     labels = {row["task_id"]: row["annotation"] for row in load_jsonl(TRAINING_LABELS)}
     train_annotations = [labels[task["task_id"]] for task in development]
     references = {row["task_id"]: row["annotation"] for row in load_jsonl(REFERENCE)}

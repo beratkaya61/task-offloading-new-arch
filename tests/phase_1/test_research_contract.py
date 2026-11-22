@@ -4,6 +4,7 @@ import copy
 import json
 import unittest
 from pathlib import Path
+from typing import Any, ClassVar, cast
 
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError
@@ -14,12 +15,20 @@ CONTRACT_PATH = ROOT / "configs" / "research_contract.json"
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 
 
-def load_json(path: Path) -> dict:
+JsonObject = dict[str, Any]
+
+
+def load_json(path: Path) -> JsonObject:
     with path.open(encoding="utf-8") as handle:
-        return json.load(handle)
+        return cast(JsonObject, json.load(handle))
 
 
 class SemanticSchemaTests(unittest.TestCase):
+    schema: ClassVar[JsonObject]
+    validator: ClassVar[Draft202012Validator]
+    explicit: ClassVar[JsonObject]
+    unknown: ClassVar[JsonObject]
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.schema = load_json(SCHEMA_PATH)
@@ -28,7 +37,9 @@ class SemanticSchemaTests(unittest.TestCase):
         cls.explicit = load_json(FIXTURES / "semantic_valid_explicit.json")
         cls.unknown = load_json(FIXTURES / "semantic_valid_unknown.json")
 
-    def assertInvalid(self, instance: dict) -> None:  # noqa: N802 - unittest style
+    def assertInvalid(  # noqa: N802 - unittest style
+        self, instance: JsonObject
+    ) -> None:
         with self.assertRaises(ValidationError):
             self.validator.validate(instance)
 
@@ -70,6 +81,8 @@ class SemanticSchemaTests(unittest.TestCase):
 
 
 class ResearchContractTests(unittest.TestCase):
+    contract: ClassVar[JsonObject]
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.contract = load_json(CONTRACT_PATH)

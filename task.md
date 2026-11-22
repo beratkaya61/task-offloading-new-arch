@@ -65,8 +65,10 @@ Bu dosya günlük ilerleme listesidir. Bilimsel kurallar için `TODO_ANTIGRAVITY
   83,75'e çıktı, anlaşmazlık 39'dan 26'ya düştü.
 - [x] Round 2 kalite kapısını yeniden ölç: 7 kappa kontrolü başarısız ve 2 sınıf
   metriğinde örnek yetersiz; ana 240 görev bloke edildi.
-- [ ] Pilot cevaplarını göstermeyen yeni örneklerle hedefli annotator kalibrasyonu
-  ve odaklı doğrulama turu yap.
+- [x] Pilot cevaplarını göstermeyen yeni örneklerle hedefli annotator kalibrasyonu
+  planını ve materyalini hazırla. İnsan doğrulama turu protokol `1.3.0` ile
+  **bilinçli olarak iptal edildi/yerine geçti**; B/C'den yeni görev istenmeyecek,
+  ana 60 kayıt tek-insan referansı olarak sınırlı raporlanacak.
 - [x] Protokol `1.2.0` hazırlığını tarihsel olarak koru; insan toplama başlamadan
   `1.3.0` iş yükü düzeltmesini yap: A 60 kör görevi etiketler; B/C'den yeni görev
   istenmez, mevcut A/B/C pilot kanıtı ayrı kullanılır ve ana 60 gold sayılmaz.
@@ -87,13 +89,18 @@ Bu dosya günlük ilerleme listesidir. Bilimsel kurallar için `TODO_ANTIGRAVITY
 - [x] Sabit profil, rule/keyword ve TF-IDF + lojistik regresyon baselines'larını
   180 makine-zayıf geliştirme etiketiyle eğitip 60 kilitli tek-insan referansında
   ölç; değerlendirme etiketlerini eğitim/ayar amacıyla kullanma.
-- [ ] Küçük encoder baseline'ını aynı split ve metrik sözleşmesiyle ölç.
-- [ ] Quadro RTX 4000 üzerinde zero/few-shot LLM baseline'larını ölç.
+- [x] Küçük encoder baseline'ını aynı split ve metrik sözleşmesiyle ölç:
+  donuk ve ince ayarlı multilingual-E5-small, sızıntısı giderilmiş v3'te tamamlandı.
+- **Opsiyonel GPU genişletmesi:** Quadro RTX 4000 üzerinde Qwen3-4B/8B
+  zero/few-shot ölçülebilir; ana kanıtı ve faz kapanışını bloke etmez.
 - [x] Üç yerel baseline için schema validity, exact match, F1, calibration,
   abstention, latency/cost ölç ve tahmin/config/kod SHA-256 bağlarını üret.
-- [ ] Küçük encoder ve LLM için aynı metrikleri tamamla.
-- [ ] Seçilen LLM/prompt/parser/cache sürümünü dondur.
-- [ ] Önceden tanımlı kalite kapısını geçir ve Faz 4 raporunu yaz.
+- [x] Küçük encoder ve Qwen2.5-1.5B few-shot baseline için aynı metrikleri
+  tamamla; Qwen3-0.6B yerel smoke yalnız teknik/uygulanabilirlik kanıtıdır.
+- [x] Qwen2.5 baseline model/prompt/parser/cache sürümünü dondur.
+- [x] Önceden tanımlı kalite kararlarını v3/LLM sonuçlarıyla raporla ve Faz 4
+  kapanış raporunu yaz: `phase_reports/PHASE_4_SEMANTIC_BENCHMARK.md`. Bağımsız
+  188 paraphrase, kapanış sonrası Faz 7 sağlamlık genişletmesidir.
 
 ## Paralel gerçek veri edinimi
 
@@ -110,63 +117,91 @@ Bu dosya günlük ilerleme listesidir. Bilimsel kurallar için `TODO_ANTIGRAVITY
 
 ## Faz 5 — Baselines ve oracle
 
-- [ ] Always-local/edge/cloud, random ve valid-random.
-- [ ] Latency/energy/deadline-aware greedy.
-- [ ] Küçük exhaustive veya MILP oracle.
-- [ ] Baskın eylem ve oracle çeşitlilik testi.
-- [ ] Reward bileşeni ve sensitivity testi.
-- [ ] Faz 5 raporunu yaz.
+- [x] Always-local/edge/cloud, random ve valid-random; v1'de 3.840 kararda ölçüldü.
+- [x] Latency/energy/deadline-aware greedy; semantiksiz ve semantik koşulları ölçüldü.
+- [x] Küçük exhaustive oracle ve parity doğrulaması simülasyon çekirdeğinde mevcut.
+- [x] Baskın eylem/collapse ve oracle çeşitlilik testleri mevcut; semantiksiz PPO'nun
+  `edge_0` çöküşü v1 raporunda açıkça gösterildi.
+- [x] Nihai NEP-v2 üzerinde reward bileşeni ve sensitivity tablosunu tamamla.
+- [x] NEP-v2 sonrası resmî Faz 5 kapanış raporunu yaz. v1 ara kanıtı
+  `phase_reports/OFFLOADING_RESULTS_V1.md` içinde tamamdır.
 
 ## Faz 6 — PPO ve semantik ablation
 
-- [ ] PPO-MLP semantiksiz ana baseline.
-- [ ] PPO + rule semantiği.
-- [ ] PPO + küçük sınıflandırıcı semantiği.
-- [ ] PPO + LLM semantiği.
-- [ ] PPO + insan-oracle semantiği.
-- [ ] Aynı episode seed’leriyle en az 5, tercihen 10 eğitim seed’i.
-- [ ] Collapse, reward decomposition ve karar overhead testleri.
-- [ ] CI, paired test, effect size ve Faz 6 raporu.
+- [x] PPO-MLP semantiksiz ana baseline; v1'de 5 tohumla tamamlandı.
+- [x] PPO + rule semantiği; kanonik ve paraphrase koşulları tamamlandı.
+- [x] PPO + küçük sınıflandırıcı semantiği; TF-IDF ve E5 koşulları tamamlandı.
+- [x] PPO + LLM semantiği. Qwen2.5'in 188 bağımsız paraphrase tahmin cache'i
+  NEP-v2 içinde aynı olaylarda greedy/PPO ile değerlendirildi; küçük Qwen
+  TF-IDF/E5'i geçmedi ve bu negatif sonuç açıkça raporlandı.
+- [x] PPO + tek-insan referansı semantiği; `oracle` değil erişilebilir semantik
+  üst sınır olarak adlandırıldı.
+- [x] Aynı episode seed'leriyle 5 eğitim tohumu; nihai ana koşullar için 10 tohum
+  kaynak bütçesine bağlı genişletmedir.
+- [x] Collapse ve karar overhead testleri; ayrıntılı reward sensitivity NEP-v2'de açık.
+- [x] v1 için CI, paired bootstrap ve etki farkları üretildi.
+- [x] Confidence calibration/fallback eşiklerini yalnız development/calibration
+  verisinde dondur; ECE/Brier ve güvenlik–başarı trade-off'unu yeniden ölç.
+- [x] Exact-preview ve `sigma=0.5` noisy-preview altında greedy–PPO karşılaştırmasını
+  aynı bilgi/seed sözleşmesiyle tamamla.
+- [x] Nihai sistem tablosuna p50/p99, queue wait, throughput/drop, total ve
+  per-success energy, fairness, action entropy/collapse ve decision overhead ekle.
+- [x] Holm düzeltmeli NEP-v2 sonuçlarıyla resmî Faz 6 kapanış raporunu yaz:
+  `phase_reports/PHASE_6_PPO_SEMANTIC_ABLATION_NEP_V2.md`.
 
 ## Faz 7 — İz güdümlü genelleme
 
-- [ ] Zaman, entity, uygulama ve domain-shift değerlendirmeleri.
-- [ ] Kaynak katmanı ablation’ları.
-- [ ] Synthetic ↔ trace-driven yön tutarlılığı.
-- [ ] Tam gerçek/hibrit terminoloji kontrolü.
-- [ ] Faz 7 raporu.
+- [x] Bağımsız 188 paraphrase üzerinde constant/rule/TF-IDF/E5/Qwen2.5 ortak
+  semantik tablosunu ve uçtan uca etkiyi üret. Fine-tuned E5'in independent
+  checkpoint'i bulunmadığı için bu eksik hücre sınırlama olarak raporlandı.
+- [x] Zaman/entity/application-proxy/domain-shift değerlendirmeleri: BUPT
+  kronolojik split bütün koşullarda; EUA 80/20 disjoint entity split ve iki-domain
+  holdout yeni 5-seed retraining ile tamamlandı. Application sonucu yalnız
+  disjoint scenario/paraphrase-family proxy'sidir, deployed application-ID değildir.
+- [x] Kaynak katmanı ablation’ları: frozen `v2_nep` checkpoint'leriyle NEP, UCI
+  compute heterogeneity, BUPT workload variability ve EUA topology variability
+  evaluation counterfactual'ları tamamlandı; retraining sensitivity değildir.
+- [x] Synthetic ↔ trace-driven yön tutarlılığı: H1/H2 yönü NEP-v2 katmanında
+  korundu (H6 desteklendi).
+- [x] Gerçek/sentetik/trace-driven-hybrid terminoloji kontrolü danışman belgesi ve
+  v1 raporunda tamamlandı; simülasyon testbed olarak sunulmuyor.
+- [x] Faz 7 raporu: `phase_reports/PHASE_7_GENERALIZATION_RESULTS.md`; entity ve
+  domain ayrıntı tabloları ayrı raporlarda verilmiştir.
 
-## Faz 8 — Gerekçeli ileri mimari
+## Faz 8 — Gerekçeli ileri mimari (koşullu; aktif backlog değil)
 
-- [ ] Değişken topoloji gerçekten gerekiyorsa adil GNN-PPO.
-- [ ] Gizli durum varsa recurrent PPO.
-- [ ] Bölünebilir görevler doğrulanırsa partial offloading ve overhead.
-- [ ] Gerçek resource allocation gerekiyorsa inner solver/hibrit eylem.
-- [ ] Her özellik için ayrı ablation ve Faz 8 raporu.
+- Değişken topoloji gerçekten gerekirse adil GNN-PPO açılır.
+- Gizli durum kanıtlanırsa recurrent PPO açılır.
+- Bölünebilir görevler doğrulanırsa partial offloading ve overhead açılır.
+- Resource allocation gerçekten eylem alanına girerse inner solver/hibrit eylem açılır.
+- Hiçbiri mevcut makale/tez çekirdeğinin tamamlanma koşulu değildir; açılırsa her
+  özellik için ayrı ablation ve Faz 8 raporu gerekir.
 
-## Faz 9 — İsteğe bağlı küçük testbed/emulation
+## Faz 9 — İsteğe bağlı küçük testbed/emulation (aktif backlog değil)
 
 Bu faz çekirdek tez kabul koşulu değildir. Yapılmazsa sonuçlar sentetik ve trace-driven-hybrid simülasyon olarak sınırlandırılır.
 
-- [ ] Donanım ve ağ envanteri.
-- [ ] Ortak zamanlı görev-niyet-sistem-sonuç telemetrisi.
-- [ ] Ölçülmüş hizmet süresi, queue, ağ ve mümkünse enerji.
-- [ ] Sim-to-real kalibrasyon ve OOD testi.
-- [ ] Ham log, manifest ve Faz 9 raporu.
+- Yapılmasına karar verilirse donanım/ağ envanteri, ortak zamanlı telemetri,
+  ölçülmüş service/queue/network/energy, sim-to-real/OOD, ham log/manifest ve Faz 9
+  raporu birlikte üretilir.
 
 ## Faz 10 — Tez ve yeniden üretilebilirlik
 
-- [ ] Sonuç tabloları/figürleri dondur.
-- [ ] Config, code version, data checksum ve seed bağını doğrula.
-- [ ] Threats to validity, negative results ve limitations yaz.
-- [ ] Reproducibility paketi ve çalıştırma rehberi.
-- [ ] GUI/gösterimi bilimsel çekirdekten ayrı tamamla.
-- [ ] Nihai test matrisi ve Faz 10 raporu.
+- [x] Sonuç tabloları/figürleri dondur.
+- [x] Config, code version, data checksum ve seed bağını doğrula.
+- [x] Advisor belgesinde yazılmış threats to validity, negative results ve
+  limitations bölümünü nihai makale/tez metnine taşı ve son v2 kanıtıyla dondur.
+- [x] Reproducibility paketi ve çalıştırma rehberi.
+- **Opsiyonel demo:** GUI yalnız danışman/yayın demosu istenirse bilimsel çekirdekten
+  ayrı tamamlanır; tez sonuçlarını bloke etmez.
+- [x] Nihai test matrisi ve Faz 10 raporu:
+  `phase_reports/PHASE_10_REPRODUCIBILITY_AND_QUALITY.md`.
 
-## Sıradaki tek iş
+## Kalan işler
 
-**Faz 4:** İnsan etiketleme kapandı; yeni anket istenmeyecek. Sabit profil,
-rule/keyword ve TF-IDF + lojistik regresyon aynı 180/60 split ve ortak metriklerle
-tamamlandı. Şimdi küçük encoder baseline'ını kur; ardından bu bilgisayarda Qwen
-çalıştırmadan Quadro RTX 4000 için Qwen3-4B/8B zero-shot/few-shot karşılaştırma
-paketini hazırla. A'nın 180 geliştirme görevini doldurması gerekmez.
+**Current-PC publication core tamamlandı:** Faz 4–7 kanıtları, danışman MD/DOCX,
+sonuç/figür/config–code–data–seed dondurması, read-only publication verification ve
+nihai kalite kapısı tamamlandı. Sıradaki zorunlu depo işlemi kullanıcının manuel
+commit'idir; otomatik commit atılmayacaktır. Quadro Qwen3-4B/8B, 10-seed
+genişletmesi, GNN/recurrent/partial offloading ve testbed ana yolu bloke etmeyen
+opsiyonel veya koşullu işlerdir.

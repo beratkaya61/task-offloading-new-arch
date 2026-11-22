@@ -14,6 +14,9 @@ Evaluation sets:
   * ``compositional600_canonical`` / ``compositional600_paraphrase`` — 600
     machine-generated tasks composed from *evaluation-split* domain sentences,
     labels by construction, in template wording and in held-out wording.
+  * ``independent_paraphrase`` — 188 independently generated and automatically
+    filtered paraphrases with labels transferred under an invariance assumption;
+    these texts are machine-generated and were not human re-annotated.
 
 Every model is scored on the same tasks; CIs resample tasks (1000 draws) and
 paired differences are reported against the rule baseline.
@@ -142,7 +145,7 @@ def main() -> None:
             for r in load_jsonl(OUTPUT / "eval_independent_paraphrase.labels.jsonl")
         }
         eval_sets["independent_paraphrase"] = (
-            load_jsonl(independent),
+            list(load_jsonl(independent)),
             independent_labels,
         )
     OUTPUT.mkdir(parents=True, exist_ok=True)
@@ -317,6 +320,10 @@ def main() -> None:
                     "under_invariance_assumption_not_human_annotated"
                 ),
                 "compositional600_*": "machine_generated_label_by_construction",
+                "independent_paraphrase": (
+                    "machine_generated_paraphrase_with_labels_transferred_under_"
+                    "an_invariance_assumption_not_human_annotated"
+                ),
                 "training": "machine_generated_weak_and_constructed_labels",
             },
             "set_sizes": {name: len(tasks) for name, (tasks, _) in eval_sets.items()},

@@ -43,6 +43,20 @@ from task_offloading.semantic.benchmark import ANNOTATION_FIELDS
 DEFAULT_MODEL_ID = "Qwen/Qwen2.5-1.5B-Instruct"
 CONSTANT_CONFIDENCE = 0.7
 
+
+def _chat_template_options(model_id: str) -> dict[str, bool]:
+    """Return model-family-specific, pre-declared chat-template controls.
+
+    Qwen3 enables a free-form reasoning trace by default.  The semantic
+    benchmark requires one bounded JSON object, deterministic decoding, and
+    comparable latency, so Qwen3 is evaluated in its documented non-thinking
+    mode.  Other model families keep their native chat-template defaults.
+    """
+
+    if "qwen3" in model_id.casefold():
+        return {"enable_thinking": False}
+    return {}
+
 _FIELD_HELP = {
     "domain": "uygulama alanı",
     "latency": "gecikme gereksinimi (status ve class)",
@@ -69,6 +83,7 @@ class FewShotLlmBaseline:
         max_new_tokens: int = 260,
         threads: int = 16,
         label_encoding: str = "signatures",
+        revision: str | None = None,
     ) -> None:
         if label_encoding not in {"signatures", "codes"}:
             raise ValueError("label_encoding must be 'signatures' or 'codes'")
@@ -80,6 +95,8 @@ class FewShotLlmBaseline:
         self._max_new_tokens = max_new_tokens
         self._threads = threads
         self._label_encoding = label_encoding
+        self._revision = revision
+        self._chat_template_options = _chat_template_options(model_id)
         self._vocabulary: dict[str, list[str]] = {}
         self._codebook: dict[str, dict[str, str]] = {}
         self._examples: list[tuple[str, dict[str, list[Any]]]] = []
@@ -130,16 +147,22 @@ class FewShotLlmBaseline:
                 break
         torch.set_num_threads(self._threads)
         self._tokenizer = AutoTokenizer.from_pretrained(
-            self._model_id, cache_dir=self._cache
+            self._model_id, cache_dir=self._cache, revision=self._revision
         )
         self._model = AutoModelForCausalLM.from_pretrained(
-            self._model_id, cache_dir=self._cache, dtype=torch.bfloat16
+            self._model_id,
+            cache_dir=self._cache,
+            revision=self._revision,
+            dtype=torch.bfloat16,
         )
         self._model.eval()
         # The system prompt and few-shot turns are identical for every task;
         # encode them once and reuse the key/value cache (exact, not approximate).
         prefix = self._tokenizer.apply_chat_template(
-            self._messages(""), add_generation_prompt=False, tokenize=False
+            self._messages(""),
+            add_generation_prompt=False,
+            tokenize=False,
+            **self._chat_template_options,
         )
         marker = "Metin: "
         prefix = prefix[: prefix.rfind(marker)]
@@ -256,6 +279,7 @@ class FewShotLlmBaseline:
             self._messages(visible_text(task)),
             add_generation_prompt=True,
             tokenize=False,
+            **self._chat_template_options,
         )
         inputs = self._tokenizer(prompt, return_tensors="pt")
         ids = inputs["input_ids"]

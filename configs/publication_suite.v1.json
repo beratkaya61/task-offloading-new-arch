@@ -1,0 +1,196 @@
+{
+  "suite_version": "1.0.0",
+  "frozen_on": "2026-11-22",
+  "python": ">=3.11,<3.12",
+  "dataset_env": "TASK_OFFLOADING_DATASETS",
+  "experiment_contract": {
+    "experiment_seed": 20261120,
+    "ppo_seeds": 5,
+    "ppo_timesteps": 150000,
+    "train_episodes": 400,
+    "test_episodes": 60,
+    "tasks_per_episode": 64,
+    "bootstrap_resamples": 2000
+  },
+  "runtime_packages": [
+    "numpy",
+    "scikit-learn",
+    "gymnasium",
+    "stable-baselines3",
+    "sb3-contrib",
+    "torch",
+    "transformers",
+    "sentence-transformers",
+    "matplotlib"
+  ],
+  "stages": [
+    {
+      "id": "semantic_score_v3_2",
+      "scope": "current_pc",
+      "kind": "analysis",
+      "commands": [
+        ["{python}", "scripts/score_semantic_prediction_cache.py"],
+        ["{python}", "scripts/summarize_semantic_v3.py", "--results", "data/semantic_benchmark/main/benchmark_v3/results.cached_v3_2.json", "--output", "phase_reports/SEMANTIC_RESULTS_V3_2_CACHE.md"]
+      ],
+      "outputs": [
+        {"path": "data/semantic_benchmark/main/benchmark_v3/results.cached_v3_2.json", "kind": "semantic_result"},
+        {"path": "phase_reports/SEMANTIC_RESULTS_V3_2_CACHE.md", "kind": "report"}
+      ]
+    },
+    {
+      "id": "offloading_v2_nep_exact",
+      "scope": "current_pc",
+      "kind": "training",
+      "commands": [
+        ["{python}", "scripts/run_offloading_experiment.py", "--tag", "v2_nep", "--seeds", "5", "--timesteps", "150000", "--train-episodes", "400", "--test-episodes", "60", "--pool", "compositional", "--nep", "--prediction-variant", "both", "--resume"]
+      ],
+      "expected_metadata": {"nep_layer": true, "pool": "compositional", "preview_noise_sigma": 0.0, "seeds": 5, "test_episodes": 60},
+      "outputs": [
+        {"path": "artifacts/offloading_experiment/results_v2_nep.json", "kind": "offloading_result"}
+      ]
+    },
+    {
+      "id": "offloading_v2_nep_noisy",
+      "scope": "current_pc",
+      "kind": "training",
+      "commands": [
+        ["{python}", "scripts/run_offloading_experiment.py", "--tag", "v2_nep_noise", "--seeds", "5", "--timesteps", "150000", "--train-episodes", "400", "--test-episodes", "60", "--pool", "compositional", "--nep", "--preview-noise", "0.5", "--prediction-variant", "both", "--resume"]
+      ],
+      "expected_metadata": {"nep_layer": true, "pool": "compositional", "preview_noise_sigma": 0.5, "seeds": 5, "test_episodes": 60},
+      "outputs": [
+        {"path": "artifacts/offloading_experiment/results_v2_nep_noise.json", "kind": "offloading_result"}
+      ]
+    },
+    {
+      "id": "offloading_v2_nep_independent",
+      "scope": "current_pc",
+      "kind": "training",
+      "commands": [
+        ["{python}", "scripts/run_offloading_experiment.py", "--tag", "v2_nep_independent", "--seeds", "5", "--timesteps", "150000", "--train-episodes", "400", "--test-episodes", "60", "--pool", "independent", "--nep", "--prediction-variant", "both", "--resume"]
+      ],
+      "expected_metadata": {"nep_layer": true, "pool": "independent", "preview_noise_sigma": 0.0, "seeds": 5, "test_episodes": 60},
+      "outputs": [
+        {"path": "artifacts/offloading_experiment/results_v2_nep_independent.json", "kind": "offloading_result"}
+      ]
+    },
+    {
+      "id": "offloading_entity_holdout",
+      "scope": "current_pc",
+      "kind": "training",
+      "commands": [
+        ["{python}", "scripts/run_offloading_experiment.py", "--tag", "v2_nep_entity_holdout", "--seeds", "5", "--timesteps", "150000", "--train-episodes", "400", "--test-episodes", "60", "--pool", "compositional", "--nep", "--conditions", "ppo_semantic,ppo_no_semantic", "--beliefs", "reference", "--eua-entity-holdout", "--resume"]
+      ],
+      "expected_metadata": {"nep_layer": true, "pool": "compositional", "eua_entity_holdout": true, "seeds": 5, "test_episodes": 60},
+      "outputs": [
+        {"path": "artifacts/offloading_experiment/results_v2_nep_entity_holdout.json", "kind": "offloading_result"}
+      ]
+    },
+    {
+      "id": "offloading_domain_holdout",
+      "scope": "current_pc",
+      "kind": "training",
+      "commands": [
+        ["{python}", "scripts/run_offloading_experiment.py", "--tag", "v2_nep_domain_holdout", "--seeds", "5", "--timesteps", "150000", "--train-episodes", "400", "--test-episodes", "60", "--pool", "compositional", "--nep", "--conditions", "ppo_semantic,ppo_no_semantic", "--beliefs", "reference", "--heldout-domains", "public_safety,transportation", "--resume"]
+      ],
+      "expected_metadata": {"nep_layer": true, "pool": "compositional", "eua_entity_holdout": false, "seeds": 5, "test_episodes": 60, "heldout_domains": ["public_safety", "transportation"]},
+      "outputs": [
+        {"path": "artifacts/offloading_experiment/results_v2_nep_domain_holdout.json", "kind": "offloading_result"}
+      ]
+    },
+    {
+      "id": "source_without_nep",
+      "scope": "current_pc",
+      "kind": "evaluation",
+      "commands": [
+        ["{python}", "scripts/run_offloading_experiment.py", "--tag", "v2_nep_source_without_nep", "--eval-only-from", "v2_nep", "--seeds", "5", "--timesteps", "150000", "--train-episodes", "400", "--test-episodes", "60", "--pool", "compositional", "--conditions", "ppo_semantic,ppo_no_semantic", "--beliefs", "reference", "--resume"]
+      ],
+      "expected_metadata": {"nep_layer": false, "physical_ablation": "none", "checkpoints_from": "v2_nep", "seeds": 5, "test_episodes": 60},
+      "outputs": [
+        {"path": "artifacts/offloading_experiment/results_v2_nep_source_without_nep.json", "kind": "offloading_result"}
+      ]
+    },
+    {
+      "id": "source_without_uci",
+      "scope": "current_pc",
+      "kind": "evaluation",
+      "commands": [
+        ["{python}", "scripts/run_offloading_experiment.py", "--tag", "v2_nep_source_without_uci", "--eval-only-from", "v2_nep", "--seeds", "5", "--timesteps", "150000", "--train-episodes", "400", "--test-episodes", "60", "--pool", "compositional", "--conditions", "ppo_semantic,ppo_no_semantic", "--beliefs", "reference", "--nep", "--physical-ablation", "without_uci_heterogeneity", "--resume"]
+      ],
+      "expected_metadata": {"nep_layer": true, "physical_ablation": "without_uci_heterogeneity", "checkpoints_from": "v2_nep", "seeds": 5, "test_episodes": 60},
+      "outputs": [
+        {"path": "artifacts/offloading_experiment/results_v2_nep_source_without_uci.json", "kind": "offloading_result"}
+      ]
+    },
+    {
+      "id": "source_without_bupt",
+      "scope": "current_pc",
+      "kind": "evaluation",
+      "commands": [
+        ["{python}", "scripts/run_offloading_experiment.py", "--tag", "v2_nep_source_without_bupt", "--eval-only-from", "v2_nep", "--seeds", "5", "--timesteps", "150000", "--train-episodes", "400", "--test-episodes", "60", "--pool", "compositional", "--conditions", "ppo_semantic,ppo_no_semantic", "--beliefs", "reference", "--nep", "--physical-ablation", "without_bupt_variability", "--resume"]
+      ],
+      "expected_metadata": {"nep_layer": true, "physical_ablation": "without_bupt_variability", "checkpoints_from": "v2_nep", "seeds": 5, "test_episodes": 60},
+      "outputs": [
+        {"path": "artifacts/offloading_experiment/results_v2_nep_source_without_bupt.json", "kind": "offloading_result"}
+      ]
+    },
+    {
+      "id": "source_without_eua",
+      "scope": "current_pc",
+      "kind": "evaluation",
+      "commands": [
+        ["{python}", "scripts/run_offloading_experiment.py", "--tag", "v2_nep_source_without_eua", "--eval-only-from", "v2_nep", "--seeds", "5", "--timesteps", "150000", "--train-episodes", "400", "--test-episodes", "60", "--pool", "compositional", "--conditions", "ppo_semantic,ppo_no_semantic", "--beliefs", "reference", "--nep", "--physical-ablation", "without_eua_variability", "--resume"]
+      ],
+      "expected_metadata": {"nep_layer": true, "physical_ablation": "without_eua_variability", "checkpoints_from": "v2_nep", "seeds": 5, "test_episodes": 60},
+      "outputs": [
+        {"path": "artifacts/offloading_experiment/results_v2_nep_source_without_eua.json", "kind": "offloading_result"}
+      ]
+    },
+    {
+      "id": "publication_reports",
+      "scope": "current_pc",
+      "kind": "analysis",
+      "commands": [
+        ["{python}", "scripts/summarize_offloading_results.py", "artifacts/offloading_experiment/results_v2_nep.json", "--output", "phase_reports/OFFLOADING_RESULTS_V2_NEP_EXACT.md"],
+        ["{python}", "scripts/summarize_offloading_results.py", "artifacts/offloading_experiment/results_v2_nep_noise.json", "--output", "phase_reports/OFFLOADING_RESULTS_V2_NEP_NOISY.md"],
+        ["{python}", "scripts/summarize_offloading_results.py", "artifacts/offloading_experiment/results_v2_nep_independent.json", "--output", "phase_reports/OFFLOADING_RESULTS_V2_NEP_INDEPENDENT.md"],
+        ["{python}", "scripts/summarize_offloading_results.py", "artifacts/offloading_experiment/results_v2_nep_entity_holdout.json", "--output", "phase_reports/OFFLOADING_RESULTS_V2_NEP_ENTITY_HOLDOUT.md"],
+        ["{python}", "scripts/summarize_offloading_results.py", "artifacts/offloading_experiment/results_v2_nep_domain_holdout.json", "--output", "phase_reports/OFFLOADING_RESULTS_V2_NEP_DOMAIN_HOLDOUT.md"],
+        ["{python}", "scripts/summarize_hypotheses_v2.py"],
+        ["{python}", "scripts/summarize_reward_sensitivity.py", "artifacts/offloading_experiment/results_v2_nep.json", "--output", "phase_reports/REWARD_SENSITIVITY_V2_NEP_EXACT.md"],
+        ["{python}", "scripts/summarize_phase7_generalization.py"]
+      ],
+      "outputs": [
+        {"path": "phase_reports/OFFLOADING_RESULTS_V2_NEP_EXACT.md", "kind": "report"},
+        {"path": "phase_reports/OFFLOADING_RESULTS_V2_NEP_NOISY.md", "kind": "report"},
+        {"path": "phase_reports/OFFLOADING_RESULTS_V2_NEP_INDEPENDENT.md", "kind": "report"},
+        {"path": "phase_reports/OFFLOADING_RESULTS_V2_NEP_ENTITY_HOLDOUT.md", "kind": "report"},
+        {"path": "phase_reports/OFFLOADING_RESULTS_V2_NEP_DOMAIN_HOLDOUT.md", "kind": "report"},
+        {"path": "phase_reports/HYPOTHESIS_DECISIONS_V2.md", "kind": "report"},
+        {"path": "phase_reports/REWARD_SENSITIVITY_V2_NEP_EXACT.md", "kind": "report"},
+        {"path": "phase_reports/PHASE_7_GENERALIZATION_RESULTS.md", "kind": "report"}
+      ]
+    },
+    {
+      "id": "advisor_document",
+      "scope": "current_pc",
+      "kind": "document",
+      "commands": [
+        ["{python}", "scripts/build_advisor_report_figures.py"],
+        ["{python}", "scripts/build_advisor_report.py"]
+      ],
+      "outputs": [
+        {"path": "TEZ_DANISMANI_MEVCUT_DURUM_VE_LITERATUR_OZETI.md", "kind": "report"},
+        {"path": "TEZ_DANISMANI_MEVCUT_DURUM_VE_LITERATUR_OZETI.docx", "kind": "document"},
+        {"path": "docs/advisor_assets/generalization_and_sources.png", "kind": "figure"}
+      ]
+    },
+    {
+      "id": "quadro_qwen3_scale_extension",
+      "scope": "quadro_optional",
+      "kind": "manual_optional",
+      "commands": [],
+      "note": "Qwen3-4B/8B zero/few-shot must reuse the frozen prompt/parser/cache contract; it does not block the current-PC publication core.",
+      "outputs": []
+    }
+  ]
+}

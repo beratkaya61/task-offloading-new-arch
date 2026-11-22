@@ -6,6 +6,7 @@ import copy
 import hashlib
 import json
 from pathlib import Path
+from typing import Any, cast
 
 import pytest
 from jsonschema.exceptions import ValidationError
@@ -30,15 +31,16 @@ NEP_PROFILE_PATH = (
 UCI_PROFILE_PATH = ROOT / "configs" / "data_profiles" / "uci_mec_859_23716d69.json"
 EUA_PROFILE_PATH = ROOT / "configs" / "data_profiles" / "eua_61238e00_22c07483.json"
 
+JsonObject = dict[str, Any]
 
-def manifest() -> dict[str, object]:
+
+def manifest() -> JsonObject:
     with MANIFEST_PATH.open(encoding="utf-8") as handle:
-        return json.load(handle)  # type: ignore[no-any-return]
+        return cast(JsonObject, json.load(handle))
 
 
-def source_by_id(values: dict[str, object], source_id: str) -> dict[str, object]:
-    sources = values["sources"]
-    assert isinstance(sources, list)
+def source_by_id(values: JsonObject, source_id: str) -> JsonObject:
+    sources = cast(list[JsonObject], values["sources"])
     return next(item for item in sources if item["id"] == source_id)
 
 
@@ -54,7 +56,7 @@ def test_manifest_schema_and_semantic_contract_are_valid() -> None:
 def test_every_column_has_exactly_one_frozen_provenance_value() -> None:
     values = manifest()
     allowed = {item.value for item in ProvenanceKind}
-    for source in values["sources"]:  # type: ignore[union-attr]
+    for source in values["sources"]:
         for column in source["columns"]:
             assert column["provenance"] in allowed
 
@@ -65,8 +67,8 @@ def test_bupt_research_statement_is_scoped_without_redistribution() -> None:
     assert bupt["access_status"] == "public"
     assert bupt["dataset_status"] == "schema_validated"
     license_info = bupt["license"]
-    assert license_info["usage_scope"] == "research_only"  # type: ignore[index]
-    assert license_info["redistribution_allowed"] is False  # type: ignore[index]
+    assert license_info["usage_scope"] == "research_only"
+    assert license_info["redistribution_allowed"] is False
     assert source_is_analysis_ready(bupt)
 
 
@@ -76,7 +78,7 @@ def test_bupt_manifest_and_non_sensitive_profile_are_aligned() -> None:
     with BUPT_PROFILE_PATH.open(encoding="utf-8") as handle:
         profile = json.load(handle)
 
-    artifact = bupt["artifacts"][0]  # type: ignore[index]
+    artifact = bupt["artifacts"][0]
     assert profile["source_commit"] in bupt["version"]
     assert profile["archive"]["filename"] == artifact["filename"]
     assert profile["archive"]["size_bytes"] == artifact["size_bytes"]
@@ -102,7 +104,7 @@ def test_nep_large_manifest_and_non_sensitive_profile_are_aligned() -> None:
     with NEP_PROFILE_PATH.open(encoding="utf-8") as handle:
         profile = json.load(handle)
 
-    artifact = nep["artifacts"][0]  # type: ignore[index]
+    artifact = nep["artifacts"][0]
     assert nep["dataset_status"] == "schema_validated"
     assert nep["citation_url"] == "https://arxiv.org/abs/2109.03395"
     assert artifact["filename"] == profile["archive"]["filename"]
@@ -141,7 +143,7 @@ def test_uci_and_eua_are_analysis_ready_with_matching_profiles() -> None:
         source = source_by_id(values, source_id)
         with profile_path.open(encoding="utf-8") as handle:
             profile = json.load(handle)
-        artifact = source["artifacts"][0]  # type: ignore[index]
+        artifact = source["artifacts"][0]
         assert source["dataset_status"] == "schema_validated"
         assert artifact["filename"] == profile["archive"]["filename"]
         assert artifact["size_bytes"] == profile["archive"]["size_bytes"]
@@ -198,8 +200,8 @@ def test_checksum_verified_claim_requires_local_verification() -> None:
 def test_manifest_schema_rejects_non_sha256_checksum() -> None:
     values = manifest()
     source = source_by_id(values, "alibaba_cluster_trace_v2018")
-    artifact = source["artifacts"][0]  # type: ignore[index]
-    artifact["checksum"]["value"] = "not-a-digest"  # type: ignore[index]
+    artifact = source["artifacts"][0]
+    artifact["checksum"]["value"] = "not-a-digest"
     with SCHEMA_PATH.open(encoding="utf-8") as handle:
         schema = json.load(handle)
     from jsonschema import Draft202012Validator
@@ -230,9 +232,9 @@ def test_analysis_ready_requires_and_accepts_all_evidence() -> None:
     values = manifest()
     uci = source_by_id(values, "uci_mec_execution_times_859")
     uci["dataset_status"] = "schema_validated"
-    artifact = uci["artifacts"][0]  # type: ignore[index]
-    artifact["checksum"]["value"] = "a" * 64  # type: ignore[index]
-    artifact["checksum"]["verification"] = "verified"  # type: ignore[index]
+    artifact = uci["artifacts"][0]
+    artifact["checksum"]["value"] = "a" * 64
+    artifact["checksum"]["verification"] = "verified"
     validate_manifest_semantics(values)
     assert source_is_analysis_ready(uci)
 
@@ -271,7 +273,7 @@ def test_benchmark_cannot_call_only_simulated_fields_trace_driven() -> None:
     values = manifest()
     hybrid = next(
         item
-        for item in values["benchmarks"]  # type: ignore[union-attr]
+        for item in values["benchmarks"]
         if item["kind"] == "trace_driven_hybrid"
     )
     hybrid["field_provenance"] = ["simulated"]
@@ -310,15 +312,15 @@ def test_license_status_fields_must_be_consistent() -> None:
 
 def test_benchmark_cannot_reference_unknown_source() -> None:
     values = manifest()
-    benchmark = values["benchmarks"][1]  # type: ignore[index]
-    benchmark["source_ids"].append("unknown_source")  # type: ignore[union-attr]
+    benchmark = values["benchmarks"][1]
+    benchmark["source_ids"].append("unknown_source")
     with pytest.raises(ValueError, match="unknown sources"):
         validate_manifest_semantics(values)
 
 
 def test_synthetic_benchmark_cannot_reference_trace_source() -> None:
     values = manifest()
-    benchmark = values["benchmarks"][0]  # type: ignore[index]
-    benchmark["source_ids"] = ["eua_dataset"]  # type: ignore[index]
+    benchmark = values["benchmarks"][0]
+    benchmark["source_ids"] = ["eua_dataset"]
     with pytest.raises(ValueError, match="synthetic benchmark"):
         validate_manifest_semantics(values)

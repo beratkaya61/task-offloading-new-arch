@@ -186,7 +186,7 @@ def main() -> None:
             "prediction_path": path.relative_to(ROOT).as_posix(),
             "prediction_sha256": sha256(path),
             "variants": {
-                variant: _score(name, subset, references, predicted, schema)
+                variant: _score(name, list(subset), references, predicted, schema)
                 for variant, (subset, references) in variants.items()
             },
         }

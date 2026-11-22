@@ -1,243 +1,549 @@
-# Tez Çalışmasının Amacı, Mevcut Durumu ve Literatürdeki Konumu
+# Tez Danışmanı İçin Mevcut Durum, Yöntem, Bulgular ve Makale Yol Haritası
 
-**Güncellik tarihi:** 14 Ekim 2026  
-**Belgenin amacı:** Çalışmada neyi çözmeye çalıştığımızı, “sekiz semantik alan” ile neyi kastettiğimizi, şu ana kadar ne yaptığımızı ve çalışmanın güncel literatürde nerede durduğunu kısa ve açık biçimde anlatmak.
+**Güncellik tarihi:** 22 Kasım 2026
 
-## 1. Çalışmanın tek cümlelik özeti
+**Önerdiğim Türkçe tez başlığı:** Belirsizlik-Duyarlı Semantik Kısıtlarla İz Güdümlü Mobil Uç Bilişimde Görev Boşaltma
 
-Bu tez, kullanıcının doğal dille anlattığı bir IoT/MEC görevinin gereksinimlerini önce yapılandırılmış bir **semantik sözleşmeye** dönüştürmeyi, ardından bu sözleşmeyi gerçek sistem izleriyle beslenen bir MEC ortamında PPO/DRL ajanına vererek görevin cihazda, edge sunucusunda veya bulutta çalıştırılmasına karar vermeyi amaçlamaktadır.
+**Önerdiğim İngilizce tez başlığı:** Trace-Driven Task Offloading in Mobile Edge Computing with Uncertainty-Aware Semantic Constraints
 
-LLM'nin görevi doğrudan “edge'i seç” veya “cloud'u seç” demek değildir. LLM yalnızca metnin ne istediğini çıkaracaktır. Nihai çalıştırma kararını ağın ve cihazların fiziksel durumunu gören DRL politikası verecektir.
+**Belgenin amacı:** Bu belgede tez kapsamında hangi problemi çözdüğümü, veriyi nasıl oluşturup ayırdığımı, hangi yöntemleri neden kullandığımı, hangi metriklerin hangi riski ölçtüğünü, elde ettiğim olumlu ve olumsuz sonuçları ve makaleye geçmeden önce gerçekten kalan işleri danışmanıma açık biçimde sunuyorum.
 
-```text
-Doğal dil görev metni
-        ↓
-Semantik çıkarıcı: görev ne istiyor?
-        ↓
-Sekiz alanlı semantik sözleşme
-        +
-Gerçek izlerden gelen fiziksel durum
-        ↓
-PPO/DRL: local / edge / cloud kararı
-        ↓
-Gecikme, enerji, başarı ve kısıt ihlali sonuçları
-```
+> **Kanıt durumu:** Semantik benchmark v3.2, NEP-v2 exact/noisy/independent offloading deneyleri, EUA entity holdout, iki-domain holdout, dört source-layer counterfactual ve Phase 10 reproducibility/quality gate tamamlandı. Ana PPO koşulları 5 independent training seed × 150.000 step; her değerlendirme 60 episode × 64 task = 3.840 paired decision içeriyor. Sonuçlar gerçek testbed değil, provenance-korumalı **trace-driven-hybrid simulation** sonucudur. Bu sınırı makale ve tez boyunca koruyacağım.
 
-## 2. Çözmeye çalıştığımız problem
+## 1. Yönetici özeti
 
-Klasik MEC offloading çalışmalarında görevin gereksinimleri çoğunlukla baştan sayısal ve eksiksiz kabul edilir. Örneğin modele doğrudan “deadline = 100 ms, veri boyutu = 5 MB” verilir. Gerçek bir kullanıcı ise çoğu zaman “Bu görüntü çok hassas, buluta gitmesin ve sonuç hızlı gelsin” gibi doğal dil kullanır.
+Bu çalışmada doğal dille verilen bir IoT/MEC görevini doğrudan LLM'ye “local, edge veya cloud seç” diyerek çözdürmüyorum. Önce görev metninden sekiz alanlı ve denetlenebilir bir **semantic requirement contract** çıkarıyorum. Ardından bu sözleşmeyi BUPT, NEP, UCI ve EUA kaynaklarıyla koşullandırılan ortak fizik çekirdeğine veriyor; offloading kararını güçlü bir greedy heuristic veya PPO ile alıyorum. Semantic extractor; network state, reward, oracle veya doğru action'ı görmüyor. Bu izolasyon sayesinde dil anlama hatası ile karar politikası hatasını ayrı ölçebiliyorum.
 
-Burada iki farklı bilgi katmanı vardır:
+Çalışmanın ana bulguları şunlardır:
 
-1. **Semantik katman:** Kullanıcı/görev ne istiyor?
-2. **Fiziksel katman:** Ağ, cihaz, edge ve cloud o anda ne durumda?
+1. **Model büyüklüğü tek başına kalite sağlamadı.** Single-human-60 özgün metinde macro-F1; rule için `%78,0`, TF-IDF(+data) için `%78,2`, frozen E5(+data) için `%76,3`, fine-tuned E5 için `%70,2`, Qwen2.5-1.5B 4-shot için `%48,3` oldu. Independent-188 paraphrase setinde TF-IDF(+data) `%80,9` ile en iyi makine yöntemi olurken Qwen `%42,0` kaldı.
+2. **Asıl ayrım paraphrase robustness altında oluştu.** Rule, makine yeniden yazımında `%40,3` macro-F1'e düştü; TF-IDF(+data) `%67,9` elde etti. Görülmemiş kompozisyonel ifadelerde rule `%47,5`, TF-IDF(+data) `%73,6`, frozen E5(+data) `%70,9` oldu.
+3. **Doğru semantik bilgi NEP-v2 sistem sonucunu belirgin artırdı.** Exact-preview koşulunda reference semantics, no-semantic'e göre success'i PPO'da `+15,03` percentage point [%95 CI `+13,85; +16,27`], greedy'de `+12,94` point [%95 CI `+11,77; +14,12`] artırdı.
+4. **Extractor quality downstream safety'yi doğrudan etkiledi.** PPO'da rule-paraphrase `%14,18` hard violation üretirken TF-IDF(+data) `%4,08`, frozen E5(+data) `%5,03`, single-human reference `%0,00` üretti. Rule yerine TF-IDF kullanımı hard violation'ı `10,10` point azalttı.
+5. **PPO, güçlü greedy baseline'ı geçmedi.** Reference koşulunda greedy `%91,7`, PPO `%91,2` success verdi. Noisy-preview ve domain holdout'ta da PPO üstünlüğü desteklenmedi. Bu negative result gizlenmiyor; makalenin dürüst deneysel sonucudur.
+6. **Semantic state policy collapse'ı azalttı.** No-semantic PPO'nun max-action share değeri `%99,7` iken reference PPO'da `%72,3` oldu. Buna rağmen greedy daha düşük latency, energy/success ve decision overhead sağladı.
+7. **Ana yön genelleme kontrollerinde korundu.** EUA entity holdout'ta semantic PPO avantajı `+15,03` point, iki-domain holdout'ta `+13,41` point oldu; her iki koşulda reference hard violation `%0,00` kaldı.
+8. **Calibration/fallback evrensel bir güvenlik garantisi değildir.** Development-only isotonic calibration confidence ölçümünü bazı modellerde iyileştirdi; fakat fallback yalnız PPO/TF-IDF koşulunda önceden tanımlı başarı-güvenlik kapısını geçti. H3 bu nedenle desteklenmedi.
 
-Tezin temel araştırma sorusu şudur:
+Bugün savunabildiğim ana sonuç şudur:
 
-> Doğal dilden bağımsız olarak çıkarılmış ve önceden dondurulmuş semantik gereksinimler, aynı fiziksel MEC olayları altında semantiksiz veya daha basit semantik yöntemlere kıyasla gecikme, enerji, başarı ve kısıt ihlali sonuçlarını anlamlı biçimde iyileştiriyor mu?
+> Natural-language semantics, MEC task offloading'i ancak extractor paraphrase-robust olduğunda, uncertainty development-only calibration ile ele alındığında ve hard permissions deterministic verification/action masking ile sınırlandığında güvenli biçimde iyileştiriyor. Aksi durumda semantik katman no-semantic policy'den daha fazla hard violation üretebiliyor.
 
-## 3. “Sekiz semantik alan” tam olarak nedir?
+### 1.1 İş paketlerinin güncel durumu
 
-Sekiz alan, görev metninin sekiz parçaya bölünmesi değildir. Bunlar, bir görevin **nasıl çalıştırılması gerektiğini etkileyen sekiz farklı gereksinim türüdür**.
-
-| Alan | Sorduğu soru | Örnek | Offloading kararına etkisi |
+| İş paketi | Durum | Depodaki ana kanıt | Kalan |
 |---|---|---|---|
-| **1. Uygulama alanı (domain)** | Görev hangi bağlamda kullanılıyor? | Sağlık, endüstri, ulaşım, kamu güvenliği, akıllı şehir, tarım, tüketici | Modelin görevin bağlamını ve farklı alanlara genellemesini ölçmemizi sağlar. Tek başına çalıştırma yeri emri değildir. |
-| **2. Gecikme (latency)** | Sonuç en geç ne zaman hazır olmalı? | “80 ms içinde”, “ertesi sabaha kadar” | Çok kısa süre isteyen görevler uzak cloud yerine local veya yakın edge'e yönelmeye daha yatkındır. Süre aşımı deadline ihlalidir. |
-| **3. Veri gizliliği (privacy)** | İşlenen veri ne kadar hassas? | Kamuya açık, kurum içi, hassas, kısıtlı | Hassasiyetin raporlanmasını ve güvenlik politikasının uygulanmasını sağlar. Açık çalıştırma yasağıyla birlikte cloud seçimi hard constraint olabilir. |
-| **4. Çalıştırma izni (execution policy)** | Görev hangi katmanlarda çalışabilir? | Cihaz izinli, edge izinli, cloud yasak | Doğrudan **hard constraint** üretir. Örneğin cloud yasaksa DRL ajanı cloud'u seçemez; seçenek action mask ile kapatılır. |
-| **5. Güvenilirlik (reliability)** | Görevin başarıyla tamamlanması ne kadar kritik? | Best effort, yüksek, görev-kritik; en az %99,95 başarı | Başarısızlık ihtimali yüksek düğümlerin kritik görevler için seçilmesini engeller veya ağır ihlal olarak sayar. |
-| **6. Sonuç doğruluğu (accuracy)** | Üretilen sonucun kalitesi ne kadar yüksek olmalı? | “F1 en az 0,97”, “yaklaşık sonuç yeterli” | Gerekli doğruluğu sağlayamayan hızlı fakat düşük kaliteli yürütme seçeneğinin uygun olmadığını belirtir. |
-| **7. Enerji önceliği (energy priority)** | Pil/enerji tasarrufu ne kadar önemli? | Düşük, dengeli, yüksek öncelik | DRL ödülünde enerji tüketiminin ağırlığını ve enerji-duyarlı tercihleri etkiler. Genellikle soft preference'tır; açık bütçe tanımlanırsa kısıta dönüşebilir. |
-| **8. Bölünebilirlik (divisibility)** | Görev parçalara ayrılıp farklı yerlerde çalıştırılabilir mi? | Bölünebilir veya bölünemez | Bölünemez görev tek yerde tamamlanmalıdır. Partial offloading ancak bölünebilir görevler ve ek iletişim maliyeti güvenilir biçimde modellendiğinde açılacaktır. |
+| Faz 0–3: research contract, simulator, provenance/split | **Tamamlandı** | Faz 0–3A raporları, oracle/parity/leakage testleri | — |
+| Faz 4: semantic benchmark | **Tamamlandı** | Human-60, 600+600 compositional, independent-188; constant/rule/TF-IDF/E5/Qwen | Yeni model eklemek zorunlu değil |
+| Faz 5: baselines/oracle/reward | **Tamamlandı** | NEP-v2 fixed/random/greedy, oracle, reward decomposition/sensitivity | — |
+| Faz 6: PPO ve semantic ablation | **Tamamlandı** | Exact/noisy/independent; calibration, mask/penalty; H1–H6 | — |
+| Faz 7: generalization/source ablation | **Tamamlandı** | Temporal, entity, scenario-family proxy, domain holdout ve source counterfactual | Claim sınırlarını tez metninde korumak |
+| Faz 8: GNN/recurrent/partial offloading | **Koşullu; aktif backlog değil** | Bu karmaşıklıkları zorunlu kılan kanıt yok | Ancak yeni hipotez ve adil ablation bütçesi açılırsa |
+| Faz 9: physical testbed/emulation | **Opsiyonel** | Simülasyon testbed diye sunulmuyor | Yapılırsa ayrı sim-to-real çalışma |
+| Faz 10: tez/makale ve reproducibility | **Current-PC core tamamlandı** | Frozen suite/evidence, tek-komut rehber, Phase 10 raporu; 264 test + Ruff + strict mypy | Kullanıcının manuel commit'i; Quadro extension opsiyonel |
 
-Her alan ayrıca şu bilgileri taşır:
+Bu bilgisayarda çekirdek deneyler tamamlandı. Quadro RTX 4000 üzerinde Qwen3-4B/8B, seçili koşullarda 10-seed genişletmesi veya ek model-scale analizi makaleyi güçlendirebilir; fakat ana bilimsel sonucu bloke eden zorunlu işler değildir.
 
-- Gereksinim metinde **açıkça belirtilmiş mi**, hiç söylenmemiş mi, yoksa çelişkili/belirsiz mi?
-- Karara dayanak olan metin parçası nedir?
-- Model bu çıkarımdan ne kadar emindir?
-- Model yeterince emin değilse bu alanda karar vermekten kaçınmalı mı (**abstention**)?
+## 2. Araştırma problemi, araştırma sorusu ve kapsam
 
-Örneğin:
+Klasik MEC offloading çalışmaları çoğunlukla task input size, CPU cycles, deadline ve energy budget gibi gereksinimleri baştan sayısal ve eksiksiz kabul eder [18]. Gerçek kullanıcı ise “hasta verisi cloud'a çıkmasın”, “alarm hemen değerlendirilsin” veya “yaklaşık sonuç yeterli fakat pil tüketimi düşük olsun” gibi doğal dil kullanabilir. Burada iki ayrı problem vardır:
 
-> “Yoğun bakım alarmı 40 ms içinde değerlendirilmelidir; veri cihazdan çıkamaz ve sonuç kritik doğrulukta olmalıdır.”
+- **Semantic problem:** Kullanıcının/görevin gereksinimi nedir?
+- **Physical decision problem:** O anda device, network, edge ve cloud hangi action'ı güvenli ve verimli biçimde gerçekleştirebilir?
 
-Bu metinden sağlık alanı, 40 ms hard-real-time gecikme, kısıtlı veri, yalnız cihazda çalıştırma izni ve kritik doğruluk gereksinimleri çıkarılır. Metinde enerji veya bölünebilirlik söylenmemişse model bunları uydurmamalı, `not_stated/unknown` olarak bırakmalıdır.
+Ana araştırma sorum şudur:
 
-## 4. Tez kapsamında tam olarak ne yapmayı planlıyoruz?
+> RL training'den önce dondurulmuş ve yalnız task text'ten çıkarılmış structured semantic requirements; aynı MEC physics, aynı evaluation tasks ve aynı random seeds altında no-semantic ve daha basit semantic baselines'a göre task success, hard-constraint satisfaction ve generalization'ı iyileştiriyor mu?
 
-Tez kapsamında iki ayrı modeli art arda kullanmayı planlıyoruz:
+Alt sorularım şunlardır:
 
-- **Semantik çıkarım modeli**, yalnız görev metnini okuyacak ve sekiz alanlı gereksinim JSON'u üretecek.
-- **PPO/DRL ajanı**, bu gereksinim JSON'u ile o andaki fiziksel sistem durumunu birlikte kullanarak görevi `local`, `edge_0`, `edge_1`, `edge_2` veya `cloud` seçeneklerinden birine atayacak.
+1. Rule, TF-IDF, multilingual E5, small LLM ve single-human reference arasında semantic quality nasıl değişiyor?
+2. Semantic quality farkı downstream success ve violation metriklerine nasıl yansıyor?
+3. PPO, güçlü greedy heuristic üzerinde gerçekten ek değer sağlıyor mu?
+4. Exact/noisy preview, entity/domain shift ve physical source counterfactual altında etki yönü korunuyor mu?
+5. Calibration, fallback ve action masking hangi koşullarda faydalı veya zararlı oluyor?
 
-Başka bir ifadeyle LLM ağ durumunu görmeyecek ve offloading kararı vermeyecek; PPO da doğal dil metnini doğrudan okumayacaktır. Böylece semantik anlama başarısı ile fiziksel karar başarısını ayrı ayrı ölçebileceğiz.
+Çalışma atomic task için `local / edge_i / cloud` action space kullanır. Partial offloading, continuous resource allocation, GNN policy veya recurrent policy mevcut araştırma sorusunun parçası değildir. Bu özellikleri başlıkta veya katkı iddiasında kullanmıyorum.
 
-### Planlanan uygulama ve deney adımları
+## 3. Tasarladığım mimari
 
-| Adım | Yapılacak çalışma | Üretilecek sonuç | Durum |
-|---|---|---|---|
-| **1. Semantik sözlüğü tanımlama** | Görevlerin domain, latency, privacy, execution policy, reliability, accuracy, energy ve divisibility alanlarıyla temsil edilmesi | Geçerli ve denetlenebilir sekiz alanlı JSON şeması | Tamamlandı |
-| **2. Kontrollü görev corpus'u oluşturma** | Farklı alanları, açık/eksik/çelişkili ifadeleri ve paraphrase'leri kapsayan Türkçe görev metinlerinin hazırlanması | 240 görev metni; 180 geliştirme ve 60 kilitli değerlendirme kaydı | Tamamlandı |
-| **3. Semantik yöntemleri karşılaştırma** | Sabit profil, rule, TF-IDF, küçük encoder, Qwen zero-shot ve Qwen few-shot yöntemlerinin aynı 60 kayıtta ölçülmesi | Her yöntem için alan bazlı F1, tam görev doğruluğu, confidence/calibration, abstention, gecikme ve maliyet | Devam ediyor |
-| **4. Semantik katmanı dondurma** | Seçilen modelin ağırlık/model kimliği, prompt'u, parser'ı ve tüm görev çıktılarının cache'lenmesi | PPO eğitiminden bağımsız, tekrarlanabilir semantik girdiler | Yapılacak |
-| **5. Trace-driven hybrid ortamı kurma** | BUPT, NEP, UCI ve EUA'nın trafik, kaynak, RTT, yürütme süresi ve konum rollerinde açık eşleme kurallarıyla kullanılması | Aynı fizik çekirdeğinde yeniden oynatılabilen MEC olayları | Yapılacak |
-| **6. Karar baselines ve oracle** | Always-local/edge/cloud, random, valid-random, latency/energy/deadline greedy ve küçük exhaustive/MILP oracle çalıştırılması | PPO'nun gerçekten öğrenip öğrenmediğini gösterecek alt ve üst karşılaştırma çizgileri | Yapılacak |
-| **7. PPO politikalarını eğitme** | Semantiksiz PPO, PPO+rule, PPO+küçük model, PPO+LLM ve PPO+insan referansı koşullarının eğitilmesi | Local/edge/cloud offloading politikaları | Yapılacak |
-| **8. Adil semantic-on/off deneyi** | Fiziksel olay, görev, episode seed'i ve PPO ayarları aynı tutulup yalnız semantik bilgi kaynağının değiştirilmesi | Semantik bilginin nedensel katkısını ölçen karşılaştırma | Yapılacak |
-| **9. Uçtan uca etki analizi** | Semantik alanlardaki doğru ve yanlış çıkarımların sistem sonuçlarına etkisinin incelenmesi | Latency p50/p95/p99, deadline miss, enerji, başarı/drop, privacy/reliability/accuracy ihlali ve fairness sonuçları | Yapılacak |
-| **10. Genelleme ve istatistik** | Farklı zaman, cihaz, uygulama ve domain koşullarında en az 5, tercihen 10 seed ile deney | %95 güven aralığı, eşleştirilmiş test, etki büyüklüğü ve genelleme analizi | Yapılacak |
+![Araştırma mimarisi ve semantic isolation](docs/advisor_assets/research_architecture.png)
 
-### Test edeceğimiz ana hipotezler
+Mimari şu güvenilirlik ilkelerine dayanır:
 
-- **H1 — Semantiğin katkısı:** Semantik gereksinimleri kullanan PPO, aynı fiziksel olaylarda semantiksiz PPO'ya göre özellikle hard constraint ihlallerini azaltacaktır.
-- **H2 — Semantik yönteminin önemi:** Daha doğru ve iyi kalibre edilmiş semantik çıkarıcılar, rule/TF-IDF gibi basit yöntemlere göre uçtan uca görev başarısını artıracaktır. Bu bir varsayımdır; deney sonucuna göre reddedilebilir.
-- **H3 — Belirsizlik yönetimi:** Düşük confidence durumunda abstention/fallback kullanılması, hatalı ve aşırı emin semantik kararların oluşturduğu kritik ihlalleri azaltacaktır.
-- **H4 — Hatanın sisteme yayılması:** Her semantik hata aynı etkiye sahip olmayacaktır; örneğin cloud yasağının kaçırılması, domain sınıfının yanlış tahmin edilmesinden daha ağır bir güvenlik sonucu doğuracaktır.
-- **H5 — Genelleme:** Semantik destekli politika, eğitimde görülmeyen zaman, kaynak yükü ve uygulama dağılımlarında yalnız sayısal/fiziksel girdili politikaya kıyasla daha iyi gereksinim uyumu sağlayacaktır.
+1. **Semantic isolation:** Extractor yalnız task text ve varsa user policy text görür. Network state, reward, oracle ve correct action gizlidir.
+2. **Frozen interface/cache:** Çıktı sekiz alanlı JSON contract'tır. Model revision, prompt, parser, raw/calibrated confidence ve predictions PPO'dan önce sürümlenir.
+3. **Shared physics:** Fixed, random, greedy ve PPO aynı deterministic transition core, queue, latency, energy, reliability ve accuracy denklemlerini kullanır.
+4. **Hard/soft ayrımı:** Explicit execution prohibitions action mask ile kapatılır. Energy priority gibi tercihler reward bileşenidir. Invalid action masking'in policy-gradient yöntemlerinde teorik olarak geçerli ve pratikte önemli olduğu gösterilmiştir [11].
+5. **Belief/truth ayrımı:** Policy ve mask `believed_requirements` kullanır; success/violation gerçek reference requirements ile ölçülür. Böylece yanlış semantics'in zararı gizlenmez.
+6. **Uncertainty provenance:** Raw confidence ile development-only calibrated confidence ayrı artifact olarak tutulur; legacy/raw cache “calibrated” diye adlandırılmaz [12].
+7. **Paired evaluation:** İki yöntem aynı tasks ve exogenous events üzerinde karşılaştırılır; policy dışı varyans azaltılır.
 
-Hipotezler yalnız toplam reward ile değerlendirilmeyecektir. Bir politika düşük gecikme üretirken gizlilik kısıtını ihlal ediyorsa başarılı sayılmayacaktır. Ayrıca insan referanslı semantik, erişilebilir üst sınır; exhaustive/MILP çözümü ise küçük fiziksel problemlerde karar üst sınırı olarak ayrı ayrı raporlanacaktır.
+Bu ayrıştırma STEPS'in semantic contract yaklaşımı ve AgentVNE'nin natural-language constraints'i optimization/RL katmanına çevirme fikriyle akrabadır [1], [2]. Ancak benim çalışmamda LLM doğrudan scheduler değildir; sekiz alanlı contract, explicit privacy/execution action masking ve extractor-error → system-effect analizi merkezde yer alır. IoT-Brain ve MAS-DecStream'de de açık uçlu dil katmanı ile deterministic physical/QoS verification'ın ayrılması benzer güvenlik gerekçesine dayanır [6], [7].
 
-### Özellikle yapmayacağımız şeyler
+### 3.1 Sekiz alanlı semantic contract
 
-- LLM'ye doğrudan “local/edge/cloud seç” dedirtmeyeceğiz.
-- LLM'ye doğru eylemi, ödülü, oracle sonucunu veya ağın anlık durumunu göstermeyeceğiz.
-- Birbiriyle ilgisiz veri setlerinin satırlarını aynı gerçek olaymış gibi birleştirmeyeceğiz.
-- LLM çıktısına uyduğu için PPO'ya ek ödül vermeyeceğiz.
-- İlk deneyde partial offloading, GNN veya karmaşık resource allocation iddiası eklemeyeceğiz. Bunlar ancak temel sonuçlar ihtiyaç gösterirse ayrı ablation ile değerlendirilecektir.
-- Gerçek testbed bulunmadığı için simülasyon sonucunu gerçek saha testi olarak sunmayacağız; testbed isteğe bağlı ek doğrulamadır.
-
-Tez tamamlandığında beklenen ana çıktı yalnız eğitilmiş bir PPO modeli değildir. Esas çıktı, **hangi semantik bilginin, hangi çıkarım yöntemiyle, hangi MEC koşulunda ve ne kadar sistem faydası veya zararı oluşturduğunu gösteren yeniden üretilebilir bir deneysel kanıt** olacaktır.
-
-## 5. Şu ana kadar ne yaptık?
-
-### Tamamlanan temel altyapı
-
-- Araştırma sorusu, veri dürüstlüğü kuralları ve deneysel adalet ilkeleri tanımlandı.
-- Local, üç edge ve cloud seçeneklerini aynı fizik denklemleriyle değerlendiren deterministik simülasyon çekirdeği hazırlandı.
-- BUPT, NEP-large, UCI MEC ve EUA kaynakları indirildi/doğrulandı. Bu kaynaklar doğal dil etiketi değil; trafik, CPU, bant genişliği, RTT, yürütme süresi ve konum gibi **fiziksel izler** sağlıyor.
-- Sekiz alanlı semantik JSON şeması oluşturuldu.
-- Sekiz uygulama alanına dağıtılmış 240 kontrollü Türkçe görev-niyet metni hazırlandı.
-
-### Semantik veri düzeni
-
-- 180 kayıt, makine tarafından üretilmiş **zayıf etiketli geliştirme/eğitim verisi** olarak ayrıldı.
-- 60 kayıt, eğitim sırasında görülmeyen ve A kullanıcısı tarafından kör biçimde etiketlenen **kilitli değerlendirme kümesi** olarak ayrıldı.
-- Bu 60 kayıt tek insan referansıdır; iki uzman tarafından uzlaştırılmış kesin “gold standard” değildir.
-- Değerlendirme etiketleri model eğitimi veya model ayarı için kullanılmadı.
-- Kontrollü görev metinleri gerçek son kullanıcı günlükleri olarak sunulmayacaktır.
-
-### Tamamlanan ilk semantik karşılaştırmalar
-
-| Yöntem | Ne yapıyor? | Tam görev doğruluğu | Sekiz alan ortalama macro-F1 |
-|---|---|---:|---:|
-| Sabit profil | Metni anlamadan en sık görülen profili verir | %3,3 | %26,7 |
-| Kural/anahtar kelime | Önceden yazılmış sözcük ve sayı kurallarını uygular | %35,0 | %71,3 |
-| TF-IDF + lojistik regresyon | 180 zayıf etiketten metin örüntülerini öğrenir | %26,7 | %69,9 |
-
-“Tam görev doğruluğu”, sekiz alanın tamamının aynı anda doğru olmasını gerektirir; tek alan yanlışsa kayıt yanlış sayılır. Bu nedenle alan doğruluğundan daha zor ve daha anlamlıdır.
-
-Bu sonuçlar nihai başarı sonucu değildir. Kural yöntemi kontrollü ifadelerde güçlü görünmektedir; ancak tam görev doğruluğu hâlâ düşüktür. Kritik gizliliği yakalama ve güvenilirlik/doğruluk gibi az örnekli sınıflar geliştirilmelidir. Ayrıca tek-insan referansı ve sınıf dengesizliği sonuçların önemli sınırlamalarıdır.
-
-### Şu anda bulunduğumuz aşama
-
-Şu anda **Faz 4 — Semantik Benchmark** içindeyiz. Kontrollü metinleri oluşturma aşaması büyük ölçüde tamamlandı; şimdi bu metinlerden sekiz alanı hangi yöntemin daha güvenilir çıkardığını ölçüyoruz.
-
-Sıradaki işler:
-
-1. Küçük çok dilli encoder baseline'ını aynı 180/60 ayrımında ölçmek.
-2. Ayrı Quadro RTX 4000 makinesinde Qwen3-4B/8B zero-shot ve few-shot deneylerini yapmak.
-3. Rule, TF-IDF, encoder ve LLM'leri aynı metriklerle karşılaştırmak.
-4. Seçilen LLM, prompt, parser ve önceden üretilmiş/cache'lenmiş çıktıları dondurmak.
-5. Semantik kalite kapısını geçtikten sonra fiziksel baselines/oracle deneylerine ve PPO eğitimine başlamak.
-
-Henüz PPO ile semantik-on/semantic-off eğitimi yapılmamıştır. Dolayısıyla şu an “semantik DRL performansını iyileştirdi” şeklinde bir sonuç iddia etmiyoruz.
-
-## 6. Literatürde ne yapılıyor?
-
-### Klasik MEC offloading
-
-Geniş MEC literatürü görevi çoğunlukla veri boyutu, CPU çevrimi ve deadline gibi hazır sayısal değişkenlerle tanımlar. Heuristic, optimizasyon, oyun teorisi veya DRL bu sayıları kullanarak offloading kararı verir; doğal dil gereksinimini çözmez.
-
-### Doğal dil ağ niyeti veri kümeleri
-
-BINS ve NIT gibi çalışmalar doğal dilde ağ/servis niyetlerinin yapılandırılmış etiket veya ağ yapılandırmasına çevrilebildiğini göstermektedir. Bu veri kümeleri değerlidir; ancak doğrudan IoT görevini local/edge/cloud ortamında çalıştıran, sekiz alanımızı ve fiziksel offloading sonucunu aynı kayıtta veren MEC benchmark'ları değildir.
-
-IoT-Brain/TopoSense-Bench ise 5.250 doğal dil sorgusunu 2.510 kameranın semantik-mekânsal çizelgelenmesiyle ilişkilendirir. Bu çalışma gerçek fiziksel dünyaya bağlanma açısından güçlü bir örnektir; problemi kamera/sensör seçimi olduğu için device-edge-cloud task offloading problemimizle aynı değildir.
-
-### Çalışmamıza en yakın güncel yaklaşımlar
-
-- **STEPS (2026):** Doğal dil isteklerinden gecikme, enerji, parasal maliyet ve yürütme güveni olmak üzere dört semantik seviye ve confidence çıkarır. Bunları bir semantic contract'a dönüştürür; çizelgeleme exact potential game ve asynchronous best response ile çözülür. Bu çalışma, “LLM doğal dili okuyacak ve edge scheduling yapılacak” ifadesinin tek başına yenilik sayılamayacağını açıkça göstermektedir.
-- **AgentVNE (2026):** LLM ile örtük affinity/donanım kısıtlarını çıkarır, ardından grafik tabanlı ağ ve PPO ile yerleştirme yapar. Semantik katman ile RL'yi birleştirmesi açısından yakındır; fakat çok-ajanlı workflow/VNE yerleştirme problemini ve farklı semantik kısıtları ele alır.
-- **IGAA (2026):** Network–Service–Intent eşlemesiyle yeni senaryolar ve eğitim verileri üretir; LLM halüsinasyonuna karşı değerlendirme-düzeltme mekanizması kullanır. Bu, yapay veri üretiminin fiziksel ve semantik kontrollerle sınırlandırılması gerektiğini destekler.
-- **MAS-DecStream (2026):** LLM destekli çok turlu MEC müzakeresini Alibaba izlerinden türetilen deneylerle değerlendirir; hard kaynak ve QoS kısıtlarını deterministik doğrulamada tutar. Bu da LLM'nin fiziksel geçerliliğin tek hakemi yapılmaması gerektiğini destekler.
-
-### Literatür taramasından çıkan dengeli sonuç
-
-14 Ekim 2026'ya kadar yapılan hedefli taramada şu tablo oluşmuştur:
-
-- Doğal dil ağ ve IoT niyet veri kümeleri vardır.
-- Gerçek MEC fiziksel izleri vardır.
-- Doğal dil semantiğini scheduling/offloading ile birleştiren yeni çalışmalar da vardır.
-- Ancak doğal dil MEC görev gereksinimi, sekiz alanlı insan referansı, gerçek fiziksel çalışma izi ve offloading sonucunu aynı doğal kayıtta birlikte sunan açık bir benchmark bu taramada bulunamamıştır.
-
-Bu nedenle kontrollü semantik corpus ile gerçek fiziksel izleri ayrı katmanlar halinde birleştirmemiz savunulabilir bir yöntemdir. Bunun doğru adı **trace-driven hybrid benchmark**'tır; “tamamen gerçek veri seti” değildir.
-
-## 7. Gerçek izlerin tezdeki rolleri
-
-| Kaynak | Çalışmada sağlayacağı bilgi | Sağlamadığı bilgi |
+| Alan | Çıkarılan bilgi | Sistemdeki rol |
 |---|---|---|
-| **BUPT** | Mobil istek zamanı, trafik büyüklüğü ve erişim davranışı dağılımları | İnsan yazımı görev gereksinimi ve sekiz semantik etiket |
-| **NEP-large** | Edge VM CPU/bant genişliği kullanımı, site RTT'si, PM/VM kapasitesi | Doğal dil kullanıcı niyeti |
-| **UCI MEC** | Görüntü tanıma görevlerinin ölçülmüş yürütme süreleri | Ağ yükü ve doğal dil gereksinimi |
-| **EUA** | Kullanıcı/edge coğrafi yerleşim senaryoları | Semantik görev etiketi ve tam çalışma telemetrisi |
+| `domain` | healthcare, industry, transportation, public safety vb. | Domain error slice ve holdout; tek başına action emri değil |
+| `latency` | Deadline class ve varsa numeric value | Deadline miss ve suitability |
+| `privacy` | Sensitivity level | Privacy raporu; execution policy ile birleştiğinde hard restriction |
+| `execution_policy` | İzinli/yasak local-edge-cloud locations | Action mask üreten temel hard constraint |
+| `reliability` | best-effort/high/mission-critical veya numeric target | Node/link reliability suitability |
+| `accuracy` | Required result quality | Node/model accuracy suitability |
+| `energy_priority` | Energy-saving preference veya açık budget | Soft reward; explicit budget varsa constraint |
+| `divisibility` | Task bölünebilir mi? | Atomic action-space kontrolü; partial offloading için gelecekteki gate |
 
-Bu kaynakların satırları, aynı anda ölçülmüş tek bir olaymış gibi birleştirilmeyecektir. Her kaynağın hangi fiziksel bileşeni koşulladığı kaydedilecek; aynı semantik senaryolar farklı fiziksel olaylarda adil biçimde karşılaştırılacaktır.
+Her alan yalnız class label içermez; `stated / not_stated / unknown / conflicting`, evidence span ve confidence de taşır. Metinde söylenmeyen gereksinimi uydurmamak, doğru class kadar önemlidir. STEPS'in confidence/semantic uncertainty yaklaşımı [1] ve calibration literatürü [12] bu tercihi destekler.
 
-## 8. Çalışmanın savunulabilir yenilik iddiası
+## 4. Veri nasıl elde edildi ve nasıl kullanıldı?
 
-Yenilik iddiamız yalnızca “LLM doğal dili okuyacak” değildir. Birlikte sınanacak katkılar şunlardır:
+Tam eşleşmiş “Türkçe task intent + sekiz semantic label + MEC telemetry + offloading action/outcome” açık veri seti bulamadım. BINS ve NIT intent translation için değerlidir; ancak bizim local/edge/cloud physics ve sekiz alanı birlikte sağlamaz [23], [24]. Bu nedenle semantic corpus ve physical traces ayrı kaynaklardan, açık provenance ve claim sınırlarıyla kullanıldı.
 
-1. Dört yerine sekiz ayrıntılı gereksinim alanı.
-2. Gizlilik ve local/edge/cloud izinlerinin açık hard constraint/action mask olması.
-3. Güvenilirlik, doğruluk ve bölünebilirliğin karara katılması.
-4. Semantik çıkarıcının DRL'den ayrılması; çıktılarının önceden üretilip sürümlü cache'te dondurulması.
-5. Belirsizlik, çelişki, `unknown` ve abstention desteği.
-6. Sabit profil, rule, TF-IDF, encoder, zero-shot LLM, few-shot LLM ve insan referansının aynı protokolde karşılaştırılması.
-7. BUPT, NEP, UCI ve EUA'nın açık rollerle kullanıldığı çok kaynaklı trace-driven deney.
-8. Aynı fiziksel olaylar ve seed'ler üzerinde semantic-on / semantic-off karşılaştırması.
-9. STEPS'in potential-game yaklaşımından farklı olarak PPO/DRL politikasının değerlendirilmesi.
-10. Semantik hatanın yalnız NLP metriğinde bırakılmayıp nihai latency, deadline miss, energy ve constraint violation sonuçlarına etkisinin ölçülmesi.
+### 4.1 Semantic corpus
 
-En önemli katkı şu nedensel soruyu adil biçimde yanıtlamak olacaktır:
+| Bölüm | Boyut | Label kaynağı | Kullanım ve sınır |
+|---|---:|---|---|
+| Kontrollü Türkçe ana corpus | 240 | 180 machine-weak label + 60 single-human reference | Family-disjoint development/evaluation |
+| Pilot annotation | 20 | İnsan | Protocol quality; ana score'a karıştırılmadı |
+| Augmented training pool | 1.980 | Construction/machine augmentation | Yalnız training; evaluation labels görülmedi |
+| Human-60 machine rewrite | 60 | Original single-human label transfer | İnsan rewrite metnini yeniden etiketlemedi |
+| Compositional | 600 template + 600 unseen wording | Label by construction | Composition/wording robustness |
+| Independent paraphrase | 200 adaydan 188 kabul | Parent-intent label transfer + automatic preservation filters | Son robustness; yeni human gold değil |
 
-> Fiziksel ortam ve olaylar aynı tutulduğunda, daha doğru semantik bilgi DRL kararını ve gerçek sistem sonuçlarını ne kadar değiştiriyor?
+`scenario_family_id` ve `paraphrase_family_id` development/evaluation arasında ayrıdır. Duplicate hash, family overlap, chronology ve train-only normalizer otomatik kontrol edilir. Daha önce tespit edilen wording leakage giderilmiş ve yalnız leakage-free v3/v3.2 sonuçları kullanılmıştır.
 
-## 9. Dürüst sınırlamalar
+### 4.2 Physical trace katmanları
 
-- 240 Türkçe metin kontrollü araştırma corpus'udur; gerçek kullanıcı trafiği değildir.
-- 60 kayıt iki uzman tarafından uzlaştırılmış gold set değil, tek-insan referansıdır.
-- İlk baseline sonuçları güçlü bir nihai sonuç değil, sonraki modeller için alt karşılaştırma çizgisidir.
-- STEPS, AgentVNE, IGAA ve MAS-DecStream'in burada kullanılan sürümleri arXiv preprint niteliğindedir; tez yazımı öncesinde yayın durumları yeniden kontrol edilmelidir.
-- Fiziksel trace ile semantik metin aynı doğal olaydan gelmediği için deney “hibrit” olarak raporlanacaktır.
-- Uçtan uca PPO ve semantic-on/off sonuçları tamamlanmadan tezin ana hipotezi doğrulanmış sayılmayacaktır.
+| Kaynak | Çalışmadaki rol | Sağlamadığı bilgi |
+|---|---|---|
+| **BUPT MEC Migration** [19] | Arrival timing, input/output/workload variability; 482.687 satır tarandı, 476.419 kabul edildi | Natural-language intent ve sekiz label |
+| **NEP / EdgeWorkloadsTraces** [20] | Edge VM CPU-load ve inter-site RTT aggregate quantiles; 276.084.449 CPU ve 330.710.309 RTT kaydı tarandı | User requirements ve raw jointly observed event |
+| **UCI Image Recognition MEC** [21] | Measured execution-time/compute heterogeneity | Network load ve natural-language label |
+| **EUA** [22] | Observed user/edge location-topology rows | Task semantics ve complete execution telemetry |
 
-## 10. Danışmana verilebilecek kısa sonuç
+Farklı veri setlerinin satırlarını aynı anda ölçülmüş doğal ortak olay gibi sunmuyorum. Doğru tanım **multi-source trace-driven-hybrid simulation**dır. Source archive/revision/checksum, field provenance (`observed / measured / derived / matched / generated / human_labeled / simulated`) ve acceptance rules sürümlüdür. Büyük ham NEP dosyaları repoya alınmaz; aggregate quantile profile ve source hashes sürümlenir.
 
-Çalışmanın semantik veri ve ilk baseline aşaması hazırlanmıştır. Şu anda 240 kontrollü Türkçe görev metninden sekiz gereksinim alanını çıkaran yöntemler karşılaştırılmaktadır. Sabit profil, rule ve TF-IDF tamamlanmış; encoder ve Qwen zero/few-shot deneyleri sıradadır. Sonrasında dondurulmuş semantik çıktılar BUPT, NEP, UCI ve EUA ile kurulan trace-driven hybrid MEC ortamına bağlanacak; PPO ajanının local/edge/cloud kararları aynı olaylar üzerinde semantiksiz, kural, küçük model, LLM ve insan referansı koşullarında karşılaştırılacaktır. Tezin ana kanıtı, yalnız LLM'nin metin doğruluğu değil, semantik bilginin gecikme, enerji, başarı ve kısıt ihlallerine ölçülebilir nedensel katkısı olacaktır.
+### 4.3 Dondurulmuş split/generalization protokolü
+
+| Boyut | Uygulama | Doğru yorum |
+|---|---|---|
+| Temporal | BUPT day `<24` train, day `>=24` test | Chronological trace holdout |
+| Entity | EUA location rows seeded `%80/%20`, disjoint; policy retraining | Unseen EUA entity/location rows |
+| Application proxy | Scenario/paraphrase families disjoint | Real deployed application-ID holdout değil |
+| Domain | `public_safety` ve `transportation` yalnız evaluation; policy retraining | Reference-semantics conditional policy generalization |
+| Physical sources | Frozen `v2_nep` policy; bir source layer evaluation'da değiştirilir | Distribution counterfactual; retraining sensitivity değil |
+
+## 5. Karşılaştırılan yöntemler, kullanım amaçları ve beklentiler
+
+### 5.1 Semantic extraction yöntemleri
+
+| Yöntem | Neden kullanıldı? | Sonuçtan önceki beklenti | Gözlenen sonuç |
+|---|---|---|---|
+| Constant profile | Metni anlamayan lower bound; class imbalance etkisi | En düşük genel kalite | Independent macro-F1 `%20,9` |
+| Rule/keyword parser | Transparent ve çok hızlı non-learning baseline | Controlled wording güçlü, paraphrase kırılgan | Original `%78,0`; independent `%54,6` |
+| TF-IDF + Logistic Regression | Küçük, hızlı, yorumlanabilir supervised baseline [17] | Augmentation ile paraphrase robustness artabilir | Independent en iyi machine result: `%80,9` |
+| Frozen multilingual-E5 + LR | Pretrained multilingual representation etkisi [13] | Paraphrase'te TF-IDF üstünlüğü mümkün ama garanti değil | Independent `%73,8`; TF-IDF'i geçmedi |
+| Fine-tuned multilingual-E5 | Task-specific representation learning | Temiz data yeterliyse artış; weak/small data'da overfit riski | Human-60 `%70,2`; beklenen üstünlük oluşmadı |
+| Qwen2.5-1.5B 4-shot | Generative small LLM schema/semantic capacity [14] | Flexible semantics; CPU latency/format riski | Independent `%42,0`; küçük classifiers'ı geçmedi |
+| Single-human reference | Erişilebilir semantic upper bound | En yüksek system alignment | NEP-v2 success yaklaşık `%91–93`, hard `%0` |
+
+“LLM > encoder > bag-of-words” sırasını ön kabul olarak kullanmadım. Bounded contract extraction'da task fit ve data diversity model büyüklüğünden önemli olabilir; Jev çalışmasının düşük-latency bounded decision modeli bulgusu da bu beklentiyle uyumludur [5].
+
+### 5.2 Offloading decision yöntemleri
+
+| Yöntem | Neden kullanıldı? | Beklenen rol | Gözlenen ana bulgu |
+|---|---|---|---|
+| Always-local / edge / cloud | Physics uçlarını ve tek-action bias'ı görmek | Hiçbiri bütün QoS/safety amaçlarında iyi olmamalı | Local tail latency, cloud hard violation üretti |
+| Random-valid | Action mask'in state-free alt sınırı | Greedy/PPO'dan zayıf | Success `%70,9`, hard `%3,62` |
+| Greedy no-semantic | Güçlü, non-learning physical heuristic | Zayıf RL'yi geçebilir | `%78,8` success; `%7,45` hard |
+| Greedy + semantics | Decision rule sabitken semantic source etkisi | Extractor contribution'ı izole etmek | Reference `%91,7`, hard `%0` |
+| PPO-MLP no-semantic | Ana learning baseline [10] | Dynamic state'i öğrenmeli; collapse riski ölçülmeli | `%76,2`; max-action share `%99,7` |
+| PPO + semantics | Semantic state/mask'in learning policy etkisi | Quality arttıkça success/safety artabilir | Reference `%91,2`; hard `%0`; collapse `%72,3` |
+| Penalty-only PPO | Hard mask'e alternatif ablation | Mask'in gerekli olup olmadığını test etmek | Reference'ta iki yaklaşım da `%0` hard |
+| Small exhaustive oracle | Simulator/reward/action validity kontrolü | Küçük instance upper bound | Ana deployed comparator değil |
+
+PPO'yu greedy'ye göre otomatik üstün kabul etmiyorum. Greedy exact preview kullanır ve güçlü bir heuristic'tir. Literature'da da LLM/RL control layer'ın güçlü heuristic üzerinde measurable headroom göstermediğinde ek maliyeti hak etmeyebileceği vurgulanmaktadır [9].
+
+## 6. Hangi metriklere neden bakıyorum?
+
+### 6.1 Semantic metrics
+
+| Metrik | Yanıtladığı soru | Neden gerekli? |
+|---|---|---|
+| Macro-F1 across fields | Rare classes dahil contract quality nedir? | Class imbalance altında accuracy'den daha adil |
+| Exact-record accuracy | Sekiz alan aynı anda doğru mu? | Contract tek parça kullanıldığı için en katı ölçü |
+| Field-wise macro-F1 | Hangi requirement kırılgan? | Domain hatası ile cloud prohibition hatası eşdeğer değil |
+| Critical-privacy P/R/F1 | Safety-critical positives kaçıyor mu? | Yalnız recall false-positive cost'u gizler |
+| Abstention F1 | Unknown/not-stated davranışı doğru mu? | Modelin uydurma requirement üretmesini ölçer |
+| ECE ve Brier | Confidence correctness ile uyumlu mu? | Fallback ve uncertainty decision için calibration gerekir [12] |
+| Schema validity/OOV | Output machine-consumable mı? | Generative LLM için format failure ayrıca ölçülmeli |
+| Inference latency | Online/offline uygulanabilirlik nedir? | Quality aynı olsa bile compute cost farklı olabilir |
+
+### 6.2 System metrics
+
+| Metrik | Yanıtladığı soru | Yorum kuralı |
+|---|---|---|
+| Task success rate | Completion ve semantic QoS birlikte sağlandı mı? | Birincil end-to-end metric; reward tek başına raporlanmaz |
+| Hard violation rate | Privacy/execution prohibition ihlal edildi mi? | Success'ten ayrı, safety-critical metric |
+| Deadline/reliability/accuracy violation | Hangi soft/QoS boyut kırılıyor? | Aggregate success'in nedenini açıklar |
+| Completion/drop/rejection | Task fiziksel olarak tamamlandı mı? | Semantic failure ile physical loss ayrılır |
+| Mean, p50, p95, p99 latency | Ortalama ve tail latency nedir? | Interactive/real-time workload için tail şarttır |
+| Queue wait | Congestion/policy collapse var mı? | Service time'dan ayrı raporlanır |
+| Completed/s, successful/s | Sistem ne kadar faydalı iş üretiyor? | Yalnız percentage rate düşük volume'u gizleyebilir |
+| Mean/episode/run energy ve energy/success | Başarısız tasks dahil energy cost nedir? | Düşük total energy başarısızlıkla elde edilmiş olabilir |
+| Action histogram, normalized entropy, max-action share | Policy tek action'a çöktü mü? | PPO collapse'ını yakalar |
+| Jain load/source-success fairness | Resource/use dağılımı dengeli mi? | Active sources ile yorumlanır; tek-source sınırlaması açıklanır |
+| Reward component decomposition | Kazanç hangi cost bileşeninden geliyor? | Reward hacking veya dominant penalty riskini gösterir |
+| Decision overhead mean/p95 | Policy seçiminin compute cost'u nedir? | Physical latency'ye eklenmez; host diagnostic'tir |
+
+### 6.3 İstatistik protokolü
+
+- Semantic tables task-level 1.000 bootstrap; system tables episode-level 2.000 paired bootstrap ile `%95 confidence interval (CI)` verir.
+- PPO ana sonuçları 5 independent training seed içerir; seed standard deviation ayrıca raporlanır.
+- Yalnız p-value değil, direction, percentage-point effect size ve CI birlikte yorumlanır [25].
+- Aynı metric family içindeki multiple comparisons için Holm step-down correction uygulanır [26].
+- Non-inferiority yalnız pre-registered margin ve CI kapısı birlikte geçerse ilan edilir.
+
+## 7. Semantic benchmark v3.2 sonuçları
+
+![Semantic extraction quality: original ve independent paraphrase](docs/advisor_assets/semantic_macro_f1.png)
+
+### 7.1 Original single-human-60
+
+| Yöntem | Exact-record | Macro-F1 | Critical privacy P/R/F1 | ECE raw→cal | Brier raw→cal |
+|---|---:|---:|---:|---:|---:|
+| Rule | `%38,3` | `%78,0` | `75,0 / 42,9 / 54,5` | `0,227→0,087` | `0,129→0,095` |
+| TF-IDF(+data) | `%38,3` | **`%78,2`** | `75,0 / 42,9 / 54,5` | `0,132→0,089` | `0,113→0,091` |
+| Frozen E5(+data) | `%36,7` | `%76,3` | `75,0 / 42,9 / 54,5` | `0,236→0,105` | `0,165→0,110` |
+| Fine-tuned E5 | `%10,0` | `%70,2` | `75,0 / 42,9 / 54,5` | raw cache | raw cache |
+| Qwen2.5-1.5B 4-shot | `%5,0` | `%48,3` | `30,0 / 42,9 / 35,3` | raw confidence | raw confidence |
+
+Human-60 küçük ve single-annotator olduğu için yöntemler arasındaki küçük farkları genellemem. Buna rağmen small LLM'nin belirgin biçimde geride kalması ve fine-tuned E5'in frozen/simpler baselines'ı geçememesi önemli negative results'tır.
+
+### 7.2 Wording robustness
+
+| Yöntem | Human-60 original | Machine rewrite-60 | Unseen compositional-600 | Independent-188 |
+|---|---:|---:|---:|---:|
+| Constant | `%25,3` | `%25,3` | `%20,7` | `%20,9` |
+| Rule | `%78,0` | `%40,3` | `%47,5` | `%54,6` |
+| TF-IDF(+data) | **`%78,2`** | **`%67,9`** | **`%73,6`** | **`%80,9`** |
+| Frozen E5(+data) | `%76,3` | `%60,4` | `%70,9` | `%73,8` |
+| Fine-tuned E5 | `%70,2` | `%62,3` | `%73,0` | Ölçülmedi; independent checkpoint yok |
+| Qwen2.5 4-shot | `%48,3` | `%43,7` | Ölçülmedi | `%42,0` |
+
+Bu tablo çalışmanın önemli bulgusudur: original controlled wording'de rule ve TF-IDF yakın görünürken independent wording'de aralarında `26,3` point macro-F1 farkı oluşmuştur. Bu nedenle yalnız canonical test, gerçek robustness kanıtı değildir.
+
+### 7.3 Calibration yorumu
+
+Calibration yalnız development/calibration records üzerinde isotonic regression ile fit edildi. Human-60, independent-188 ve compositional evaluation labels calibrator veya threshold selection için kullanılmadı. Human-60'ta TF-IDF(+data) ECE `0,132→0,089`, Brier `0,113→0,091`; frozen E5(+data) ECE `0,236→0,105`, Brier `0,165→0,110` oldu. Independent-188'de TF-IDF ECE iyileşirken Brier `0,117→0,121` ile hafif kötüleşti. Dolayısıyla “calibration her distribution'da her metric'i iyileştirir” demiyorum.
+
+Fallback threshold `0,6` evaluation sonucuna bakılmadan donduruldu. Downstream H3 tablosunda yalnız PPO/TF-IDF success kaybı `<2` point iken hard violation'ı azalttı; diğer model/policy çiftleri aynı kapıyı geçmedi. Confidence calibration ile safe fallback aynı şey değildir.
+
+## 8. NEP-v2 uçtan uca offloading sonuçları
+
+![NEP-v2 exact-preview success ve hard violation](docs/advisor_assets/offloading_success_and_violations.png)
+
+### 8.1 Deney sözleşmesi
+
+| Öğe | Dondurulan değer |
+|---|---|
+| Benchmark | Multi-source trace-driven-hybrid + NEP aggregate quantile layer |
+| Evaluation | 60 episode × 64 task = 3.840 paired decisions/condition |
+| PPO | 5 seed × 150.000 step |
+| Physics | Shared deterministic transition core |
+| Ana bilgi rejimi | Exact preview; ayrıca `σ=0,5` noisy preview |
+| Uncertainty | Episode-paired bootstrap, 2.000 resample, `%95 CI` |
+| Multiple testing | Metric-family içinde Holm correction |
+
+### 8.2 Fixed ve güçlü baseline sonuçları
+
+| Policy | Success ↑ | Hard violation ↓ | Deadline miss ↓ | Drop ↓ |
+|---|---:|---:|---:|---:|
+| Always-local | `%57,5` | `%0,00` | `%21,6` | `%0,00` |
+| Always-edge-0 | `%76,1` | `%0,00` | `%9,4` | `%0,55` |
+| Always-cloud | `%75,5` | `%17,71` | `%5,7` | `%0,03` |
+| Random-valid | `%70,9` | `%3,62` | `%8,8` | `%0,34` |
+| Greedy no-semantic | `%78,8` | `%7,45` | `%3,7` | `%0,31` |
+| Greedy single-human reference | **`%91,7`** | **`%0,00`** | `%3,6` | `%0,18` |
+| PPO no-semantic | `%76,2` | `%0,01` | `%9,4` | `%0,55` |
+| PPO single-human reference | `%91,2` | **`%0,00`** | `%3,6` | `%0,12` |
+
+Always-local hard violation'ı sıfırlarken queue/tail latency'yi büyütür. Always-cloud latency avantajı karşılığında `%17,71` hard violation üretir. Bu nedenle tek metric üzerinden “en iyi policy” seçmek bilimsel olarak doğru değildir.
+
+### 8.3 Semantic source ablation
+
+| Semantic source | Greedy success | Greedy hard | PPO success | PPO hard |
+|---|---:|---:|---:|---:|
+| No semantic | `%78,8` | `%7,45` | `%76,2` | `%0,01` |
+| Rule paraphrase | `%81,5` | `%7,84` | `%79,5` | `%14,18` |
+| TF-IDF(+data) paraphrase | `%85,3` | `%2,19` | `%85,7` | `%4,08` |
+| Frozen E5(+data) paraphrase | `%86,9` | `%3,26` | `%86,8` | `%5,03` |
+| Single-human reference | **`%91,7`** | **`%0,00`** | **`%91,2`** | **`%0,00`** |
+
+Reference semantics'in no-semantic'e etkisi PPO için `+15,03` point, `%95 CI [+13,85; +16,27]`; greedy için `+12,94` point, `%95 CI [+11,77; +14,12]` oldu. Rule yerine TF-IDF(+data) kullanıldığında hard violation PPO'da `−10,10`, greedy'de `−5,65` point düştü.
+
+### 8.4 Tail, queue, throughput, energy ve collapse
+
+| Koşul | p50 / p95 / p99 latency | Queue wait | Successful task/s | Energy/success | Collapse/max share | Decision overhead mean |
+|---|---:|---:|---:|---:|---:|---:|
+| Greedy no-semantic | `66,7 / 124,9 / 154,3 ms` | `25,6 ms` | `25,68` | `7,71 mJ` | `%61,2` | yaklaşık `0,04 ms` |
+| Greedy reference | `67,5 / 133,6 / 195,0 ms` | `26,0 ms` | `29,72` | `7,39 mJ` | `%58,6` | yaklaşık `0,04 ms` |
+| PPO no-semantic | `241,0 / 554,1 / 688,7 ms` | `230,7 ms` | `21,63` | `23,63 mJ` | **`%99,7`** | yaklaşık `1,6 ms` |
+| PPO reference | `76,8 / 192,6 / 304,7 ms` | `37,8 ms` | `28,96` | `8,84 mJ` | `%72,3` | yaklaşık `1,5 ms` |
+
+Semantic state, no-semantic PPO'nun `edge_0` collapse'ını azaltmış ve queue/energy sonuçlarını iyileştirmiştir. Ancak reference greedy daha yüksek success, daha düşük energy/success ve çok daha düşük decision overhead verdi. Bu nedenle katkıyı “yeni PPO daha iyi” diye değil, “semantic constraint layer policy families boyunca ölçülebilir etki yaratıyor” diye konumlandırıyorum.
+
+### 8.5 Independent-188: machine extractors ve small LLM
+
+| Semantic source | Semantic macro-F1 | Greedy success / hard | PPO success / hard |
+|---|---:|---:|---:|
+| TF-IDF(+data) | **`%80,9`** | `%89,1 / %0,29` | `%89,2 / %0,98` |
+| Frozen E5(+data) | `%73,8` | `%89,2 / %0,44` | **`%89,7 / %1,19`** |
+| Qwen2.5 4-shot raw | `%42,0` | `%83,8 / %4,48` | `%82,1 / %7,36` |
+| Qwen2.5 raw + fallback | `%42,0` | `%83,9 / %4,32` | `%82,4 / %6,80` |
+| Single-human reference | Reference | `%92,3 / %0,00` | `%91,5 / %0,00` |
+
+Small Qwen, TF-IDF/E5'i ne semantic quality ne downstream safety'de geçti. “LLM kullandığım için performans arttı” iddiası desteklenmiyor. Daha önemli bulgu, extractor error'ın system success ve hard violation'a ölçülebilir biçimde yayılmasıdır.
+
+## 9. Noisy preview, fallback, mask ve reward ablation sonuçları
+
+### 9.1 Exact/noisy PPO–greedy
+
+Exact-preview reference koşulunda PPO − greedy success farkı `−0,5` point [%95 CI `−1,0; −0,1`]; Holm-adjusted `p=0,090` oldu. Noisy-preview `σ=0,5` koşulunda fark `−0,98` point [%95 CI `−1,44; −0,55`] oldu. Pre-registered `−1` point non-inferiority margin'in CI alt sınırı geçilmedi. PPO üstünlüğü veya non-inferiority ilan etmiyorum.
+
+### 9.2 Fallback ablation
+
+| Policy/source | Success farkı, fallback − raw | Hard violation farkı | H3 kapısı |
+|---|---:|---:|---|
+| PPO / TF-IDF | `−0,52 [−0,92; −0,13]` | `−0,40 [−0,59; −0,20]` | Geçti |
+| PPO / frozen E5 | `−1,99 [−2,41; −1,56]` | `+0,10 [+0,05; +0,17]` | Geçmedi |
+| Greedy / TF-IDF | `−0,36 [−0,78; +0,08]` | `−0,05 [−0,29; +0,16]` | Geçmedi |
+| Greedy / frozen E5 | `−1,61 [−2,14; −1,12]` | `+0,26 [+0,00; +0,52]` | Geçmedi |
+
+### 9.3 Action mask versus penalty
+
+Reference mask-PPO − penalty-PPO hard violation farkı `0,00 [0,00; 0,00]`, success farkı `−0,18 [−0,36; −0,02]` oldu. İki yaklaşım da hard violation'ı sıfırladığı için “mask daha düşük violation üretir” yön hipotezi desteklenmedi. Bunun anlamı mask'in gereksiz olduğu değil; bu deney rejiminde penalty baseline'ın da reference conditions altında sıfır ihlale ulaşmasıdır.
+
+### 9.4 Reward decomposition ve sensitivity
+
+Reference semantics, greedy ve PPO'da hard cost'u sıfırlarken soft constraint ve queue/latency cost'u da düşürdü. Base weights ve her reward component'in ayrı ayrı `0,5× / 2×` yapıldığı 13 frozen-trajectory profilde en düşük scalar cost koşulu greedy-reference kaldı. Bu **post-hoc evaluation-cost robustness** kanıtıdır; her weight profile için PPO yeniden eğitilmediği için training sensitivity değildir.
+
+## 10. Phase 7 generalization ve source-layer sonuçları
+
+![Entity/domain holdout ve source-layer counterfactual sonuçları](docs/advisor_assets/generalization_and_sources.png)
+
+### 10.1 Strict retraining holdout
+
+| Koşul | Split | PPO reference success / hard | PPO no-semantic success | Paired success farkı [%95 CI] |
+|---|---|---:|---:|---:|
+| EUA entity holdout | `3415 train / 854 test row` | `%91,22 / %0,00` | `%76,19` | `+15,03 [+13,82; +16,25]` |
+| Domain holdout | `public_safety`, `transportation` yalnız test | `%92,93 / %0,00` | `%79,53` | `+13,41 [+12,37; +14,51]` |
+
+Domain holdout'ta greedy-reference `%93,45`, PPO-reference `%92,93` oldu; PPO − greedy `−0,52` point [%95 CI `−0,98; −0,08`, Holm `p=0,023`]. Semantic advantage no-semantic'e karşı korunurken PPO superiority yine desteklenmedi.
+
+Domain sonucu extractor leave-domain-out generalization kanıtı değildir. Policy held-out domains olmadan yeniden eğitildi; evaluation semantics single-human-reference-derived construction'dan geldi. Doğru iddia **reference-semantics conditional policy-domain generalization**dır.
+
+### 10.2 Frozen-policy source-layer counterfactual
+
+| Evaluation layer | Greedy reference success | PPO reference success | Base'e göre Δ PPO success | PPO hard |
+|---|---:|---:|---:|---:|
+| Bütün layers | `%91,74` | `%91,21` | `0,00` | `%0,00` |
+| NEP background çıkarıldı | `%91,35` | `%90,73` | `−0,48` | `%0,00` |
+| UCI compute heterogeneity çıkarıldı | `%85,94` | `%82,29` | `−8,92` | `%0,00` |
+| BUPT workload variability sabitlendi | `%92,84` | `%92,13` | `+0,92` | `%0,00` |
+| EUA topology variability sabitlendi | `%92,01` | `%91,52` | `+0,31` | `%0,00` |
+
+En büyük mutlak shift UCI compute heterogeneity çıkarıldığında görüldü. Bu tablo aynı frozen policy'nin evaluation distribution duyarlılığıdır; katmanın nedensel faydası veya retraining sensitivity değildir.
+
+## 11. Pre-registered H1–H6 kararları
+
+| Hipotez | Karar | Ana kanıt |
+|---|---|---|
+| H1: Reference semantics, no-semantic'e göre success'i artırır | **Desteklendi** | PPO `+15,03`, greedy `+12,94` point; CI'lar sıfırın üzerinde |
+| H2: Rule hard violation, TF-IDF(+data)'dan yüksektir | **Desteklendi** | PPO `+10,10`, greedy `+5,65` point |
+| H3: Calibrated fallback güvenliği başarıyı kabul edilebilir kayıpla artırır | **Desteklenmedi** | Dört model/policy çiftinden yalnız PPO/TF-IDF iki kapıyı geçti |
+| H4: Mask-PPO, penalty-PPO'dan düşük hard violation üretir | **Desteklenmedi** | İki yöntem reference'ta `%0` hard |
+| H5: Noisy reference PPO, greedy'ye `−1` point margin'de non-inferior | **Desteklenmedi** | CI alt sınırı `−1,44` |
+| H6: H1/H2 yönü NEP layer'da korunur | **Desteklendi** | v1 ve NEP-v2 aynı direction |
+
+Negative results çalışma başarısızlığı değildir. “LLM mutlaka basit modeli geçer”, “calibration/fallback her zaman güvenlidir” ve “PPO mutlaka greedy'yi geçer” ön kabullerini reddetmek, daha güvenilir bir bilimsel katkı sağlar.
+
+## 12. Güncel literatürde konum ve katkı
+
+| Çalışma | Yaklaşım | Benim çalışmamın farkı |
+|---|---|---|
+| STEPS [1] | LLM ile service-level semantic contract ve game-theoretic scheduling | Sekiz alan, privacy/execution mask, extractor quality → PPO/greedy system effect |
+| AgentVNE [2] | Affinity-aware multi-agent VNE; LLM + GNN/PPO | Bizde atomic IoT task offloading; değişken graph placement iddiası yok |
+| LeDRL [3] | System/task/link state'i LLM prompt'una koyup DRL prior üretir | LLM system state'i görmez; yalnız requirements çıkarır |
+| COMLLM [4] | Generative LLM doğrudan offloading action üretir | LLM online decision path'ten çıkarılmış frozen contract kullanılır |
+| Jev [5] | Bounded intent alanları için low-latency decision model | Küçük-model sonucumuzu destekler; biz downstream MEC propagation ölçüyoruz |
+| IoT-Brain [6] | Neuro-symbolic semantic-spatial sensor scheduling | Problem sensor/trajectory; bizimki local-edge-cloud offloading |
+| MAS-DecStream [7] | LLM-assisted negotiation, deterministic hard QoS | Bizde extractor isolation ve paired semantic ablation ana odak |
+| Privacy-aware MARL [8] | Privacy cost ile continuous offloading | Natural-language parser ve execution action mask yok |
+| When Do LLM Agents Help? [9] | Strong heuristic vs LLM control plane | Güçlü greedy ve measurable-headroom ilkemizi destekler |
+
+Savunulabilir katkı birleşimi şudur:
+
+1. Türkçe task text'ten sekiz alanlı, evidence/confidence/unknown-conflicting içeren contract;
+2. Privacy/execution permissions'ın reward bonusu değil deterministic action mask olması;
+3. Extractor'ın policy'den önce dondurulması ve semantic/physical error'ın ayrılması;
+4. Constant, rule, TF-IDF, E5, LLM ve single-human reference'ın ortak NLP ve system metrics ile karşılaştırılması;
+5. Semantic error'ın macro-F1'den success, hard violation, tail latency, energy ve collapse'a kadar izlenmesi;
+6. BUPT/NEP/UCI/EUA rollerini karıştırmadan kullanan provenance-preserving trace-driven-hybrid benchmark;
+7. “Büyük model daha iyi” ve “RL güçlü heuristic'i geçer” varsayımlarına karşı doğrulanmış negative results.
+
+## 13. Dürüst sınırlamalar ve threats to validity
+
+1. Ana human evaluation set 60 kayıt ve single annotator'dır; iki bağımsız uzman adjudication yoktur.
+2. Controlled Turkish corpus gerçek production user traffic değildir.
+3. Machine rewrite-60 ve independent-188 insan tarafından yeniden etiketlenmedi; parent label preservation varsayılır.
+4. Compositional ve offloading tasks önemli ölçüde `label_by_construction` kullanır.
+5. Fine-tuned E5'in independent calibrated checkpoint'i yoktur; eksik hücre açıkça raporlanır.
+6. Qwen2.5 cache raw/constant confidence taşır; calibrated LLM olarak sunulmaz.
+7. NEP layer aggregate quantiles kullanır; raw temporal/user correlations tam olarak yeniden kurulmaz.
+8. BUPT/NEP/UCI/EUA doğal olarak jointly observed tek event değildir; sonuç hybrid simulation'dır.
+9. PPO 5 training seed ile ölçüldü. 10-seed yalnız yayın bütçesi ve danışman kararıyla genişletilebilir.
+10. PPO no-semantic collapse güçlü bir negative result'tır; bu yüzden greedy ana comparator olarak korunur.
+11. Source-success Jain fairness tek source-device episode'da mekanik olarak 1'dir; user fairness kanıtı değildir.
+12. Reward sensitivity frozen trajectories üzerinde post-hoc'tur; PPO retraining sensitivity değildir.
+13. Source-layer ablation frozen-policy evaluation counterfactual'ıdır; causal source contribution değildir.
+14. Application sonucu scenario/paraphrase-family proxy'sidir; deployed application-ID holdout değildir.
+15. Domain sonucu reference semantics koşullu policy generalization'dır; extractor leave-domain-out değildir.
+16. Decision overhead bu host'ta wall-clock diagnostic'tir; physical task latency'ye eklenmez ve hardware benchmark değildir.
+17. Çalışma gerçek testbed değildir; Quadro GPU da MEC field testbed yerine geçmez.
+
+## 14. Makale/tez planı ve gerçekten kalan işler
+
+### 14.1 Önerdiğim makale mesajı
+
+> Natural-language semantics improves MEC task offloading only when the extractor is paraphrase-robust, confidence is evaluated without test leakage, and hard permissions are deterministically verified; otherwise semantic assistance may create more hard violations than a semantics-free policy.
+
+### 14.2 Makale bölüm planı
+
+1. **Introduction:** Numeric-requirement assumption ile natural-language intent arasındaki boşluk.
+2. **Related Work:** MEC/DRL, semantic-aware scheduling, LLM-assisted orchestration, intent datasets.
+3. **Problem Formulation:** Sekiz semantic fields, hard/soft constraints, MDP ve shared physics.
+4. **Architecture:** Isolated extractor, frozen cache, calibration/fallback, action mask, PPO/greedy.
+5. **Data and Protocol:** Corpus, BUPT/NEP/UCI/EUA provenance, splits, leakage tests, seeds/statistics.
+6. **Semantic Results:** Original, paraphrase, compositional, independent, calibration/latency.
+7. **End-to-End Results:** Success/safety/resource/policy diagnostics.
+8. **Ablations and Generalization:** Noise, fallback, mask/penalty, reward, entity/domain/source.
+9. **Limitations and Ethics:** Single annotator, constructed labels, hybrid simulation, compute cost.
+
+### 14.3 Bu bilgisayarda tamamlanan zorunlu kapanış
+
+| İş | Tamamlanma kanıtı | Durum |
+|---|---|---|
+| Advisor Markdown/DOCX ve figürlerini son artifact'lerle eşitlemek | Visible-text parity ve 4 embedded figure doğrulandı | **Tamamlandı** |
+| Result/config/data/model/seed bağlarını dondurmak | Versioned suite, SHA-256 evidence manifest ve staged commands | **Tamamlandı** |
+| Repository-wide kalite kapısı | 264 pytest; Ruff temiz; strict mypy 111 source file/0 issue | **Tamamlandı** |
+| Phase 10 kapanışını raporlamak | `phase_reports/PHASE_10_REPRODUCIBILITY_AND_QUALITY.md` | **Tamamlandı** |
+
+### 14.4 Quadro makinesine bırakılabilecek opsiyonel işler
+
+- Qwen3-4B ve bütçe uygunsa Qwen3-8B zero/few-shot karşılaştırması;
+- Daha büyük LLM kalite artışı sağlarsa latency/VRAM/energy trade-off'u;
+- Seçili confirmatory contrast'larda 10-seed genişletmesi;
+- Danışman isterse ayrı physical testbed/emulation protokolü.
+
+GNN-PPO, recurrent PPO, partial offloading ve inner resource-allocation solver mevcut başlığı tamamlamak için zorunlu değildir. Bunlar ancak yeni research question, uygun data ve ayrı fair ablation planı varsa eklenmelidir.
+
+### 14.5 Danışmanımdan beklediğim kararlar
+
+1. Ana katkıyı “yeni PPO architecture” yerine “uncertainty-aware semantic constraint layer ve downstream paired effect analysis” olarak çerçevelemem uygun mudur?
+2. Makale öncesinde single-human-60 için ikinci uzman adjudication zorunlu görülüyor mu?
+3. Ana 5-seed sonuçları yeterli mi; yalnız seçili contrast'ları 10 seed'e çıkarmalı mıyım?
+4. Quadro Qwen3-4B/8B ana makale için zorunlu mu, supplementary extension mı olmalı?
+5. İlk hedef yayın yeri edge/networking systems mi, applied AI/IoT mu olmalı?
+
+## 15. Sonuç
+
+Çalışma plan aşamasında değildir. Leakage-free semantic benchmark, development-only calibration, NEP-v2 exact/noisy/independent offloading, complete system metrics, Holm-corrected hypotheses, EUA entity holdout, domain holdout ve source-layer counterfactual tamamlanmıştır.
+
+En güçlü pozitif sonuç, doğru semantics'in no-semantic'e göre success'i greedy'de yaklaşık `+12,9`, PPO'da `+15,0` point artırması ve reference hard violation'ı `%0` tutmasıdır. En önemli negative results ise small LLM'nin simple classifiers'ı geçmemesi, fallback'in evrensel güvenlik sağlamaması ve PPO'nun güçlü greedy'yi geçmemesidir. Bu sonuçlar birlikte okunduğunda çalışma “LLM kullandım, performans arttı” anlatısından daha güçlü bir noktaya ulaşmaktadır:
+
+> Semantic layer'ın değeri model adından değil; wording robustness, calibrated uncertainty, deterministic verification ve aynı physical events üzerinde ölçülen downstream safety etkisinden gelmektedir.
 
 ## Kaynaklar
 
-1. Qi ve diğerleri, **STEPS: Semantic Contract-Guided Scheduling for LLM-Assisted Natural Language-Driven Edge AI Services**, arXiv, 2026. <https://arxiv.org/abs/2606.09537>
-2. Zheng ve diğerleri, **AgentVNE: LLM-Augmented Graph Reinforcement Learning for Affinity-Aware Multi-Agent Placement in Edge Agentic AI**, arXiv, 2026. <https://arxiv.org/abs/2601.02021>
-3. Sun ve diğerleri, **IGAA: Intent-Driven General Agentic AI for Edge Services Scheduling using Generative Meta Learning**, arXiv, 2026. <https://arxiv.org/abs/2601.13702>
-4. Zhou ve diğerleri, **IoT-Brain: Grounding LLMs for Semantic-Spatial Sensor Scheduling**, arXiv/MobiCom 2026. <https://arxiv.org/abs/2604.08033>
-5. Lajili ve Brahmi, **Multi-Agent Scheduling with LLM-Assisted Contract Net Negotiation for Stream Processing in Mobile Edge Computing**, arXiv, 2026. <https://arxiv.org/abs/2608.12371>
-6. Li ve diğerleri, **Business Intent and Network Slicing Correlation Dataset from Data-Driven Perspective (BINS)**, Scientific Data, 2025. <https://www.nature.com/articles/s41597-025-04736-z>
-7. AlSamarneh, Al-Jarrah ve Al-Hammouri, **NIT: A Dataset for Network Intent Translation**, Data in Brief, 2025. <https://pmc.ncbi.nlm.nih.gov/articles/PMC12272756/>
-8. Liu, Li ve Wang, **Request Scheduling Combined with Load Balancing in Mobile Edge Computing** ve BUPT veri deposu. <https://github.com/BuptMecMigration/Edge-Computing-Dataset>
-9. Xu ve diğerleri, **From Cloud to Edge: A First Look at Public Edge Platforms** ve EdgeWorkloadsTraces/NEP. <https://github.com/xumengwei/EdgeWorkloadsTraces>
-10. UCI, **Image Recognition Task Execution Times in Mobile Edge Computing**. <https://archive.ics.uci.edu/dataset/859/image+recognition+task+execution+times+in+mobile+edge+computing>
-11. EUA Datasets resmi veri deposu. <https://github.com/PhuLai/eua-dataset>
+[1] H. Qi, M. Liwang, X. Wang ve S. Hosseinalipour, “STEPS: Semantic-Contract-Guided Scheduling for LLM-Assisted Natural-Language-Driven Edge AI Services,” arXiv:2606.09537, 2026. <https://arxiv.org/abs/2606.09537>
 
-> **Kapsam notu:** Bu belge sistematik derleme makalesi değil, tez yönünü doğrulamak için hazırlanmış güncel ve hedefli bir literatür özetidir. “Bulunamadı” ifadesi, 14 Ekim 2026 tarihine kadar incelenen kaynaklar kapsamındadır.
+[2] R. Zheng ve diğerleri, “AgentVNE: LLM-Augmented Graph Reinforcement Learning for Affinity-Aware Multi-Agent Placement in Edge Agentic AI,” arXiv:2601.02021, 2026. <https://arxiv.org/abs/2601.02021>
+
+[3] H. Guo, K. Xv, Z. Ge ve L. Yang, “LLM-Enhanced Deep Reinforcement Learning for Task Offloading in Collaborative Edge Computing,” arXiv:2605.05727, 2026. <https://arxiv.org/abs/2605.05727>
+
+[4] N. Yang, C. Cheng ve H. Zhang, “Multi-Turn Reasoning LLMs for Task Offloading in Mobile Edge Computing,” arXiv:2604.07148, 2026. <https://arxiv.org/abs/2604.07148>
+
+[5] D. Li, X. Wang, H. Gong, R. Lang ve G. Yu, “Replacing Large Language Models with Jev Decision Models for Low-Latency Edge Service Orchestration,” arXiv:2609.22753v2, 2026. <https://arxiv.org/abs/2609.22753>
+
+[6] Z. Zhou ve diğerleri, “IoT-Brain: Grounding LLMs for Semantic-Spatial Sensor Scheduling,” arXiv:2604.08033 / MobiCom 2026. <https://arxiv.org/abs/2604.08033>
+
+[7] S. Lajili ve Z. Brahmi, “Multi-Agent Scheduling with LLM-Assisted Contract Net Negotiation for Stream Processing in Mobile Edge Computing,” arXiv:2608.12371, 2026. <https://arxiv.org/abs/2608.12371>
+
+[8] M. Rafid, G. Famitafreshi, K. Ramantas, L. Alonso ve C. Verikoukis, “Personalized Privacy-Aware MARL Offloading in the Edge-Cloud Continuum,” arXiv:2611.25800, 2026. <https://arxiv.org/abs/2611.25800>
+
+[9] R. Zakerian, “When Do LLM Agents Help? Deadline-Aware Mixed-Criticality Task Scheduling at the Autonomous-Vehicle Edge,” arXiv:2608.19557, 2026. <https://arxiv.org/abs/2608.19557>
+
+[10] J. Schulman, F. Wolski, P. Dhariwal, A. Radford ve O. Klimov, “Proximal Policy Optimization Algorithms,” arXiv:1707.06347, 2017. <https://arxiv.org/abs/1707.06347>
+
+[11] S. Huang ve S. Ontañón, “A Closer Look at Invalid Action Masking in Policy Gradient Algorithms,” FLAIRS 35, 2022. <https://arxiv.org/abs/2006.14171>
+
+[12] C. Guo, G. Pleiss, Y. Sun ve K. Q. Weinberger, “On Calibration of Modern Neural Networks,” ICML, 2017. <https://arxiv.org/abs/1706.04599>
+
+[13] L. Wang ve diğerleri, “Text Embeddings by Weakly-Supervised Contrastive Pre-training,” arXiv:2212.03533v2, 2024. <https://arxiv.org/abs/2212.03533>
+
+[14] Qwen Team, “Qwen2.5 Technical Report,” arXiv:2412.15115, 2024. <https://arxiv.org/abs/2412.15115>
+
+[15] A. Yang ve diğerleri, “Qwen3 Technical Report,” arXiv:2505.09388, 2025. <https://arxiv.org/abs/2505.09388>
+
+[16] P. H. Martins ve diğerleri, “EuroLLM: Multilingual Language Models for Europe,” arXiv:2409.16235, 2024. <https://arxiv.org/abs/2409.16235>
+
+[17] F. Pedregosa ve diğerleri, “Scikit-learn: Machine Learning in Python,” Journal of Machine Learning Research, 12, 2825–2830, 2011. <https://jmlr.org/papers/v12/pedregosa11a.html>
+
+[18] Y. Mao, J. Zhang ve K. B. Letaief, “Dynamic Computation Offloading for Mobile-Edge Computing with Energy Harvesting Devices,” IEEE JSAC, 2016. <https://arxiv.org/abs/1605.05488>
+
+[19] BUPT MEC Migration, “Edge Computing Dataset,” resmî veri/kod deposu. <https://github.com/BuptMecMigration/Edge-Computing-Dataset>
+
+[20] M. Xu ve diğerleri, “From Cloud to Edge: A First Look at Public Edge Platforms,” IMC 2021; EdgeWorkloadsTraces resmî deposu. <https://github.com/xumengwei/EdgeWorkloadsTraces>
+
+[21] I. A. Alghamdi, C. Anagnostopoulos ve D. Pezaros, “Image Recognition Task Execution Times in Mobile Edge Computing,” UCI Machine Learning Repository. <https://archive.ics.uci.edu/dataset/859/image+recognition+task+execution+times+in+mobile+edge+computing>
+
+[22] P. Lai ve diğerleri, “EUA Datasets,” resmî veri deposu. <https://github.com/PhuLai/eua-dataset>
+
+[23] J. Li, S. Zou, Y. Sun, H. Gao ve W. Ni, “Business Intent and Network Slicing Correlation Dataset from Data-Driven Perspective,” Scientific Data, 2025. <https://www.nature.com/articles/s41597-025-04736-z>
+
+[24] A. A. AlSamarneh, O. Y. Al-Jarrah ve A. T. Al-Hammouri, “NIT: A Dataset for Network Intent Translation,” Data in Brief, 2025. <https://pmc.ncbi.nlm.nih.gov/articles/PMC12272756/>
+
+[25] R. Dror, G. Baumer, S. Shlomov ve R. Reichart, “The Hitchhiker's Guide to Testing Statistical Significance in Natural Language Processing,” ACL, 2018. <https://aclanthology.org/P18-1128/>
+
+[26] S. Holm, “A Simple Sequentially Rejective Multiple Test Procedure,” Scandinavian Journal of Statistics, 6(2), 65–70, 1979. <https://www.jstor.org/stable/4615733>
+
+## Ek A — Doğrudan kanıt dosyaları
+
+- `phase_reports/PHASE_4_SEMANTIC_BENCHMARK.md`
+- `phase_reports/SEMANTIC_RESULTS_V3_2_CACHE.md`
+- `phase_reports/PHASE_5_BASELINES_ORACLE_NEP_V2.md`
+- `phase_reports/PHASE_6_PPO_SEMANTIC_ABLATION_NEP_V2.md`
+- `phase_reports/OFFLOADING_RESULTS_V2_NEP_EXACT.md`
+- `phase_reports/OFFLOADING_RESULTS_V2_NEP_NOISY.md`
+- `phase_reports/OFFLOADING_RESULTS_V2_NEP_INDEPENDENT.md`
+- `phase_reports/HYPOTHESIS_DECISIONS_V2.md`
+- `phase_reports/PHASE_7_GENERALIZATION_RESULTS.md`
+- `phase_reports/OFFLOADING_RESULTS_V2_NEP_ENTITY_HOLDOUT.md`
+- `phase_reports/OFFLOADING_RESULTS_V2_NEP_DOMAIN_HOLDOUT.md`
+- `configs/generalization_protocol.v1.json`
+- `configs/data_profiles/nep_quantiles_v1.json`
+
+## Ek B — Reproducibility ve software verification
+
+- Semantic extractor/cache ile PPO/greedy decision layer ayrı modüllerdir.
+- Model/prompt/parser/config/data source revision ve hashes sürümlenir.
+- Same seed/tasks/exogenous events methods arasında paylaşılır.
+- Baseline ve PPO shared physics core kullanır.
+- Phase 7 artifact gate her koşulda 5 PPO run ve run başına 3.840 decision şartını fail-closed doğrular.
+- Büyük raw traces ve model weights repoya alınmaz; source identity/checksum, acceptance rules ve derived aggregate profiles sürümlenir.
+- Bu belge canonical Markdown'dur. DOCX aynı kaynaktan üretilir; text parity ve embedded figure count build sırasında otomatik doğrulanır.
+- Final repository-wide sonuç: `264 passed`; Ruff `All checks passed`; strict mypy `111 source file, 0 issue`. Publication read-only verify `issues=[]`; danışman DOCX parity kontrolü dört embedded figure ile geçti.
+
+> **Literatür notu:** 2026 preprint'lerinin venue/status bilgisi makale submission öncesinde yeniden doğrulanmalıdır. Kaynak numaraları bu belgede makale yazımına geçişi kolaylaştırmak için sabit tutulmuştur.
