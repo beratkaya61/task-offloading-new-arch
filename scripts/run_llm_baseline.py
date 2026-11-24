@@ -6,8 +6,9 @@ labels).  Results are scored exactly like ``run_semantic_benchmark_v3.py`` and
 compared with the rule baseline on the same tasks (paired bootstrap).
 
 Environment: ``LLM_SETS`` (comma list, default human60 sets), ``LLM_LIMIT``
-(smoke test: first N tasks per set), ``LLM_MODEL`` (HF model id), and optional
-``LLM_REVISION`` (immutable Hugging Face commit hash).
+(smoke test: first N tasks per set), ``LLM_MODEL`` (HF model id), optional
+``LLM_REVISION`` (immutable Hugging Face commit hash), and
+``LLM_QUANTIZATION`` (``none`` or ``4bit``).
 """
 
 from __future__ import annotations
@@ -47,6 +48,7 @@ def main() -> None:
     subset = os.environ.get("LLM_SUBSET") == "200"
     model_id = os.environ.get("LLM_MODEL", DEFAULT_MODEL_ID)
     model_revision = os.environ.get("LLM_REVISION") or None
+    quantization = os.environ.get("LLM_QUANTIZATION", "none")
     split = load_json_object(MAIN / "split_manifest.v1.json")
     dev = ordered_subset(load_jsonl(MAIN / "tasks.v1.jsonl"), list(split["machine_labeled_development"]["task_ids"]))
     weak = {r["task_id"]: r["annotation"] for r in load_jsonl(MAIN / "preannotations" / "machine_development.v1.jsonl")}
@@ -60,6 +62,7 @@ def main() -> None:
         cache_folder=ROOT / "models" / "huggingface",
         model_id=model_id,
         revision=model_revision,
+        quantization=quantization,
     )
     model.fit(dev, [weak[t["task_id"]] for t in dev])
     print(f"model and shared prefix ready ({time.perf_counter() - load_started:.1f}s)", flush=True)

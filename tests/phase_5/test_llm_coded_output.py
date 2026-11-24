@@ -48,6 +48,13 @@ def test_unknown_label_encoding_is_rejected() -> None:
         )
 
 
+def test_unknown_quantization_is_rejected() -> None:
+    with pytest.raises(ValueError, match="quantization"):
+        FewShotLlmBaseline(
+            cache_folder=Path("models/huggingface"), quantization="int8"
+        )
+
+
 def test_qwen3_uses_documented_non_thinking_mode() -> None:
     assert _chat_template_options("Qwen/Qwen3-0.6B") == {
         "enable_thinking": False

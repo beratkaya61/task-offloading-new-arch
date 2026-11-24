@@ -84,9 +84,12 @@ class FewShotLlmBaseline:
         threads: int = 16,
         label_encoding: str = "signatures",
         revision: str | None = None,
+        quantization: str = "none",
     ) -> None:
         if label_encoding not in {"signatures", "codes"}:
             raise ValueError("label_encoding must be 'signatures' or 'codes'")
+        if quantization not in {"none", "4bit"}:
+            raise ValueError("quantization must be 'none' or '4bit'")
         suffix = "" if label_encoding == "signatures" else f"_codes{shots}shot"
         self.name = f"llm_fewshot_{model_id.split('/')[-1]}{suffix}"
         self._cache = str(cache_folder)
@@ -96,6 +99,7 @@ class FewShotLlmBaseline:
         self._threads = threads
         self._label_encoding = label_encoding
         self._revision = revision
+        self._quantization = quantization
         self._chat_template_options = _chat_template_options(model_id)
         self._vocabulary: dict[str, list[str]] = {}
         self._codebook: dict[str, dict[str, str]] = {}
@@ -104,6 +108,7 @@ class FewShotLlmBaseline:
         self._tokenizer: Any = None
         self._prefix_ids: Any = None
         self._prefix_cache: Any = None
+        self._input_device: Any = None
         self.invalid_field_count = 0
         self.unparsable_count = 0
 
@@ -149,13 +154,32 @@ class FewShotLlmBaseline:
         self._tokenizer = AutoTokenizer.from_pretrained(
             self._model_id, cache_dir=self._cache, revision=self._revision
         )
+        load_options: dict[str, Any] = {
+            "cache_dir": self._cache,
+            "revision": self._revision,
+        }
+        if self._quantization == "4bit":
+            if not torch.cuda.is_available():
+                raise RuntimeError("4-bit inference requires a CUDA-capable GPU")
+            from transformers import BitsAndBytesConfig
+
+            load_options.update(
+                device_map="auto",
+                dtype=torch.float16,
+                quantization_config=BitsAndBytesConfig(
+                    load_in_4bit=True,
+                    bnb_4bit_quant_type="nf4",
+                    bnb_4bit_use_double_quant=True,
+                    bnb_4bit_compute_dtype=torch.float16,
+                ),
+            )
+        else:
+            load_options["dtype"] = torch.bfloat16
         self._model = AutoModelForCausalLM.from_pretrained(
-            self._model_id,
-            cache_dir=self._cache,
-            revision=self._revision,
-            dtype=torch.bfloat16,
+            self._model_id, **load_options
         )
         self._model.eval()
+        self._input_device = self._model.get_input_embeddings().weight.device
         # The system prompt and few-shot turns are identical for every task;
         # encode them once and reuse the key/value cache (exact, not approximate).
         prefix = self._tokenizer.apply_chat_template(
@@ -167,10 +191,14 @@ class FewShotLlmBaseline:
         marker = "Metin: "
         prefix = prefix[: prefix.rfind(marker)]
         self._prefix_ids = self._tokenizer(prefix, return_tensors="pt")["input_ids"]
-        with torch.no_grad():
-            self._prefix_cache = self._model(
-                self._prefix_ids, use_cache=True
-            ).past_key_values
+        # A copied few-shot KV cache is useful on CPU, but would reserve a
+        # substantial second allocation on the 8 GB Quadro during 4-bit runs.
+        # Build each inference cache normally in that constrained configuration.
+        if self._quantization == "none":
+            with torch.no_grad():
+                self._prefix_cache = self._model(
+                    self._prefix_ids, use_cache=True
+                ).past_key_values
 
     # -------------------------------------------------------------- prompt
     def _system_prompt(self) -> str:
@@ -281,11 +309,13 @@ class FewShotLlmBaseline:
             tokenize=False,
             **self._chat_template_options,
         )
-        inputs = self._tokenizer(prompt, return_tensors="pt")
+        inputs = self._tokenizer(prompt, return_tensors="pt").to(self._input_device)
         ids = inputs["input_ids"]
         prefix_length = self._prefix_ids.shape[1]
         cache = None
-        if torch.equal(ids[0, :prefix_length], self._prefix_ids[0]):
+        if self._prefix_cache is not None and torch.equal(
+            ids[0, :prefix_length].cpu(), self._prefix_ids[0]
+        ):
             cache = copy.deepcopy(self._prefix_cache)
         with torch.no_grad():
             output = self._model.generate(
