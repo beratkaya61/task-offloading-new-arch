@@ -38,8 +38,22 @@ def test_build_reports_zero_leakage_and_expected_sizes() -> None:
         "train": 186,
         "validation": 32,
     }
-    assert manifest["row_counts"] == {"test": 768, "train": 3024, "validation": 768}
+    template_rows = {"test": 768, "train": 3024, "validation": 768}
+    natural = manifest.get("natural_views", {}).get("added_by_split", {})
+    assert manifest["row_counts"] == {s: n + int(natural.get(s, 0)) for s, n in template_rows.items()}
     assert len(manifest["banned_evaluation_contexts"]["subjects"]) == 30
+
+
+def test_natural_views_follow_the_no_self_preference_rule() -> None:
+    tasks = list(load_jsonl(EXPANDED / "candidates.tasks.jsonl"))
+    natural = [t for t in tasks if t["design_strata"]["wording_view"] == "natural"]
+    for row in natural:
+        generator = row["provenance"]["generator_model"]
+        if row["design_strata"]["split"] == "test":
+            assert "qwen" not in generator.casefold()
+        assert row["provenance"]["label_claim"].endswith("pending_human_verification")
+    profiles = [t["grouping"]["semantic_profile_id"] for t in natural]
+    assert len(profiles) == len(set(profiles))
 
 
 def test_subjects_and_operations_never_cross_splits() -> None:

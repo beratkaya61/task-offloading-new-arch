@@ -15,6 +15,7 @@ The build fails closed when any leakage audit is non-zero.
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
 from collections import Counter, defaultdict
@@ -36,6 +37,7 @@ BLUEPRINT = ROOT / "configs" / "main_semantic_scenarios.v1.json"
 MAIN = ROOT / "data" / "semantic_benchmark" / "main"
 V3 = MAIN / "benchmark_v3"
 OUTPUT = ROOT / "data" / "semantic_benchmark" / "expanded_v2"
+DATA_DIR = OUTPUT
 
 
 def _object(path: Path) -> dict[str, Any]:
@@ -128,6 +130,74 @@ def leakage_audit(
     }
 
 
+def add_natural_views(
+    tasks: list[dict[str, Any]],
+    labels: list[dict[str, Any]],
+    *,
+    evaluation_texts: set[str],
+    banned_terms: list[str],
+) -> dict[str, Any]:
+    """Append accepted LLM natural rewrites as a third wording view per profile.
+
+    Labels are transferred from the canonical row and flagged as pending
+    human verification; rewrites that touch locked evaluation texts or banned
+    evaluation-context terms are dropped (never allowed to fail open).
+    """
+
+    rewrites: dict[str, dict[str, Any]] = {}
+    for path in sorted((DATA_DIR / "natural_rewrites").glob("*.jsonl")):
+        if path.name.endswith(".smoke.jsonl"):
+            continue
+        for row in load_jsonl(path):
+            if row["accepted"]:
+                rewrites[str(row["source_task_id"])] = row
+    label_by_id = {str(r["task_id"]): r for r in labels}
+    seen_texts = {_visible(t) for t in tasks}
+    added: Counter[str] = Counter()
+    dropped: Counter[str] = Counter()
+    generators: dict[str, set[str]] = defaultdict(set)
+    for canonical in [t for t in tasks if t["design_strata"]["wording_view"] == "canonical"]:
+        rewrite = rewrites.get(str(canonical["task_id"]))
+        if rewrite is None:
+            continue
+        split = str(canonical["design_strata"]["split"])
+        if rewrite["split"] != split:
+            raise ValueError(f"rewrite split mismatch for {canonical['task_id']}")
+        text = str(rewrite["rewrite"]).strip()
+        folded = text.casefold()
+        if text in evaluation_texts or text in seen_texts or any(term in folded for term in banned_terms):
+            dropped[split] += 1
+            continue
+        seen_texts.add(text)
+        profile_id = str(canonical["grouping"]["semantic_profile_id"])
+        natural_id = f"{profile_id}_natural"
+        row = copy.deepcopy(canonical)
+        row["task_id"] = natural_id
+        row["task_text"] = text
+        row["user_policy_text"] = None
+        row["design_strata"]["wording_view"] = "natural"
+        row["provenance"] = {
+            **row["provenance"],
+            "origin": "llm_natural_rewrite",
+            "source_task_id": canonical["task_id"],
+            "generator_model": rewrite["generator_model"],
+            "generator_revision": rewrite["generator_revision"],
+            "label_claim": "construction_label_transferred_pending_human_verification",
+        }
+        source_label = label_by_id[str(canonical["task_id"])]
+        annotation = copy.deepcopy(source_label["annotation"])
+        annotation["task_id"] = natural_id
+        tasks.append(row)
+        labels.append({"task_id": natural_id, "split": split, "annotation": annotation})
+        added[split] += 1
+        generators[split].add(str(rewrite["generator_model"]))
+    return {
+        "added_by_split": dict(sorted(added.items())),
+        "dropped_by_split": dict(sorted(dropped.items())),
+        "generator_by_split": {k: sorted(v) for k, v in sorted(generators.items())},
+    }
+
+
 def main() -> None:
     config = _object(CONFIG)
     blueprint = _object(BLUEPRINT)
@@ -152,6 +222,12 @@ def main() -> None:
         seed=seed,
         profile_prefix="exp2_profile",
         protocol="semantic_expansion_v2",
+    )
+    natural_report = add_natural_views(
+        tasks,
+        labels,
+        evaluation_texts=evaluation_texts,
+        banned_terms=[t.casefold() for t in (*banned_subjects, *banned_operations)],
     )
     audit = leakage_audit(
         tasks,
@@ -223,6 +299,7 @@ def main() -> None:
             "operations": sorted(banned_operations),
         },
         "leakage_audit": audit,
+        "natural_views": natural_report,
         "labels": "by_construction_pending_blind_human_annotation",
         "family_assignments": dict(sorted(assignments.items())),
         "comparison_contract": config["comparison_contract"],
@@ -250,6 +327,7 @@ def main() -> None:
         f"families={manifest['family_counts']} rows={manifest['row_counts']}"
     )
     print(f"banned_eval_contexts={len(banned_subjects)} leakage_audit={audit}")
+    print(f"natural_views={natural_report}")
     print(
         f"human_annotation_tasks={len(annotation_items)} "
         f"minimum_assignments={annotation_manifest['minimum_independent_assignments']}"

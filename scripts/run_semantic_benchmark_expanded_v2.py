@@ -85,6 +85,15 @@ def main() -> None:
         )
         for split in ("validation", "test")
     }
+    # Test broken down by wording: template views vs LLM natural rewrites.
+    for view_name, views in (("template", {"canonical", "paraphrase"}), ("natural", {"natural"})):
+        subset = [t for t in by_split["test"] if t["design_strata"]["wording_view"] in views]
+        if subset and len(subset) != len(by_split["test"]):
+            eval_sets[f"v2_test_{view_name}"] = (
+                subset,
+                labels,
+                [str(t["grouping"]["subject_group_id"]) for t in subset],
+            )
     for name in EXTERNAL:
         tasks, ext_labels = _external(name)
         eval_sets[name] = (tasks, ext_labels, None)

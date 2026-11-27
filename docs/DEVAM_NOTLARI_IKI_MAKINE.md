@@ -30,6 +30,27 @@ $env:PYTHONPATH='src'; .\.venv\Scripts\python.exe scripts\prepare_expansion_v2_a
 .\.venv\Scripts\python.exe -c "import torch; print(torch.cuda.is_available())"
 ```
 
+## Doğal ifade üretimi (27→28 Kasım gecesi, Quadro)
+
+Bu gece `logs/run_natural_rewrites_overnight.ps1` zinciri çalışıyor:
+1. Qwen3-8B, train ve validation için 1.896 profili yeniden yazar (~2 saat).
+2. Turkish-Llama-8B indirmesinin bitmesi beklenir.
+3. Turkish-Llama, test için 384 profili yeniden yazar.
+
+Test ifadeleri, değerlendirilen modelin kendi üslubunu tanımaması (self-preference) için farklı bir model ailesinden gelir. İlerleme `logs/natural_rewrites_overnight.log` dosyasında, çıktılar `data/semantic_benchmark/expanded_v2/natural_rewrites/` altındadır.
+
+**Sabah (Quadro makinesinde) yapılacaklar:**
+
+```powershell
+$env:PYTHONPATH='src'
+.\.venv\Scripts\python.exe scripts\build_semantic_expansion_v2.py          # natural görünümü ekler + sızıntı denetimi
+.\.venv\Scripts\python.exe scripts\prepare_expansion_v2_annotation.py      # ana paketler natural ile yeniden üretilir (pilot değişmez)
+.\.venv\Scripts\python.exe -m pytest -q
+git add -A; git commit -m "Add natural rewrite views to expansion v2"; git push
+```
+
+**Pilot** bu akşam evde başlatılabilir: `pilot.html` formları gece üretiminden etkilenmez; bunu bir test garanti eder.
+
 ## Durum
 
 | İş | Durum | Makine |
