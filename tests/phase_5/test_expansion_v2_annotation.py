@@ -59,7 +59,10 @@ def test_every_heldout_subject_is_annotated_with_two_profiles_per_family() -> No
         if row["role"] in {"validation_reference", "test_reference"}:
             rows[row["scenario_family_id"]][row["wording_view"]] += 1
     assert set(rows) == heldout
-    assert all(views == {"canonical": 2, "paraphrase": 2} for views in rows.values())
+    for views in rows.values():
+        assert views["canonical"] == 2
+        assert views["natural"] + views["paraphrase"] == 2
+        assert set(views) <= {"canonical", "natural", "paraphrase"}
 
 
 def test_pilot_is_train_only_and_disjoint_from_main() -> None:
@@ -68,6 +71,10 @@ def test_pilot_is_train_only_and_disjoint_from_main() -> None:
     main_families = {r["scenario_family_id"] for r in key if r["role"] not in {"pilot", "hidden_repeat"}}
     assert {r["split"] for r in key if r["role"] == "pilot"} == {"train"}
     assert not pilot_families & main_families
+    pilot = [r for r in key if r["role"] == "pilot"]
+    assert all(r["alias"].startswith("v2p_") for r in pilot)
+    assert all(r["alias"].startswith("v2x_") for r in key if r["role"] != "pilot")
+    assert {r["wording_view"] for r in pilot} <= {"canonical", "paraphrase"}
 
 
 def test_hidden_repeats_come_back_in_later_sessions() -> None:
@@ -83,7 +90,7 @@ def test_v2_record_schema_accepts_naturalness_and_rejects_real_ids() -> None:
     schema = json.loads((ROOT / "schemas" / "human_annotation_record.v2.schema.json").read_text(encoding="utf-8"))
     record = {
         "record_version": "1.0.0", "protocol_version": "2.0.0", "annotator_id": "annotator_a",
-        "task_id": "v2x_0001", "task_content_sha256": "a" * 64,
+        "task_id": "v2p_0001", "task_content_sha256": "a" * 64,
         "started_at_utc": "2026-12-01T10:00:00Z", "submitted_at_utc": "2026-12-01T10:01:00Z",
         "annotation": {}, "naturalness": "natural",
     }
@@ -95,3 +102,23 @@ def test_v2_record_schema_accepts_naturalness_and_rejects_real_ids() -> None:
         pass
     else:
         raise AssertionError("schema must reject non-opaque task ids")
+
+
+FROZEN_PILOT_CONTENT_SHA256 = {
+    # Released 2026-11-27; later wording additions must never change the pilot.
+    "annotator_a": "0f6d4e3c37f28f36e43ee95729a6b14bcc07ce776d0e29f7900ef8607b2fe1a9",
+    "annotator_b": "b85a5762b6e044896ce075a2423e5658930a90e1d27d2f0bf6b973e197fa94bb",
+}
+
+
+def test_released_pilot_packets_are_frozen() -> None:
+    import hashlib
+
+    for annotator, expected in FROZEN_PILOT_CONTENT_SHA256.items():
+        rows = list(load_jsonl(OUT / "packets" / f"{annotator}.pilot.jsonl"))
+        payload = json.dumps(
+            [[r["presentation_order"], r["task_id"], r["task_text"], r["user_policy_text"]] for r in rows],
+            ensure_ascii=False,
+            sort_keys=True,
+        )
+        assert hashlib.sha256(payload.encode()).hexdigest() == expected

@@ -68,10 +68,17 @@ def _select(tasks: list[dict[str, Any]], assignments: dict[str, str]) -> tuple[l
         family = str(task["grouping"]["scenario_family_id"])
         by_family[family][str(task["grouping"]["semantic_profile_id"])].append(task)
 
+    def annotated_views(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        """Canonical plus the natural view; the template paraphrase is the fallback."""
+
+        by_view = {str(r["design_strata"]["wording_view"]): r for r in rows}
+        second = by_view.get("natural") or by_view["paraphrase"]
+        return [by_view["canonical"], second]
+
     def two_profiles(family: str) -> list[dict[str, Any]]:
         profiles = sorted(by_family[family])
         chosen = sorted(_rng("profiles", family).sample(profiles, PROFILES_PER_HELDOUT_FAMILY))
-        return [row for profile in chosen for row in sorted(by_family[family][profile], key=lambda r: r["task_id"])]
+        return [row for profile in chosen for row in annotated_views(by_family[family][profile])]
 
     domain_of = {str(t["grouping"]["scenario_family_id"]): str(t["design_strata"]["scenario_domain"]) for t in tasks}
     train_by_domain: dict[str, list[str]] = defaultdict(list)
@@ -92,7 +99,14 @@ def _select(tasks: list[dict[str, Any]], assignments: dict[str, str]) -> tuple[l
         for family in audit:
             main.extend({**row, "_role": "training_audit"} for row in two_profiles(family))
         for family in pilot_families:
-            rows = [row for profile in sorted(by_family[family]) for row in by_family[family][profile]]
+            # Pilot uses only the frozen template views so later wording additions
+            # (e.g. LLM natural rewrites) never change an already released pilot.
+            rows = [
+                row
+                for profile in sorted(by_family[family])
+                for row in sorted(by_family[family][profile], key=lambda r: r["task_id"])
+                if row["design_strata"]["wording_view"] in {"canonical", "paraphrase"}
+            ]
             pilot.append({**_rng("pilot", family).choice(rows), "_role": "pilot"})
     return main, pilot
 
@@ -113,14 +127,18 @@ def main() -> None:
     for index, row in enumerate(repeats):
         sessions[SESSIONS - 2 + index % 2].append({**row, "_role": "hidden_repeat", "_repeat_of": row["task_id"]})
 
-    entries: list[tuple[str, dict[str, Any]]] = [("pilot", row) for row in pilot_rows]
-    entries += [(f"session_{i + 1:02d}", row) for i, session in enumerate(sessions) for row in session]
-    aliases = list(range(1, len(entries) + 1))
-    _rng("aliases").shuffle(aliases)
+    # Separate alias spaces: the pilot (v2p_) is independent of the main pool (v2x_).
+    pilot_entries: list[tuple[str, dict[str, Any]]] = [("pilot", row) for row in pilot_rows]
+    main_entries = [(f"session_{i + 1:02d}", row) for i, session in enumerate(sessions) for row in session]
+    pilot_numbers = list(range(1, len(pilot_entries) + 1))
+    _rng("pilot_aliases").shuffle(pilot_numbers)
+    main_numbers = list(range(1, len(main_entries) + 1))
+    _rng("aliases").shuffle(main_numbers)
+    entries = pilot_entries + main_entries
+    aliases = [f"v2p_{n:04d}" for n in pilot_numbers] + [f"v2x_{n:04d}" for n in main_numbers]
     key: list[dict[str, Any]] = []
     blinded: dict[str, list[dict[str, Any]]] = defaultdict(list)
-    for (session, row), number in zip(entries, aliases, strict=True):
-        alias = f"v2x_{number:04d}"
+    for (session, row), alias in zip(entries, aliases, strict=True):
         blinded[session].append(
             {"task_id": alias, "language": row["language"], "task_text": row["task_text"], "user_policy_text": row["user_policy_text"]}
         )

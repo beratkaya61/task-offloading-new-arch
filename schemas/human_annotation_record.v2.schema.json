@@ -20,7 +20,7 @@
     "record_version": {"const": "1.0.0"},
     "protocol_version": {"const": "2.0.0"},
     "annotator_id": {"enum": ["annotator_a", "annotator_b"]},
-    "task_id": {"type": "string", "pattern": "^v2x_[0-9]{4}$"},
+    "task_id": {"type": "string", "pattern": "^v2[xp]_[0-9]{4}$"},
     "task_content_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "started_at_utc": {"type": "string", "format": "date-time"},
     "submitted_at_utc": {"type": "string", "format": "date-time"},
