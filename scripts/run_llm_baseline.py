@@ -8,7 +8,8 @@ compared with the rule baseline on the same tasks (paired bootstrap).
 Environment: ``LLM_SETS`` (comma list, default human60 sets), ``LLM_LIMIT``
 (smoke test: first N tasks per set), ``LLM_MODEL`` (HF model id), optional
 ``LLM_REVISION`` (immutable Hugging Face commit hash), and
-``LLM_QUANTIZATION`` (``none`` or ``4bit``).
+``LLM_QUANTIZATION`` (``none`` or ``4bit``), ``LLM_SHOTS`` (default 4), and
+``LLM_LABEL_ENCODING`` (``signatures`` or ``codes``).
 """
 
 from __future__ import annotations
@@ -49,6 +50,8 @@ def main() -> None:
     model_id = os.environ.get("LLM_MODEL", DEFAULT_MODEL_ID)
     model_revision = os.environ.get("LLM_REVISION") or None
     quantization = os.environ.get("LLM_QUANTIZATION", "none")
+    shots = int(os.environ.get("LLM_SHOTS", "4"))
+    label_encoding = os.environ.get("LLM_LABEL_ENCODING", "signatures")
     split = load_json_object(MAIN / "split_manifest.v1.json")
     dev = ordered_subset(load_jsonl(MAIN / "tasks.v1.jsonl"), list(split["machine_labeled_development"]["task_ids"]))
     weak = {r["task_id"]: r["annotation"] for r in load_jsonl(MAIN / "preannotations" / "machine_development.v1.jsonl")}
@@ -63,6 +66,8 @@ def main() -> None:
         model_id=model_id,
         revision=model_revision,
         quantization=quantization,
+        shots=shots,
+        label_encoding=label_encoding,
     )
     model.fit(dev, [weak[t["task_id"]] for t in dev])
     print(f"model and shared prefix ready ({time.perf_counter() - load_started:.1f}s)", flush=True)
@@ -121,9 +126,16 @@ def main() -> None:
             "model_id": model_id,
             "requested_revision": model_revision,
             "extractor": model.name,
-            "shots": 4,
+            "shots": shots,
+            "label_encoding": label_encoding,
+            "label_vocabulary_source_task_count": len(dev),
+            "paired_prompt_demonstration_count": shots,
             "decoding": "greedy",
-            "few_shot_source": "development split, machine weak labels",
+            "few_shot_source": (
+                "development split, machine weak labels; all development labels "
+                "define the allowed vocabulary and only the declared shots are "
+                "paired prompt demonstrations"
+            ),
             "evaluation_labels_used_for_training_or_tuning": False,
             "calibration_note": "constant confidence; ECE/Brier not interpretable",
             "unparsable_outputs": model.unparsable_count,

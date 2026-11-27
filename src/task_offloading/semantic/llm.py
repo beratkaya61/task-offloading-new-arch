@@ -86,12 +86,16 @@ class FewShotLlmBaseline:
         revision: str | None = None,
         quantization: str = "none",
     ) -> None:
+        if shots < 0:
+            raise ValueError("shots must be non-negative")
         if label_encoding not in {"signatures", "codes"}:
             raise ValueError("label_encoding must be 'signatures' or 'codes'")
         if quantization not in {"none", "4bit"}:
             raise ValueError("quantization must be 'none' or '4bit'")
-        suffix = "" if label_encoding == "signatures" else f"_codes{shots}shot"
-        self.name = f"llm_fewshot_{model_id.split('/')[-1]}{suffix}"
+        encoding_suffix = "" if label_encoding == "signatures" else "_codes"
+        self.name = (
+            f"llm_prompt_{model_id.split('/')[-1]}_{shots}shot{encoding_suffix}"
+        )
         self._cache = str(cache_folder)
         self._model_id = model_id
         self._shots = shots
@@ -113,14 +117,13 @@ class FewShotLlmBaseline:
         self.unparsable_count = 0
 
     # ----------------------------------------------------------------- fit
-    def fit(
-        self,
-        tasks: Sequence[Mapping[str, Any]],
-        annotations: Sequence[Mapping[str, Any]],
+    def prepare_label_space(
+        self, annotations: Sequence[Mapping[str, Any]]
     ) -> None:
-        import torch
-        from transformers import AutoModelForCausalLM, AutoTokenizer
+        """Build the allowed output vocabulary without loading model weights."""
 
+        if not annotations:
+            raise ValueError("annotations must not be empty")
         for field in ANNOTATION_FIELDS:
             counts = Counter(
                 _signature_label(semantic_signature(a, field)) for a in annotations
@@ -130,6 +133,30 @@ class FewShotLlmBaseline:
                 label: f"c{index}"
                 for index, label in enumerate(self._vocabulary[field])
             }
+
+    def attach_loaded_model(self, model: Any, tokenizer: Any) -> None:
+        """Attach an already loaded/fine-tuned model for shared parsing/evaluation."""
+
+        import torch
+
+        if not self._vocabulary:
+            raise RuntimeError("prepare_label_space must be called before attachment")
+        self._model = model
+        self._tokenizer = tokenizer
+        self._input_device = model.get_input_embeddings().weight.device
+        self._prefix_ids = torch.empty((1, 0), dtype=torch.long)
+        self._prefix_cache = None
+
+    def fit(
+        self,
+        tasks: Sequence[Mapping[str, Any]],
+        annotations: Sequence[Mapping[str, Any]],
+    ) -> None:
+        import torch
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+
+        self.prepare_label_space(annotations)
+        self._examples.clear()
         ranked = sorted(
             zip(tasks, annotations, strict=True),
             key=lambda pair: (
@@ -141,15 +168,21 @@ class FewShotLlmBaseline:
                 str(pair[0]["task_id"]),
             ),
         )
-        seen_domains: set[str] = set()
-        for task, annotation in ranked:
-            domain = str(annotation["domain"].get("value"))
-            if domain in seen_domains:
-                continue
-            seen_domains.add(domain)
-            self._examples.append((visible_text(task), _compact(annotation)))
-            if len(self._examples) == self._shots:
-                break
+        if self._shots:
+            seen_domains: set[str] = set()
+            for task, annotation in ranked:
+                domain = str(annotation["domain"].get("value"))
+                if domain in seen_domains:
+                    continue
+                seen_domains.add(domain)
+                self._examples.append((visible_text(task), _compact(annotation)))
+                if len(self._examples) == self._shots:
+                    break
+            if len(self._examples) != self._shots:
+                raise ValueError(
+                    f"requested {self._shots} shots but only "
+                    f"{len(self._examples)} domain-distinct examples are available"
+                )
         torch.set_num_threads(self._threads)
         self._tokenizer = AutoTokenizer.from_pretrained(
             self._model_id, cache_dir=self._cache, revision=self._revision
@@ -164,9 +197,11 @@ class FewShotLlmBaseline:
             from transformers import BitsAndBytesConfig
 
             load_options.update(
-                device_map="auto",
+                # ``auto`` may spill layers to CPU on an 8 GB card, which the
+                # 4-bit bitsandbytes loader rejects without FP32 CPU offload.
+                device_map={"": torch.cuda.current_device()},
                 dtype=torch.float16,
-                quantization_config=BitsAndBytesConfig(
+                quantization_config=BitsAndBytesConfig(  # type: ignore[no-untyped-call]
                     load_in_4bit=True,
                     bnb_4bit_quant_type="nf4",
                     bnb_4bit_use_double_quant=True,

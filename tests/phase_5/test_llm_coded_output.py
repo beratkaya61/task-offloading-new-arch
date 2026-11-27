@@ -55,6 +55,29 @@ def test_unknown_quantization_is_rejected() -> None:
         )
 
 
+def test_negative_shot_count_is_rejected() -> None:
+    with pytest.raises(ValueError, match="shots"):
+        FewShotLlmBaseline(
+            cache_folder=Path("models/huggingface"), shots=-1
+        )
+
+
+def test_model_names_keep_shot_conditions_separate() -> None:
+    zero = FewShotLlmBaseline(
+        cache_folder=Path("models/huggingface"),
+        model_id="Qwen/Qwen3-8B",
+        shots=0,
+    )
+    eight = FewShotLlmBaseline(
+        cache_folder=Path("models/huggingface"),
+        model_id="Qwen/Qwen3-8B",
+        shots=8,
+        label_encoding="codes",
+    )
+    assert zero.name == "llm_prompt_Qwen3-8B_0shot"
+    assert eight.name == "llm_prompt_Qwen3-8B_8shot_codes"
+
+
 def test_qwen3_uses_documented_non_thinking_mode() -> None:
     assert _chat_template_options("Qwen/Qwen3-0.6B") == {
         "enable_thinking": False

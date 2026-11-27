@@ -1,0 +1,302 @@
+{
+  "model_id": "Qwen/Qwen3-8B",
+  "requested_revision": null,
+  "extractor": "llm_prompt_Qwen3-8B_4shot",
+  "shots": 4,
+  "label_encoding": "signatures",
+  "label_vocabulary_source_task_count": 180,
+  "paired_prompt_demonstration_count": 4,
+  "decoding": "greedy",
+  "few_shot_source": "development split, machine weak labels; all development labels define the allowed vocabulary and only the declared shots are paired prompt demonstrations",
+  "evaluation_labels_used_for_training_or_tuning": false,
+  "calibration_note": "constant confidence; ECE/Brier not interpretable",
+  "unparsable_outputs": 0,
+  "out_of_vocabulary_fields": 60,
+  "sets": {
+    "human60_original": {
+      "task_count": 60,
+      "exact_record_accuracy": 0.16666666666666666,
+      "macro_f1_across_fields": 0.5543280235530993,
+      "critical_privacy": {
+        "positive_reference_count": 7,
+        "precision": 0.4375,
+        "recall": 1.0,
+        "f1": 0.6086956521739131
+      },
+      "abstention_f1": 0.9388335704125178,
+      "inference_latency_ms_mean": 9493.930246666667,
+      "fields_macro_f1": {
+        "domain": 0.6436495650891936,
+        "latency": 0.25,
+        "privacy": 0.7913857677902622,
+        "execution_policy": 0.1972934472934473,
+        "reliability": 0.47747074931540956,
+        "accuracy": 0.5733333333333333,
+        "energy_priority": 0.6975697569756977,
+        "divisibility": 0.803921568627451
+      },
+      "intervals": {
+        "llm_prompt_Qwen3-8B_4shot": {
+          "exact_record_accuracy": {
+            "value": 0.16666666666666666,
+            "ci95": [
+              0.08333333333333333,
+              0.26666666666666666
+            ],
+            "diff_vs_baseline": {
+              "value": -0.2166666666666667,
+              "ci95": [
+                -0.3500000000000001,
+                -0.08333333333333331
+              ],
+              "p_value_two_sided": 0.0
+            }
+          },
+          "exact_field_accuracy": {
+            "value": 0.8375,
+            "ci95": [
+              0.8125,
+              0.8625
+            ],
+            "diff_vs_baseline": {
+              "value": -0.0708333333333333,
+              "ci95": [
+                -0.09588541666666665,
+                -0.04583333333333328
+              ],
+              "p_value_two_sided": 0.0
+            }
+          },
+          "macro_f1_across_fields": {
+            "value": 0.5543280235530993,
+            "ci95": [
+              0.5037446122819053,
+              0.6115222640367858
+            ],
+            "diff_vs_baseline": {
+              "value": -0.2261634211980238,
+              "ci95": [
+                -0.25899778908353827,
+                -0.17000106221979727
+              ],
+              "p_value_two_sided": 0.0
+            }
+          }
+        },
+        "rule_keyword": {
+          "exact_record_accuracy": {
+            "value": 0.38333333333333336,
+            "ci95": [
+              0.26666666666666666,
+              0.5166666666666667
+            ]
+          },
+          "exact_field_accuracy": {
+            "value": 0.9083333333333333,
+            "ci95": [
+              0.88953125,
+              0.9291666666666667
+            ]
+          },
+          "macro_f1_across_fields": {
+            "value": 0.7804914447511231,
+            "ci95": [
+              0.7087413075699335,
+              0.8375487821652969
+            ]
+          }
+        }
+      }
+    },
+    "human60_paraphrase": {
+      "task_count": 60,
+      "exact_record_accuracy": 0.11666666666666667,
+      "macro_f1_across_fields": 0.5437947488601955,
+      "critical_privacy": {
+        "positive_reference_count": 7,
+        "precision": 0.35714285714285715,
+        "recall": 0.7142857142857143,
+        "f1": 0.47619047619047616
+      },
+      "abstention_f1": 0.9356223175965666,
+      "inference_latency_ms_mean": 9256.634909999999,
+      "fields_macro_f1": {
+        "domain": 0.662406015037594,
+        "latency": 0.24725274725274726,
+        "privacy": 0.5566770186335404,
+        "execution_policy": 0.1919093851132686,
+        "reliability": 0.6165538883985485,
+        "accuracy": 0.38048090523338046,
+        "energy_priority": 0.891156462585034,
+        "divisibility": 0.803921568627451
+      },
+      "intervals": {
+        "llm_prompt_Qwen3-8B_4shot": {
+          "exact_record_accuracy": {
+            "value": 0.11666666666666667,
+            "ci95": [
+              0.05,
+              0.2004166666666663
+            ],
+            "diff_vs_baseline": {
+              "value": -0.11666666666666667,
+              "ci95": [
+                -0.25,
+                0.033333333333333326
+              ],
+              "p_value_two_sided": 0.148
+            }
+          },
+          "exact_field_accuracy": {
+            "value": 0.8270833333333333,
+            "ci95": [
+              0.8041145833333334,
+              0.8520833333333333
+            ],
+            "diff_vs_baseline": {
+              "value": -0.03750000000000009,
+              "ci95": [
+                -0.0708333333333333,
+                -0.004114583333333366
+              ],
+              "p_value_two_sided": 0.04
+            }
+          },
+          "macro_f1_across_fields": {
+            "value": 0.5437947488601955,
+            "ci95": [
+              0.5042763116233946,
+              0.6097187245229271
+            ],
+            "diff_vs_baseline": {
+              "value": 0.14063123689046253,
+              "ci95": [
+                0.07104413983702988,
+                0.1998304278614606
+              ],
+              "p_value_two_sided": 0.0
+            }
+          }
+        },
+        "rule_keyword": {
+          "exact_record_accuracy": {
+            "value": 0.23333333333333334,
+            "ci95": [
+              0.13333333333333333,
+              0.35
+            ]
+          },
+          "exact_field_accuracy": {
+            "value": 0.8645833333333334,
+            "ci95": [
+              0.8416666666666667,
+              0.8875
+            ]
+          },
+          "macro_f1_across_fields": {
+            "value": 0.403163511969733,
+            "ci95": [
+              0.38415503917763,
+              0.4587582739288281
+            ]
+          }
+        }
+      }
+    },
+    "independent_paraphrase": {
+      "task_count": 188,
+      "exact_record_accuracy": 0.15425531914893617,
+      "macro_f1_across_fields": 0.5533284658295416,
+      "critical_privacy": {
+        "positive_reference_count": 46,
+        "precision": 0.38181818181818183,
+        "recall": 0.45652173913043476,
+        "f1": 0.4158415841584158
+      },
+      "abstention_f1": 0.9200394866732478,
+      "inference_latency_ms_mean": 10864.344760638298,
+      "fields_macro_f1": {
+        "domain": 0.6605735192627776,
+        "latency": 0.26271326271326273,
+        "privacy": 0.38923099800962396,
+        "execution_policy": 0.3299038181288254,
+        "reliability": 0.4664459723283253,
+        "accuracy": 0.6639088916040589,
+        "energy_priority": 0.7577022746904692,
+        "divisibility": 0.8961489898989898
+      },
+      "intervals": {
+        "llm_prompt_Qwen3-8B_4shot": {
+          "exact_record_accuracy": {
+            "value": 0.15425531914893617,
+            "ci95": [
+              0.10638297872340426,
+              0.2074468085106383
+            ],
+            "diff_vs_baseline": {
+              "value": -0.026595744680851074,
+              "ci95": [
+                -0.09042553191489361,
+                0.031914893617021295
+              ],
+              "p_value_two_sided": 0.482
+            }
+          },
+          "exact_field_accuracy": {
+            "value": 0.8038563829787234,
+            "ci95": [
+              0.7852393617021277,
+              0.8231549202127659
+            ],
+            "diff_vs_baseline": {
+              "value": -0.0026595744680850686,
+              "ci95": [
+                -0.019946808510638347,
+                0.013979388297872345
+              ],
+              "p_value_two_sided": 0.816
+            }
+          },
+          "macro_f1_across_fields": {
+            "value": 0.5533284658295416,
+            "ci95": [
+              0.5283084122324849,
+              0.5724837469564943
+            ],
+            "diff_vs_baseline": {
+              "value": 0.006900886638521175,
+              "ci95": [
+                -0.028117274294259944,
+                0.04353580740663291
+              ],
+              "p_value_two_sided": 0.672
+            }
+          }
+        },
+        "rule_keyword": {
+          "exact_record_accuracy": {
+            "value": 0.18085106382978725,
+            "ci95": [
+              0.13284574468085106,
+              0.23404255319148937
+            ]
+          },
+          "exact_field_accuracy": {
+            "value": 0.8065159574468085,
+            "ci95": [
+              0.785904255319149,
+              0.8257978723404256
+            ]
+          },
+          "macro_f1_across_fields": {
+            "value": 0.5464275791910205,
+            "ci95": [
+              0.5132121259310847,
+              0.5728106522240447
+            ]
+          }
+        }
+      }
+    }
+  }
+}
