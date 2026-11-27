@@ -8,8 +8,7 @@
 ## Makineye geçince ilk adımlar
 
 ```powershell
-git fetch origin
-git checkout semantic-expansion-v2
+git checkout main
 git pull
 .\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
 $env:PYTHONPATH='src'
