@@ -1,6 +1,6 @@
 # Tez Danışmanı İçin Mevcut Durum, Yöntem, Bulgular ve Makale Yol Haritası
 
-**Güncellik tarihi:** 22 Kasım 2026
+**Güncellik tarihi:** 27 Kasım 2026
 
 **Önerdiğim Türkçe tez başlığı:** Belirsizlik-Duyarlı Semantik Kısıtlarla İz Güdümlü Mobil Uç Bilişimde Görev Boşaltma
 
@@ -45,7 +45,7 @@ Pratikte izlediğim end-to-end işlem sırası şöyledir:
 
 Çalışmanın ana bulguları şunlardır:
 
-1. **Model büyüklüğü tek başına kalite sağlamadı.** Single-human-60 özgün metinde macro-F1; rule için `%78,0`, TF-IDF(+data) için `%78,2`, frozen E5(+data) için `%76,3`, fine-tuned E5 için `%70,2`, Qwen2.5-1.5B 4-shot için `%48,3` oldu. Independent-188 paraphrase setinde TF-IDF(+data) `%80,9` ile en iyi makine yöntemi olurken Qwen `%42,0` kaldı.
+1. **Prompt-only LLM'ler, 8B ölçeğinde bile supervised baselines'ı geçmedi; fakat bu eşit eğitim bütçeli bir mimari karşılaştırması değildir.** Single-human-60 özgün metinde macro-F1; rule için `%78,0`, TF-IDF(+data) için `%78,2`, frozen E5(+data) için `%76,3`, fine-tuned E5 için `%70,2`, Qwen2.5-1.5B 4-shot için `%48,3` oldu. Aynı ölçümde Qwen3-8B 0/4/8-shot `%50,2 / %55,4 / %54,8` verdi. En iyi koşul 4-shot'tır; 8-shot kalite artırmadı fakat gecikmeyi yaklaşık iki katına çıkardı (`9,5→19,4` s/görev). Qwen modellerinin ağırlıkları task-specific eğitilmedi; development etiketleri yalnız çıktı sözlüğünü tanımladı ve promptta yalnız `k` paired demonstrasyon kullanıldı.
 2. **Asıl ayrım paraphrase robustness altında oluştu.** Rule, makine yeniden yazımında `%40,3` macro-F1'e düştü; TF-IDF(+data) `%67,9` elde etti. Görülmemiş kompozisyonel ifadelerde rule `%47,5`, TF-IDF(+data) `%73,6`, frozen E5(+data) `%70,9` oldu.
 3. **Doğru semantik bilgi NEP-v2 sistem sonucunu belirgin artırdı.** Exact-preview koşulunda reference semantics, no-semantic'e göre `task success rate` değerini PPO'da `+15,03` percentage point [95% CI `+13,85; +16,27`], greedy'de `+12,94` point [95% CI `+11,77; +14,12`] artırdı.
 4. **Extractor quality downstream safety'yi doğrudan etkiledi.** PPO'da rule-paraphrase `%14,18` `hard constraint violation rate` üretirken TF-IDF(+data) `%4,08`, frozen E5(+data) `%5,03`, single-human reference `%0,00` üretti. Rule yerine TF-IDF kullanımı `hard constraint violation rate` değerini `10,10` point azalttı.
@@ -53,6 +53,8 @@ Pratikte izlediğim end-to-end işlem sırası şöyledir:
 6. **Semantic state policy collapse'ı azalttı.** No-semantic PPO'nun max-action share değeri `%99,7` iken reference PPO'da `%72,3` oldu. Buna rağmen greedy daha düşük latency, energy/success ve decision overhead sağladı.
 7. **Ana yön generalization kontrollerinde korundu.** EUA entity holdout'ta semantic PPO avantajı `+15,03` point, two-domain holdout'ta `+13,41` point oldu; her iki koşulda reference `hard constraint violation rate` `%0,00` kaldı.
 8. **Calibration/fallback evrensel bir güvenlik garantisi değildir.** Development-only isotonic calibration confidence ölçümünü bazı modellerde iyileştirdi; fakat fallback yalnız PPO/TF-IDF koşulunda önceden tanımlı başarı-güvenlik kapısını geçti. H3 bu nedenle desteklenmedi.
+9. **Veri miktarı ve wording çeşitliliği belirleyici oldu.** D180'den D1924'e geçiş human rewrite'ta TF-IDF macro-F1'i `+19,8`, frozen E5'i `+8,6` puan; independent-188'de sırasıyla `+36,9` ve `+22,1` puan artırdı. Bu bulgu yeni, daha büyük ve insan denetimli ortak benchmark genişletmesini gerekçelendiriyor.
+10. **Eşit ve daha çeşitli supervision ile fine-tuned E5 ilk kez en iyi yöntem oldu (geçici sonuç).** Bütün supervised yöntemler aynı 3.024 satırlık, eski test senaryolarından tamamen arındırılmış Expanded-v2 train'i ile eğitildi. Hiç görülmemiş 32 cihazdan oluşan testte macro-F1 şöyledir: fine-tuned E5 `%89,3`, TF-IDF `%87,6`, frozen E5 `%84,5`, rule `%79,7`. Fine-tuned E5, TF-IDF'i v2 testte `+1,7` puan [95% CI `+0,1; +2,8`], Independent-188'de `+3,8` puan [`+0,8; +7,6`] geçti. Küçük veride bu sıralama tersti. Aynı TF-IDF eski şablon testinde `%99,4` aldığı için yeni test, şablon tanımadan çok gerçek genellemeyi ölçmektedir. Etiketler henüz construction label olduğundan bu sonuçlar insan etiketlemesi sonrası yeniden üretilecektir.
 
 Bugün savunabildiğim ana sonuç şudur:
 
@@ -63,7 +65,7 @@ Bugün savunabildiğim ana sonuç şudur:
 | İş paketi | Durum | Depodaki ana kanıt | Kalan |
 |---|---|---|---|
 | Faz 0–3: research contract, simulator, provenance/split | **Tamamlandı** | Faz 0–3A raporları, oracle/parity/leakage testleri | — |
-| Faz 4: semantic benchmark | **Tamamlandı** | Human-60, 600+600 compositional, independent-188; constant/rule/TF-IDF/E5/Qwen | Yeni model eklemek zorunlu değil |
+| Faz 4: semantic benchmark v3.2 | **Tamamlandı; genişletme aktif** | Human-60, 600+600 compositional, independent-188; constant/rule/TF-IDF/E5/Qwen2.5; Qwen3-8B 0/4/8-shot; Expanded-v2 ve kör annotation paketleri | Expanded-v2 iki kişilik insan annotation/adjudication, Qwen3-8B QLoRA ve ortak final yeniden eğitim |
 | Faz 5: baselines/oracle/reward | **Tamamlandı** | NEP-v2 fixed/random/greedy, oracle, reward decomposition/sensitivity | — |
 | Faz 6: PPO ve semantic ablation | **Tamamlandı** | Exact/noisy/independent; calibration, mask/penalty; H1–H6 | — |
 | Faz 7: generalization/source ablation | **Tamamlandı** | Temporal, entity, scenario-family proxy, domain holdout ve source counterfactual | Claim sınırlarını tez metninde korumak |
@@ -71,7 +73,7 @@ Bugün savunabildiğim ana sonuç şudur:
 | Faz 9: physical testbed/emulation | **Opsiyonel** | Simülasyon testbed diye sunulmuyor | Yapılırsa ayrı sim-to-real çalışma |
 | Faz 10: tez/makale ve reproducibility | **Current-PC core tamamlandı** | Frozen suite/evidence, tek-komut rehber, Phase 10 raporu; 264 test + Ruff + strict mypy; publication-core commit `03dee8e` | Quadro extension opsiyonel |
 
-Bu bilgisayarda çekirdek deneyler tamamlandı. Quadro RTX 4000 üzerinde Qwen3-4B/8B, seçili koşullarda 10-seed genişletmesi veya ek model-scale analizi makaleyi güçlendirebilir; fakat ana bilimsel sonucu bloke eden zorunlu işler değildir.
+Eski çekirdek deneyler tamamlandı; ancak danışman geri bildirimi sonrasında semantic benchmark genişletmesi yeni aktif iş paketidir. Yeni turda bütün supervised extractor'lar aynı Expanded-v2 train/validation/test üzerinde yeniden eğitilecek; Qwen3-8B 0/4/8-shot ayrı in-context track, QLoRA ise aynı supervised data track içinde raporlanacaktır. Prompt-only track tamamlandı; supervised track'in geçici construction-label sonuçları alındı; final tablo iki kişilik insan etiketlemesinden sonra üretilecektir.
 
 ## 2. Araştırma problemi, araştırma sorusu ve kapsam
 
@@ -143,12 +145,62 @@ Tam eşleşmiş “Türkçe task intent + sekiz semantic label + MEC telemetry +
 |---|---:|---|---|
 | Kontrollü Türkçe ana corpus | 240 | 180 machine-weak label + 60 single-human reference | Family-disjoint development/evaluation |
 | Pilot annotation | 20 | İnsan | Protocol quality; ana score'a karıştırılmadı |
-| Augmented training pool | 1.980 | Construction/machine augmentation | Yalnız training; evaluation labels görülmedi |
+| Augmented training pool | 1.924 | Construction/machine augmentation; 180 temel görevden türetildi | Yalnız training; evaluation labels görülmedi |
 | Human-60 machine rewrite | 60 | Original single-human label transfer | İnsan rewrite metnini yeniden etiketlemedi |
 | Compositional | 600 template + 600 unseen wording | Label by construction | Composition/wording robustness |
 | Independent paraphrase | 200 adaydan 188 kabul | Parent-intent label transfer + automatic preservation filters | Son robustness; yeni human gold değil |
 
 `scenario_family_id` ve `paraphrase_family_id` development/evaluation arasında ayrıdır. Duplicate hash, family overlap, chronology ve train-only normalizer otomatik kontrol edilir. Daha önce tespit edilen wording leakage giderilmiş ve yalnız leakage-free v3/v3.2 sonuçları kullanılmıştır.
+
+Cached v3.2 scorer içinde görülen `1.980` sayısı sabit yazılmış metadata hatasıdır; güncel training task/label dosyaları ve authoritative `results.v3.json` `1.924` satır içerir. Bu satırlar 1.924 bağımsız görev değildir; 180 temel development metninin paraphrase ve compositional türevleridir.
+
+### 4.1.1 Genişletilmiş ortak benchmark: Expanded-v1'den Expanded-v2'ye — 27 Kasım 2026
+
+Danışman geri bildirimindeki veri sayısı ve çeşitliliği sınırlamasını ele almak için önce 600 senaryo aileli bir aday (Expanded-v1) üretildi. Bu adayın kendi split'i aile düzeyinde temiz görünse de çapraz denetim iki sızıntı yolu ortaya çıkardı:
+
+1. **Eski testlere sızıntı:** Human-60, Comp-600 ve Independent-188'in tamamı Human-60'ın 30 cihaz/işlem bağlamından türemiştir. Expanded-v1 aynı senaryo dosyasından üretildiği için 600 ailenin 244'ü bu bağlamları yeniden kullandı. Yeni train'de Human-60 original'dan 3, Comp-600'den yaklaşık 93 birebir metin bulunuyordu.
+2. **Split'ler arası cihaz/işlem geçişi:** Bir cihaz farklı işlemlerle birden fazla aileye girdiği için 120 cihazın 98'i ve 120 işlemin 103'ü birden fazla split'te görünüyordu.
+
+Bu nedenle Expanded-v1 geri çekildi ve **Expanded-v2** oluşturuldu:
+
+- Eski değerlendirme setlerinin 30 bağlamı bütün split'lerden çıkarıldı. Bu bağlamların cihaz ve işlem adları hiçbir yeni metinde geçemez.
+- Her domain için 20 yeni cihaz ve her cihaza ait 3 doğal işlem elle yazıldı (toplam 160 cihaz, 480 işlem).
+- Split birimi **cihaz grubu** oldu: Bir cihaz bütün işlemleriyle tek split'e atanır.
+- Validation ve test yalnız hiçbir eski artifact'te geçmemiş yeni cihazlardan oluşur. Temiz eski development bağlamları yalnız train'e girer.
+
+| Birim | Toplam | Train | Validation | Test |
+|---|---:|---:|---:|---:|
+| Bağımsız cihaz grubu | 250 | 186 | 32 | 32 |
+| Senaryo ailesi (cihaz + işlem) | 570 | 378 | 96 | 96 |
+| İlişkili metin satırı (aile × 4 semantik profil × 2 ifade) | 4.560 | 3.024 | 768 | 768 |
+
+Build betiği dokuz sızıntı denetimini zorunlu tutar ve herhangi biri sıfırdan farklıysa durur:
+
+- duplicate metin;
+- cihaz grubu, profil, cihaz ve işlem için split'ler arası geçiş;
+- kilitli testlerle birebir metin çakışması;
+- yasaklı bağlam terimleri;
+- held-out cihaz/işlem adlarının eski metinlerde görünmesi.
+
+Mevcut build'de dokuzunun tamamı `0`'dır. Aynı kontroller bağımsız pytest testleriyle artifact'ler üzerinden yeniden hesaplanır.
+
+Bu artifact henüz final veri seti değildir; construction label'lar insan etiketi olarak sunulmayacaktır. İki etiketleyiciyle uygulanabilir **yalın annotation tasarımı** seçildi:
+
+- 32 test ve 32 validation cihazının tamamı korunur.
+- Her aileden 4 yerine 2 semantik profil iki ifadeyle etiketlenir: 384 validation ve 384 test.
+- Train için 48 ailelik bir denetim örneği eklenir (192). Bunun amacı inşa etiketlerinin hata oranını ölçmektir.
+- 40 pilot ve 24 gizli tekrar görev eklenir.
+
+Böylece etiketleyici başına 1.024 görev, yaklaşık 12–16 saat iş çıkar. İkinci etiketleyici ayrıca mevcut Human-60'ı kör olarak etiketler; eski ana test de böylece iki kişilik hale gelir.
+
+Görev kimlikleri opaktır (`v2x_NNNN`); etiketleyici split, ifade türü, üreteç ve model çıktısı görmez. Her metin için ayrıca "doğal / kabul edilebilir / doğal değil" değerlendirmesi alınır. Kapılar önceden sabittir:
+
+- alan başına kappa `≥ 0,70`;
+- gizli tekrar öz-uyumu `≥ 0,85`;
+- train denetiminde insan ve inşa etiketi uyumu `≥ 0,90`;
+- iki kişinin de "doğal değil" dediği metinlerin çıkarılması.
+
+Etiketlenmeyen validation/test satırları final değerlendirmeye ve eğitime girmez.
 
 ### 4.2 Physical trace katmanları
 
@@ -181,8 +233,10 @@ Farklı veri setlerinin satırlarını aynı anda ölçülmüş doğal ortak ola
 | Rule/keyword parser | Transparent ve çok hızlı non-learning baseline | Controlled wording güçlü, paraphrase kırılgan | Original `%78,0`; independent `%54,6` |
 | TF-IDF + Logistic Regression | Küçük, hızlı, yorumlanabilir supervised baseline [17] | Augmentation ile paraphrase robustness artabilir | Independent en iyi machine result: `%80,9` |
 | Frozen multilingual-E5 + LR | Pretrained multilingual representation etkisi [13] | Paraphrase'te TF-IDF üstünlüğü mümkün ama garanti değil | Independent `%73,8`; TF-IDF'i geçmedi |
-| Fine-tuned multilingual-E5 | Task-specific representation learning | Temiz data yeterliyse artış; weak/small data'da overfit riski | Human-60 `%70,2`; beklenen üstünlük oluşmadı |
+| Fine-tuned multilingual-E5 | Task-specific representation learning | Temiz data yeterliyse artış; weak/small data'da overfit riski | D1924 ile Human-60 `%70,2`, üstünlük yok. Expanded-v2 ile v2 test `%89,3` ve Independent-188 `%85,5`; TF-IDF'i anlamlı geçti (geçici) |
 | Qwen2.5-1.5B 4-shot | Generative small LLM schema/semantic capacity [14] | Flexible semantics; CPU latency/format riski | Independent `%42,0`; küçük classifiers'ı geçmedi |
+| Qwen3-8B 0/4/8-shot | Aynı büyük modelde demonstrasyon katkısını izole etmek | Shot arttıkça bounded extraction iyileşebilir; training değildir | Independent `%47,3 / %55,3 / %52,4`; 4-shot en iyi, 8-shot iki kat yavaş ve ek kazanç yok |
+| Qwen3-8B QLoRA | Aynı supervised data altında task-specific LLM adaptation | Prompt-only koşuldan daha iyi schema/label uyumu | 8 GB bellek optimizasyonları ve truncation koruması eklendi; final eğitim insan etiketi sonrası |
 | Single-human reference | Erişilebilir semantic upper bound | En yüksek system alignment | NEP-v2 success yaklaşık `%91–93`, hard `%0` |
 
 “LLM > encoder > bag-of-words” sırasını ön kabul olarak kullanmadım. Bounded contract extraction'da task fit ve data diversity model büyüklüğünden önemli olabilir; Jev çalışmasının düşük-latency bounded decision modeli bulgusu da bu beklentiyle uyumludur [5].
@@ -258,6 +312,8 @@ PPO'yu greedy'ye göre otomatik üstün kabul etmiyorum. Greedy exact preview ku
 
 Human-60 küçük ve single-annotator olduğu için yöntemler arasındaki küçük farkları genellemem. Buna rağmen small LLM'nin belirgin biçimde geride kalması ve fine-tuned E5'in frozen/simpler baselines'ı geçememesi önemli negative results'tır.
 
+Bu Qwen sonucu “Qwen dört örnekle eğitildi” şeklinde yorumlanmamalıdır. Qwen2.5-1.5B'nin ağırlıkları task-specific güncellenmedi; 180 development anotasyonu izinli çıktı sözlüğünü oluşturdu, yalnız dört metin–etiket çifti prompt demonstrasyonu oldu. Bu nedenle sonuç prompt-only baseline'dır ve D1924 üzerinde parametre öğrenen TF-IDF/E5 ile eşit supervision altında mimari üstünlük kanıtı değildir.
+
 ### 7.2 Wording robustness
 
 | Yöntem | Human-60 original | Machine rewrite-60 | Unseen compositional-600 | Independent-188 |
@@ -276,6 +332,100 @@ Bu tablo çalışmanın önemli bulgusudur: original controlled wording'de rule 
 Calibration yalnız development/calibration records üzerinde isotonic regression ile fit edildi. Human-60, independent-188 ve compositional evaluation labels calibrator veya threshold selection için kullanılmadı. Human-60'ta TF-IDF(+data) ECE `0,132→0,089`, Brier `0,113→0,091`; frozen E5(+data) ECE `0,236→0,105`, Brier `0,165→0,110` oldu. Independent-188'de TF-IDF ECE iyileşirken Brier `0,117→0,121` ile hafif kötüleşti. Dolayısıyla “calibration her distribution'da her metric'i iyileştirir” demiyorum.
 
 Fallback threshold `0,6` evaluation sonucuna bakılmadan donduruldu. Downstream H3 tablosunda yalnız PPO/TF-IDF success kaybı `<2` point iken hard violation'ı azalttı; diğer model/policy çiftleri aynı kapıyı geçmedi. Confidence calibration ile safe fallback aynı şey değildir.
+
+### 7.4 Veri artırma ablation'ı
+
+| Model | Set | D180 | D1924 | Fark |
+|---|---|---:|---:|---:|
+| TF-IDF + LR | Human-60 original | `%76,6` | `%78,2` | `+1,6` puan |
+| TF-IDF + LR | Human-60 rewrite | `%48,1` | `%67,9` | `+19,8` puan |
+| TF-IDF + LR | Independent-188 | `%44,0` | `%80,9` | `+36,9` puan |
+| Frozen E5 + LR | Human-60 original | `%75,8` | `%76,3` | `+0,5` puan |
+| Frozen E5 + LR | Human-60 rewrite | `%51,8` | `%60,4` | `+8,6` puan |
+| Frozen E5 + LR | Independent-188 | `%51,7` | `%73,8` | `+22,1` puan |
+
+Artış original kontrollü wording'de sınırlı, wording shift altında büyüktür. Dolayısıyla veri artırmanın ana katkısı canonical metni ezberletmekten çok lexical/wording robustness sağlamaktır. Bununla birlikte D1924 yalnız 180 temel kaynaktan türediği için bu sonuç daha fazla bağımsız scenario toplamanın yerini tutmaz; Expanded-v2 bu eksikliği 250 bağımsız cihaz grubu ve 570 senaryo ailesiyle hedefler (bkz. 4.1.1 ve 7.6).
+
+### 7.5 Qwen3-8B prompt-only: 0/4/8-shot karşılaştırması
+
+**Deney koşulları:**
+- **Sabit tutulanlar:** Qwen3-8B, aynı label encoding (`signatures`), greedy decoding, thinking modu kapalı. Görevler ve setler, tarihsel Qwen2.5-1.5B koşusuyla aynı.
+- **Değişen tek şey:** Promptta gösterilen paired demonstrasyon sayısı (`k`). `k` demonstrasyon development split'inden, domain'leri farklı olacak biçimde seçilir. Bütün development etiketleri yalnız izinli çıktı sözlüğünü tanımlar. Model ağırlıkları hiç güncellenmez.
+- **Donanım:** Quadro RTX 4000 (8 GB). FP16 8B modelin ağırlıkları tek başına yaklaşık 15 GB tuttuğu için inference 4-bit NF4 ile yapıldı; bu, aynı 8B modeldir.
+
+| Koşul | Human-60 original | Human-60 rewrite | Independent-188 | Ortalama gecikme |
+|---|---:|---:|---:|---:|
+| Rule/keyword (referans) | `%78,0` | `%40,3` | `%54,6` | `<1` ms |
+| TF-IDF + LR (D1924) | `%78,2` | `%67,9` | `%80,9` | `~2` ms |
+| Qwen2.5-1.5B 4-shot (tarihsel) | `%48,3` | `%43,7` | `%42,0` | `~14,7` s |
+| **Qwen3-8B 0-shot** | `%50,2` [45,9; 56,6] | `%51,3` [47,7; 58,4] | `%47,3` [43,8; 49,7] | `8,2–9,3` s |
+| **Qwen3-8B 4-shot** | `%55,4` [50,4; 61,2] | `%54,4` [50,4; 61,0] | `%55,3` [52,8; 57,2] | `9,3–10,9` s |
+| **Qwen3-8B 8-shot** | `%54,8` [49,9; 60,4] | `%52,3` [47,8; 58,5] | `%52,4` [49,8; 54,6] | `19,4–22,0` s |
+
+Değerler macro-F1'dir; köşeli parantezler görev-bootstrap %95 CI'dır.
+
+**Yorum:**
+1. **Ölçek tek başına yetmedi.** 0-shot Qwen3-8B, 4-shot Qwen2.5-1.5B'den yalnız `1,9–7,6` puan iyidir.
+2. **Demonstrasyon 4'e kadar yardımcı oldu, sonra doydu.** 0'dan 4'e geçiş üç sette `+3,1` ile `+8,0` puan kazandırdı. 8-shot hiçbir sette 4-shot'ı geçmedi, fakat gecikmeyi yaklaşık iki katına çıkardı. Bunun nedeni, uzun prefix'in 8 GB VRAM'i neredeyse doldurmasıdır (yaklaşık 7,9 GB).
+3. **İfade değişikliğine dayanıklıydı.** Qwen3-8B'nin original ile rewrite farkı 1–3 puandır. Rule aynı geçişte 38 puan kaybeder.
+4. **Supervised yöntemlerin belirgin gerisinde kaldı.** En iyi Qwen koşulu Human-60'ta TF-IDF'in `22,8` puan, Independent-188'de `25,6` puan altındadır.
+5. **Offloading güvenliği açısından en kritik alanlarda en zayıftır.** Independent-188 alan bazında, 4-shot'ta latency macro-F1 `%26,3` ve execution policy `%33,0`'dır. Kritik privacy F1 shot sayısı arttıkça düştü: `0,60 → 0,42 → 0,37`. Bunun karşılığında sözlük dışı (OOV) alan sayısı `123 → 60 → 41` azaldı. Yani demonstrasyonlar çıktı biçimini düzeltti ama gizlilik sınıflandırmasını kötüleştirdi.
+
+Bu track eğitimsiz bir in-context baseline olarak raporlanır; supervised yöntemlerle "mimari üstünlük" karşılaştırması yalnız 7.6'daki eşit supervision koşulunda yapılır.
+
+### 7.6 Eşit supervision ile genişletilmiş karşılaştırma (geçici, Expanded-v2)
+
+**Koşullar:**
+- Bütün supervised yöntemler aynı 3.024 satırlık Expanded-v2 train ile eğitildi.
+- Hiperparametreler benchmark v3'ten aynen alındı. Validation yalnız raporlandı; test hiçbir seçimde kullanılmadı.
+- Expanded-v2 setlerinde güven aralıkları **cihaz grubu** düzeyinde cluster bootstrap ile hesaplandı, çünkü aynı cihazdan 24 satır bağımsız değildir. Eski dış setlerde görev düzeyinde bootstrap kullanıldı.
+- Etiketler construction label'dır; bu tablo insan etiketlemesinden sonra aynı komutla yeniden üretilecektir.
+
+| Yöntem | v2 validation | **v2 test (32 yeni cihaz)** | Human-60 original | Human-60 rewrite | Comp-600 canonical | Comp-600 unseen wording | Independent-188 |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Constant profile | `%20,6` | `%20,6` | `%25,3` | `%25,3` | `%20,7` | `%20,7` | `%20,9` |
+| Rule/keyword | `%79,8` | `%79,7` | `%78,0` | `%40,3` | `%98,5` | `%47,5` | `%54,6` |
+| TF-IDF + LR (v2 train) | `%86,9` | **`%87,6`** | `%78,2` | `%61,0` | `%99,4` | `%72,4` | **`%81,7`** |
+| Frozen E5 + LR (v2 train) | `%84,2` | `%84,5` | `%70,6` | `%55,3` | `%93,0` | `%74,8` | `%78,6` |
+| **Fine-tuned E5 (v2 train)** | **`%88,9`** | **`%89,3`** | `%77,3` | **`%65,8`** | `%98,6` | **`%80,5`** | **`%85,5`** |
+
+**Yorum:**
+1. **v2 testi eski şablon testinden belirgin biçimde zordur.** TF-IDF, Comp-600 canonical'da `%99,4` alırken yeni cihazlarda `%87,6` alır. Yani v2 test şablon tanımayı değil, görülmemiş cihaz ve görevlere genellemeyi ölçer.
+2. **Daha çeşitli veriyle fine-tuned E5 ilk kez en iyi yöntem oldu.** Küçük veride (D1924) fine-tuned E5, TF-IDF'in gerisindeydi (Human-60 `%70,2`). Aynı v2 train ile eğitilince TF-IDF'i iki genelleme testinde anlamlı biçimde geçti. Eşleştirilmiş bootstrap farkları:
+
+   | Set | Fine-tuned E5 − TF-IDF | 95% CI |
+   |---|---:|---|
+   | v2 test | `+1,7` puan | `[+0,1; +2,8]`, cihaz-grubu bootstrap |
+   | Independent-188 | `+3,8` puan | `[+0,8; +7,6]` |
+   | Human-60 rewrite | `+4,8` puan | `[−0,9; +12,9]`, anlamlı değil |
+   | Human-60 original | `−0,9` puan | `[−1,8; −0,3]` |
+
+   Bu, "veri büyüyüp çeşitlendikçe daha güçlü öğrenen model öne geçer" sezgisinin bu çalışmadaki ilk doğrudan kanıtıdır. Frozen E5'in TF-IDF'i geçememesi ise kazancın önceden eğitilmiş temsilden değil, göreve özel ince ayardan geldiğini gösterir.
+3. **Rule'a göre farklar** (v2 test): fine-tuned E5 `+9,6` puan [95% CI `+7,9; +11,1`], TF-IDF `+7,9` puan [`+6,7; +9,4`], frozen E5 `+4,8` puan [`+3,0; +6,3`].
+4. **Yeni verinin etkisi modele göre farklıdır.** Eski D1924 eğitimine göre:
+   - Fine-tuned E5 neredeyse her sette kazandı: Human-60 original `+7,1`, Human-60 rewrite `+3,5`, Comp-600 canonical `+11,1`, Comp-600 unseen wording `+7,5` puan.
+   - TF-IDF ve frozen E5 karışık: Independent-188'de TF-IDF `+0,8`, frozen E5 `+4,8` puan kazandı; Human-60 rewrite'ta sırasıyla `−6,9` ve `−5,1` puan kaybetti.
+
+   Yeni veri cihaz/senaryo çeşitliliğini artırdı, fakat dil ve üslup çeşitliliği hâlâ şablon sınırındadır. Bu nedenle bir sonraki adım, Qwen3-8B ile insan denetimine tabi şablon dışı doğal ifadeler eklemektir.
+5. **Maliyet:** Fine-tuned E5'in eğitimi Quadro RTX 4000'de yaklaşık 15 dakika sürer; TF-IDF'inki 7 saniyedir.
+6. **Qwen3-8B QLoRA henüz bu tabloda yoktur.** 8 GB'de çalıştığı doğrulanmıştır (bkz. 7.7). Dolayısıyla "aynı veriyle eğitilen 8B LLM, fine-tuned E5'i geçer mi?" sorusu henüz açıktır.
+
+### 7.7 Qwen3-8B task-specific (QLoRA) eğitim planı
+
+Task-specific track'te Qwen3-8B LoRA adaptörü, diğer supervised yöntemlerle aynı Expanded-v2 train satırlarında eğitilecek ve ayarları yalnız insan etiketli validation üzerinde seçilecektir.
+
+**Neden QLoRA:** Sistem önce FP16 yüklemeyi tercih eder. Ancak 8B modelin yalnız FP16 ağırlıkları yaklaşık 14,9 GiB iken mevcut ve tek GPU 8 GB'dir; daha büyük bir GPU'ya erişim yoktur. Bu nedenle fiziksel bellek kapısı QLoRA'ya düşmüştür. Bu daha küçük bir model değildir: aynı 8B taban 4-bit bellekte tutulur, LoRA adaptörleri daha yüksek hassasiyette eğitilir.
+
+**Bellek sorunu ve düzeltmeler:** İlk tek-adımlık smoke 9,15 GiB tepe allocation ile kartı aştı. Nedeni, PEFT'in k-bit hazırlık adımının 151 bin satırlık embedding ve `lm_head` katmanlarını FP32'ye çevirmesidir; bu yaklaşık 2,5 GiB ek yük demektir. Düzeltmeler:
+- hafif hazırlık modu: taban FP16/NF4'te kalır, yalnız LoRA ağırlıkları FP32 olur;
+- 8-bit paged AdamW optimizer;
+- reentrant olmayan gradient checkpointing.
+
+**Truncation hatası ve düzeltme:** Eski 256 token sınırı, Expanded-v2 train satırlarının 157'sinde cevap JSON'unu keserek modele bozuk çıktı öğretecekti. En uzun satır 283 token olduğu için sınır 320'ye çıkarıldı. Ayrıca cevap kesilecekse eğitim artık sessizce devam etmek yerine durur.
+
+**Doğrulama:** Düzeltmelerden sonra yapılan 2 optimizer-update'lik smoke'ta (16 satır) tepe allocation `6,24` GiB'e indi ve 8 GB kart içinde kaldı. Kayıp `1,15 → 0,72` azaldı. Eğitilebilir parametre sayısı `7,67` milyondur (toplamın `%0,094`'ü). Ölçülen hız yaklaşık `1,1` s/satır; tam bir epoch (3.024 satır) yaklaşık 1 saat sürer.
+
+Final eğitim insan etiketlemesi bitip ayarlar validation'da dondurulduktan sonra yapılacaktır. Raporlanacak maliyetler: süre, tepe VRAM, eğitilebilir parametre sayısı ve inference gecikmesi.
 
 ## 8. NEP-v2 uçtan uca offloading sonuçları
 
@@ -449,6 +599,9 @@ Savunulabilir katkı birleşimi şudur:
 15. Domain sonucu reference semantics koşullu policy generalization'dır; extractor leave-domain-out değildir.
 16. Decision overhead bu host'ta wall-clock diagnostic'tir; physical task latency'ye eklenmez ve hardware benchmark değildir.
 17. Çalışma gerçek testbed değildir; Quadro GPU da MEC field testbed yerine geçmez.
+18. Expanded-v2 sonuçları (7.6) henüz construction label'lara dayanır; insan etiketlemesi ve hakem kararı tamamlanana kadar geçicidir. Yeni bağlamlar tek yazar tarafından elle yazılmıştır ve doğallık değerlendirmesinden geçmemiştir.
+19. Qwen3-8B, 8 GB GPU nedeniyle 4-bit NF4 ile çalıştırıldı ve QLoRA ile eğitilecektir. FP16 sonuçlarından farklı olabilir; bu fark bu donanımda ölçülemez.
+20. Qwen gecikmeleri tek bir 8 GB tüketici/iş istasyonu kartında ölçülmüştür. 8-shot'taki iki katlık yavaşlama kısmen VRAM doygunluğundan kaynaklanır; daha büyük bir kartta farklı olabilir.
 
 ## 14. Makale/tez planı ve gerçekten kalan işler
 
@@ -478,30 +631,42 @@ Savunulabilir katkı birleşimi şudur:
 | Phase 10 kapanışını raporlamak | `phase_reports/PHASE_10_REPRODUCIBILITY_AND_QUALITY.md` | **Tamamlandı** |
 | Publication core'u version control altında dondurmak | Git commit `03dee8e` | **Tamamlandı** |
 
-### 14.4 Quadro makinesine bırakılabilecek opsiyonel işler
+### 14.4 Aktif semantic data ve Qwen genişletmesi
 
-- Qwen3-4B ve bütçe uygunsa Qwen3-8B zero/few-shot karşılaştırması;
-- Daha büyük LLM kalite artışı sağlarsa latency/VRAM/energy trade-off'u;
-- Seçili confirmatory contrast'larda 10-seed genişletmesi;
-- Danışman isterse ayrı physical testbed/emulation protokolü.
+| Adım | Durum |
+|---|---|
+| Expanded-v1'deki sızıntıların tespiti ve sızıntısız Expanded-v2'nin üretilmesi | **Tamamlandı** |
+| Qwen3-8B 0/4/8-shot prompt-only track (eski setler) | **Tamamlandı** |
+| TF-IDF, frozen E5 ve fine-tuned E5 ile eşit supervision geçici karşılaştırması | **Tamamlandı (construction label)** |
+| Qwen3-8B QLoRA'nın 8 GB'de çalıştığının doğrulanması (tepe 6,24 GiB) | **Tamamlandı** |
+| İki kişilik kör annotation paketleri, form, kılavuz ve uyum/hakem betikleri | **Hazır; etiketleme başlamadı** |
+| Pilot (40 görev) ve kılavuz netleştirme | Sırada |
+| Ana etiketleme (7 oturum), Human-60 ikinci etiketleme ve hakem kararı | Sırada (2–3 hafta) |
+| Qwen3-8B QLoRA ve Qwen3-8B 0/4/8-shot'ın Expanded-v2 validation/test'te çalıştırılması | Sırada (GPU) |
+| Qwen3-8B ile şablon dışı doğal ifade varyantları (insan denetimli) | Planlandı |
+| Kapılar, ayarların dondurulması ve tek komutla final yeniden eğitim/puanlama | İnsan etiketleri sonrası |
+
+Başarıyla birlikte latency, peak VRAM, training time, trainable parameter ve parse/OOV maliyetleri de raporlanacaktır.
+
+Bu genişletme eski v3.2 sonuçlarını geçersiz kılmaz; onları küçük-veri tarihsel baseline ve augmentation ablation'ı olarak korur. Yeni final tablo tamamlanmadan candidate construction label sonuçları makale sonucu olarak kullanılmayacaktır.
 
 GNN-PPO, recurrent PPO, partial offloading ve inner resource-allocation solver mevcut başlığı tamamlamak için zorunlu değildir. Bunlar ancak yeni research question, uygun data ve ayrı fair ablation planı varsa eklenmelidir.
 
 ### 14.5 Danışmanımdan beklediğim kararlar
 
 1. Ana katkıyı “yeni PPO architecture” yerine “uncertainty-aware semantic constraint layer ve downstream paired effect analysis” olarak çerçevelemem uygun mudur?
-2. Makale öncesinde single-human-60 için ikinci uzman adjudication zorunlu görülüyor mu?
+2. Human-60'ın ikinci kör etiketlemesi Expanded-v2 annotation'ına eklendi; ayrıca uzman adjudication gerekli görülüyor mu?
 3. Ana 5-seed sonuçları yeterli mi; yalnız seçili contrast'ları 10 seed'e çıkarmalı mıyım?
-4. Quadro Qwen3-4B/8B ana makale için zorunlu mu, supplementary extension mı olmalı?
+4. Expanded-v2 için seçilen yalın tasarım uygun mudur: 2 etiketleyici, etiketleyici başına 1.024 görev, 32 test cihazının tamamı ve aile başına 2 profil? Yoksa test cihaz sayısı artırılmalı mıdır?
 5. İlk hedef yayın yeri edge/networking systems mi, applied AI/IoT mu olmalı?
 
 ## 15. Sonuç
 
-Çalışma plan aşamasında değildir. Leakage-free semantic benchmark, development-only calibration, NEP-v2 exact/noisy/independent offloading, complete system metrics, Holm-corrected hypotheses, EUA entity holdout, domain holdout ve source-layer counterfactual tamamlanmıştır.
+Eski çalışma plan aşamasında değildir: leakage-free semantic benchmark v3.2, development-only calibration, NEP-v2 exact/noisy/independent offloading, complete system metrics, Holm-corrected hypotheses, EUA entity holdout, domain holdout ve source-layer counterfactual tamamlanmıştır. Bunun üzerine danışman geri bildirimiyle veri büyüklüğü/çeşitliliği ve eşit task-specific supervision için ayrı bir genişletme çalışma paketi açılmıştır. Bu pakette ilk aday (Expanded-v1) sızıntı nedeniyle geri çekilmiş, sızıntısız Expanded-v2 üretilmiştir. Qwen3-8B prompt-only karşılaştırması tamamlanmış, iki kişilik insan etiketlemesi için paketler hazırlanmıştır.
 
 En güçlü pozitif sonuç, doğru semantics'in no-semantic'e göre success'i greedy'de yaklaşık `+12,9`, PPO'da `+15,0` point artırması ve reference hard violation'ı `%0` tutmasıdır. En önemli negative results ise small LLM'nin simple classifiers'ı geçmemesi, fallback'in evrensel güvenlik sağlamaması ve PPO'nun güçlü greedy'yi geçmemesidir. Bu sonuçlar birlikte okunduğunda çalışma “LLM kullandım, performans arttı” anlatısından daha güçlü bir noktaya ulaşmaktadır:
 
-> Semantic layer'ın değeri model adından değil; wording robustness, calibrated uncertainty, deterministic verification ve aynı physical events üzerinde ölçülen downstream safety etkisinden gelmektedir.
+> Semantic layer'ın değeri model adından değil; yeterli ve çeşitli insan-denetimli veri, eşit supervision altında adil model karşılaştırması, wording robustness, calibrated uncertainty, deterministic verification ve aynı physical events üzerinde ölçülen downstream safety etkisinden gelmektedir.
 
 ## Kaynaklar
 
@@ -584,5 +749,6 @@ En güçlü pozitif sonuç, doğru semantics'in no-semantic'e göre success'i gr
 - Bu belge canonical Markdown'dur. DOCX aynı kaynaktan üretilir; text parity ve embedded figure count build sırasında otomatik doğrulanır.
 - Final repository-wide sonuç: `264 passed`; Ruff `All checks passed`; strict mypy `111 source file, 0 issue`. Publication read-only verify `issues=[]`; danışman DOCX parity kontrolü beş embedded figure ile geçti.
 - Publication core commit: `03dee8e824cbf1291cbcf29997f8613868742241`.
+- 27 Kasım 2026 Expanded-v2/Qwen3-8B genişletmesi ve annotation paketleri sonrası: `287 passed`; Ruff `All checks passed`. Yeni ve değişen semantic/LoRA modülleri strict mypy'den temiz geçti; repository-wide strict mypy'de yalnız mevcut makinedeki yeni numpy/gymnasium stub sürümlerinden kaynaklanan, değişmemiş `env/__init__.py` içinde iki önceden var olan tip uyumsuzluğu raporlandı.
 
 > **Literatür notu:** 2026 preprint'lerinin venue/status bilgisi makale submission öncesinde yeniden doğrulanmalıdır. Kaynak numaraları bu belgede makale yazımına geçişi kolaylaştırmak için sabit tutulmuştur.
