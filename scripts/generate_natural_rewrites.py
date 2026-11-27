@@ -46,16 +46,24 @@ DEFAULT_MODELS = {
 }
 
 
+def _cache_for(model_id: str) -> Path:
+    """Models live either directly in CACHE or in CACHE/hub (snapshot_download)."""
+
+    folder = "models--" + model_id.replace("/", "--")
+    return CACHE if (CACHE / folder).exists() else CACHE / "hub"
+
+
 def _load(model_id: str, revision: str | None) -> tuple[Any, Any]:
     from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
-    tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=CACHE, revision=revision)
+    cache = _cache_for(model_id)
+    tokenizer = AutoTokenizer.from_pretrained(model_id, cache_dir=cache, revision=revision)
     tokenizer.padding_side = "left"
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token = tokenizer.eos_token
     model: Any = AutoModelForCausalLM.from_pretrained(
         model_id,
-        cache_dir=CACHE,
+        cache_dir=cache,
         revision=revision,
         dtype=torch.float16,
         device_map={"": torch.cuda.current_device()},
@@ -78,6 +86,13 @@ def _generate(model: Any, tokenizer: Any, model_id: str, sources: list[str], see
         for text in sources
     ]
     batch = tokenizer(prompts, return_tensors="pt", padding=True, add_special_tokens=False).to(model.device)
+    # Llama-3 chat models end a turn with <|eot_id|>, not the base eos token;
+    # without it they keep generating "assistant ..." continuations.
+    eos_ids = [int(tokenizer.eos_token_id)]
+    for marker in ("<|eot_id|>", "<|im_end|>"):
+        token_id = tokenizer.convert_tokens_to_ids(marker)
+        if isinstance(token_id, int) and token_id != tokenizer.unk_token_id and token_id not in eos_ids:
+            eos_ids.append(token_id)
     torch.manual_seed(seed)
     with torch.inference_mode():
         output = model.generate(
@@ -87,6 +102,7 @@ def _generate(model: Any, tokenizer: Any, model_id: str, sources: list[str], see
             top_p=0.9,
             max_new_tokens=220,
             pad_token_id=tokenizer.pad_token_id,
+            eos_token_id=eos_ids,
         )
     new_tokens = output[:, batch["input_ids"].shape[1] :]
     return [tokenizer.decode(row, skip_special_tokens=True) for row in new_tokens]

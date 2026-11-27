@@ -52,6 +52,8 @@ def clean_output(raw: str) -> str:
     """Strip quotes/labels a chat model may wrap around the rewrite."""
 
     text = raw.strip()
+    # A chat model that misses its end-of-turn token restarts with a role tag.
+    text = re.split(r"(?<=[.!?\"”])\s*(?:assistant|user|system)\b", text, maxsplit=1)[0]
     text = re.sub(r"^(yeniden yazılmış metin|metin)\s*:\s*", "", text, flags=re.IGNORECASE)
     text = text.strip().strip('"“”«»').strip()
     return re.sub(r"\s+", " ", text)

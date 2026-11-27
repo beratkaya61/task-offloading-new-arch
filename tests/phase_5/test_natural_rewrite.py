@@ -50,3 +50,9 @@ def test_privacy_meaning_shift_is_rejected() -> None:
 
 def test_clean_output_strips_wrappers() -> None:
     assert clean_output('Yeniden yazılmış metin: "Merhaba  dünya."') == "Merhaba dünya."
+
+
+def test_clean_output_cuts_runaway_role_continuation() -> None:
+    raw = "Sonuç 30 ms içinde hazır olmalıdır.assistant Süt sağım robotu, tekrar eden metin"
+    assert clean_output(raw) == "Sonuç 30 ms içinde hazır olmalıdır."
+    assert clean_output("Asistan cihaz verileri işler.") == "Asistan cihaz verileri işler."
