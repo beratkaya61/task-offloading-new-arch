@@ -164,7 +164,7 @@ Danışman geri bildirimindeki veri sayısı ve çeşitliliği sınırlamasını
 Bu nedenle Expanded-v1 geri çekildi ve **Expanded-v2** oluşturuldu:
 
 - Eski değerlendirme setlerinin 30 bağlamı bütün split'lerden çıkarıldı. Bu bağlamların cihaz ve işlem adları hiçbir yeni metinde geçemez.
-- Her domain için 20 yeni cihaz ve her cihaza ait 3 doğal işlem elle yazıldı (toplam 160 cihaz, 480 işlem).
+- Her domain için 20 yeni cihaz ve her cihaza ait 3 işlem yazıldı (toplam 160 cihaz, 480 işlem). Bu bağlamlar yapay zekâ asistanı (Claude) ile yapılandırılmış biçimde hazırlandı; yazar gözden geçirmesi ve insan doğallık değerlendirmesi şartına bağlıdır (bkz. 4.1.2).
 - Split birimi **cihaz grubu** oldu: Bir cihaz bütün işlemleriyle tek split'e atanır.
 - Validation ve test yalnız hiçbir eski artifact'te geçmemiş yeni cihazlardan oluşur. Temiz eski development bağlamları yalnız train'e girer.
 
@@ -201,6 +201,61 @@ Görev kimlikleri opaktır (`v2x_NNNN`); etiketleyici split, ifade türü, üret
 - iki kişinin de "doğal değil" dediği metinlerin çıkarılması.
 
 Etiketlenmeyen validation/test satırları final değerlendirmeye ve eğitime girmez.
+
+### 4.1.2 Expanded-v2 metinleri ve etiketleri nasıl üretildi?
+
+Expanded-v2'deki her metin beş adımlı, tamamen sürümlenmiş ve tohum (seed) sabit bir hatla üretilir. Etiketler ilk aşamada **inşa yoluyla (label by construction)** oluşur: hangi kısıt cümlesi eklendiyse etiket odur. Bu etiketler insan etiketi olarak sunulmaz; final etiketler iki kişilik kör annotation ve hakem kararından gelir.
+
+**Adım 1 — Senaryo bağlamları (cihaz + işlem):**
+- Her domain için 20 yeni cihaz ve her cihaza özgü 3 işlem tanımlandı (`configs/semantic_expansion_contexts_v2.json`). Örnek: "Mantar üretim odası sensörü → oda karbondioksit düzeyini ayarlama".
+- Bağlamlar yapay zekâ asistanı (Claude) ile yapılandırılmış biçimde yazıldı. İlk corpus'taki `llm_assisted_structured_design` yöntemiyle aynı statüdedir.
+- Kurallar: hiçbir cihaz veya işlem adı eski senaryo dosyasıyla aynı olamaz; işlemler rastgele başka cihazlara bağlanmaz. Bu, v1'deki "robot süpürge baş hareketi işler" türü doğal olmayan eşleşmeleri önler.
+- Eski senaryo dosyasından yalnız kilitli testlerle hiçbir bağlantısı olmayan 90 development bağlamı alındı; bunlar yalnız train'e girer.
+
+**Adım 2 — Domain cümlesi:** Her (cihaz, işlem) çifti sabit bir kalıba yerleştirilir: "`{cihaz}`, `{veri türü}` üzerinde `{işlem}` görevini yürütür." Veri türü domain'e göre sabittir (ör. tarım: "tarımsal sensör verisi").
+
+**Adım 3 — Semantik profil (kısıt cümleleri ve etiket):**
+- Bu adımı ilk benchmark'tan beri kullanılan kompozisyon üreteci yapar (`semantic/compositional.py`).
+- Üreteç önce kaç kısıt ekleneceğini çeker: 0–4, olasılıklar `0,10 / 0,25 / 0,30 / 0,25 / 0,10`. Sonra yedi alandan (latency, privacy, execution policy, reliability, accuracy, energy, divisibility) o kadarını seçer ve her biri için protokoldeki kalıp cümleyi ekler.
+- Sayısal eşikler sabit listelerden çekilir: gecikme `30–3000 ms`, başarı oranı `%95–%99,99`, F1 `0,93–0,97`.
+- Bazı kısıtlar bilerek **çelişkili** yazılır. Örnek: "Yanıt anlık verilmelidir" ile "Dört saniyelik gecikme tamamen kabul edilebilir" birlikte. Bunlar `ambiguous` olarak etiketlenir ve modellerin çekimser kalma (abstention) yeteneğini ölçer.
+- Cümleler karıştırılır ve bir kısmı ayrı bir "kullanıcı politikası" metnine aktarılabilir.
+- Her senaryo ailesi için birbirinden farklı **4 semantik profil** seçilir.
+
+**Adım 4 — Şablon paraphrase görünümü:**
+- Aynı profilin ikinci bir ifadesi kural tabanlı paraphrase havuzlarıyla üretilir. Giriş cümlesi de yeniden kurulur: "`{işlem}` amacıyla `{veri}`, `{cihaz}` tarafından işlenir."
+- Train için train havuzu, validation ve test için ayrı tutulan test havuzu kullanılır.
+- Anlam korunduğu için etiket aynen aktarılır.
+
+**Adım 5 — Doğal ifade (natural) görünümü (LLM ile):**
+- Şablon dışı dil çeşitliliği için her profilin kalıp metni bir LLM'e verilir. Model, kuralları açıkça yazılmış bir promptla metni yeniden yazar: sayıları ve izin/yasak ifadelerini aynen koru, kısıt ekleme veya çıkarma, cümle yapısını değiştir, en fazla dört cümle yaz.
+- **Üreteç split'e göre farklıdır:**
+  - train ve validation: Qwen3-8B;
+  - test: farklı model ailesinden `ytu-ce-cosmos/Turkish-Llama-8b-Instruct-v0.1` (Llama-3 tabanlı, Türkçe odaklı; revizyon sabit).
+
+  Böylece daha sonra değerlendirilecek Qwen tabanlı model test metinlerinde kendi üslubunu görmez (self-preference bias önlenir).
+- Decoding: sampling, temperature `0,7`, top-p `0,9`; 4-bit NF4; Quadro RTX 4000.
+- **Otomatik filtre** her üretimi reddeder, eğer:
+  - kaynaktaki bir sayı kaybolduysa;
+  - etiketli bir alanın işareti (ör. "kısıtlı veri", "bulut … kullanılamaz", "pil/enerji", "paralel") kaybolduysa;
+  - kaynakta olmayan yeni bir kısıt eklendiyse (ör. kendiliğinden "doğruluğu yüksek" yazılması);
+  - metin biçim veya dil olarak bozuksa.
+- Reddedilen üretim yeni tohumla en fazla 3 kez denenir. İlk ölçümde kabul oranı yaklaşık `%80`'dir; geçemeyen profiller natural görünümü almaz.
+- Kabul edilen metnin etiketi kalıptan aktarılır ve "insan doğrulaması bekliyor" diye işaretlenir. Anlamın gerçekten korunup korunmadığına insan etiketlemesi karar verir.
+- Üretim 27 Kasım 2026 akşamı tamamlanmaktadır. Nihai satır sayıları build manifestinde (`natural_views`) raporlanır.
+
+**Örnek (aynı profil, üç ifade; etiket: latency `interactive`/800 ms, accuracy `high`/F1 0,97, energy `balanced`):**
+
+| Görünüm | Metin |
+|---|---|
+| Kalıp (canonical) | Mantar üretim odası sensörü, tarımsal sensör verisi üzerinde oda karbondioksit düzeyini ayarlama görevini yürütür. *Politika:* Sonuç en geç 800 ms içinde hazır olmalıdır. Enerji tüketimi ile yanıt süresi dengelenmelidir. Sonucun F1 skoru en az 0,97 olmalıdır. |
+| Şablon paraphrase | Oda karbondioksit düzeyini ayarlama amacıyla tarımsal sensör verisi, mantar üretim odası sensörü tarafından işlenir. *Politika:* Sonuç 800 ms geçmeden üretilmelidir. Enerji kullanımı ile gecikme arasında denge kurulmalıdır. Elde edilen F1 skoru en az 0,97 olmalıdır. |
+| Doğal (Qwen3-8B, train) | Tarımsal sensörlerden gelen verilerle oda içindeki karbondioksit seviyesini ayarlayan mantar üretim odası sensörü, 800 ms içinde sonuç üretmelidir. Cihazın enerji tüketimi ve yanıt süresi arasında dengelenme gerekmektedir. Elde edilen sonuçların F1 skoru en az 0,97 olmalıdır. |
+
+**Sonraki kontroller:**
+- Doğal görünüm eklendikten sonra dokuz sızıntı denetimi yeniden çalışır.
+- Kilitli testlerle çakışan veya yasaklı bağlam terimi içeren doğal metinler otomatik düşürülür.
+- Ardından insan annotation başlar. Validation ve test'te her seçili profil için kalıp ve doğal görünüm etiketlenir; etiketleyiciler metnin nasıl üretildiğini görmez.
 
 ### 4.2 Physical trace katmanları
 
@@ -599,7 +654,7 @@ Savunulabilir katkı birleşimi şudur:
 15. Domain sonucu reference semantics koşullu policy generalization'dır; extractor leave-domain-out değildir.
 16. Decision overhead bu host'ta wall-clock diagnostic'tir; physical task latency'ye eklenmez ve hardware benchmark değildir.
 17. Çalışma gerçek testbed değildir; Quadro GPU da MEC field testbed yerine geçmez.
-18. Expanded-v2 sonuçları (7.6) henüz construction label'lara dayanır; insan etiketlemesi ve hakem kararı tamamlanana kadar geçicidir. Yeni bağlamlar tek yazar tarafından elle yazılmıştır ve doğallık değerlendirmesinden geçmemiştir.
+18. Expanded-v2 sonuçları (7.6) henüz construction label'lara dayanır; insan etiketlemesi ve hakem kararı tamamlanana kadar geçicidir. Yeni cihaz/işlem bağlamları yapay zekâ asistanı ile, doğal ifadeler ise Qwen3-8B ve Turkish-Llama-8B ile üretilmiştir; ikisi de henüz insan doğallık ve anlam değerlendirmesinden geçmemiştir.
 19. Qwen3-8B, 8 GB GPU nedeniyle 4-bit NF4 ile çalıştırıldı ve QLoRA ile eğitilecektir. FP16 sonuçlarından farklı olabilir; bu fark bu donanımda ölçülemez.
 20. Qwen gecikmeleri tek bir 8 GB tüketici/iş istasyonu kartında ölçülmüştür. 8-shot'taki iki katlık yavaşlama kısmen VRAM doygunluğundan kaynaklanır; daha büyük bir kartta farklı olabilir.
 
