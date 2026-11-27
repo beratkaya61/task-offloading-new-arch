@@ -28,7 +28,7 @@
     "session_07": 149
   },
   "blinding_key": "data/semantic_benchmark/expanded_v2/annotation/blinding_key.coordinator_only.jsonl",
-  "blinding_key_sha256": "bb0d59f75d9e0693f66e50fe588d25fca3dfeaace443b75ea1d0c7ee6ae8f54b",
+  "blinding_key_sha256": "d18edf4b2d67ad9485b753562c676b16b6cc91904e13c4522ccb1a3f244d5761",
   "packets": {
     "annotator_a/pilot": {
       "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_a.pilot.jsonl",
@@ -38,43 +38,43 @@
     },
     "annotator_a/session_01": {
       "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_a.session_01.jsonl",
-      "packet_sha256": "83e326a8ad49bd96b2ac0a91ee82dcdb08fdb71c5bb22ce9c77005ad2f5fffad",
+      "packet_sha256": "cbfd9ea753b1e621165e130c8a86f659a2b8eb1fb8528a6f85908bd53512c62a",
       "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_a/session_01.html",
       "task_count": 138
     },
     "annotator_a/session_02": {
       "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_a.session_02.jsonl",
-      "packet_sha256": "dafeff83fb4738559e6d01000eeac1b6f7fcdd21628aada5bb628da5177cb81e",
+      "packet_sha256": "f4bcb8ae79985c214e8362ee6878a3c848436d5635049805dad6ccd619e61d56",
       "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_a/session_02.html",
       "task_count": 137
     },
     "annotator_a/session_03": {
       "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_a.session_03.jsonl",
-      "packet_sha256": "0eef242a9cfa1d7fba978698ec8999fdfc37d689f0843a22bf65bad6414a4c0e",
+      "packet_sha256": "048c1836d1c8f6bb6296e8474dd8ac5bbc98cde9812afc156b9d72e0c93375f2",
       "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_a/session_03.html",
       "task_count": 137
     },
     "annotator_a/session_04": {
       "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_a.session_04.jsonl",
-      "packet_sha256": "9da1e097eaec13783f136755b28b015df8a8f09b941da647193ab91c67fe3614",
+      "packet_sha256": "afeab476940ace0bf7a0ae23651b1fceaa26b6fc154bfb9ce5a8272301fed471",
       "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_a/session_04.html",
       "task_count": 137
     },
     "annotator_a/session_05": {
       "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_a.session_05.jsonl",
-      "packet_sha256": "c8b4d91ed4991ffec45994d751578c47df7862883156c74e02c42660fa7b9bc5",
+      "packet_sha256": "e7dfe3e6d0472b08fe9d8b5fa7b32be677bfcfcd61147469c80c58503595234c",
       "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_a/session_05.html",
       "task_count": 137
     },
     "annotator_a/session_06": {
       "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_a.session_06.jsonl",
-      "packet_sha256": "b11cda57fdc96e84081eed06a17e72178cdf07f22e0800f5f4efe430b1ae7962",
+      "packet_sha256": "a566ed80debae54bf1ce39b2c7b11626553c7bc05ab55e2b7b4981a952f2a9ce",
       "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_a/session_06.html",
       "task_count": 149
     },
     "annotator_a/session_07": {
       "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_a.session_07.jsonl",
-      "packet_sha256": "d9a924f162b15887d6309f15994e3bb24a4428a3e9f25b5e6a8a3d4f83f08d46",
+      "packet_sha256": "edfe27c9528df6f7457daa7327c0508a8e678a2d0c8fc90661c6063a9ac220b5",
       "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_a/session_07.html",
       "task_count": 149
     },
@@ -86,43 +86,43 @@
     },
     "annotator_b/session_01": {
       "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_b.session_01.jsonl",
-      "packet_sha256": "f5520fa398d035cf3594d5bfe4671b5fa711c1c6a2997be469aecf6812ef09f4",
+      "packet_sha256": "5208d548a80bf0a828e3272013cbadaa66c52c89c746b3b3fb6a1609147c8e59",
       "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_b/session_01.html",
       "task_count": 138
     },
     "annotator_b/session_02": {
       "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_b.session_02.jsonl",
-      "packet_sha256": "a5e67ad9cfeea73e01f3a4d623b5e75a37d451a7f11d9325b225f41b16d09bfd",
+      "packet_sha256": "115fa893469e9881f48447b70b5e6ebf30083917ab7c58c7ce53323419beb030",
       "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_b/session_02.html",
       "task_count": 137
     },
     "annotator_b/session_03": {
       "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_b.session_03.jsonl",
-      "packet_sha256": "f74425d7946826c4c3edd990095c8b3f84452ab1de9d393042eb07afea61af65",
+      "packet_sha256": "5878ad46bca66efdf0462ab69d8c0c4db18023773a0832a8d1f3c1e7385ddb83",
       "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_b/session_03.html",
       "task_count": 137
     },
     "annotator_b/session_04": {
       "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_b.session_04.jsonl",
-      "packet_sha256": "c6fe2b6c6fe9891624e54ff2a8e9fb4ffd580daffa42b5e264e23be16dab2fa2",
+      "packet_sha256": "bb444e32cf93ec3e34f16b6bda6af65ec3c0a0663a08a4b698cf9b0a6a9ec1bb",
       "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_b/session_04.html",
       "task_count": 137
     },
     "annotator_b/session_05": {
       "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_b.session_05.jsonl",
-      "packet_sha256": "407379f0bd809c104d9bf2b627734050653a420827979db2a8407dba8e541fe8",
+      "packet_sha256": "563ef312275a9069a308b69905e15842c5a918ba278c758268fa1efc60264079",
       "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_b/session_05.html",
       "task_count": 137
     },
     "annotator_b/session_06": {
       "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_b.session_06.jsonl",
-      "packet_sha256": "af334d3fb2a0d08f43497beec9af78a63bbad454616f70abb021b4becc4f87a0",
+      "packet_sha256": "1a159e328c6c383e9be0aaf2c6c34f32470bdaacd60f0124ffa9dae1bebbcd75",
       "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_b/session_06.html",
       "task_count": 149
     },
     "annotator_b/session_07": {
       "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_b.session_07.jsonl",
-      "packet_sha256": "86840651550444c3cbf448c600755c267f0779d73f8adcb7c79d61bbe50c5c14",
+      "packet_sha256": "06b72910091238582586937eb9eccd04b6ecb24545d8df841e0374b3d6a6233c",
       "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_b/session_07.html",
       "task_count": 149
     }

@@ -16,9 +16,9 @@
     "validation": 96
   },
   "row_counts": {
-    "test": 768,
-    "train": 3024,
-    "validation": 768
+    "test": 1140,
+    "train": 4311,
+    "validation": 1088
   },
   "family_origin_counts": {
     "historical_development_blueprint:train": 90,
@@ -28,7 +28,7 @@
   },
   "total_subject_groups": 250,
   "total_families": 570,
-  "total_rows": 4560,
+  "total_rows": 6539,
   "banned_evaluation_contexts": {
     "subjects": [
       "Afet çağrı merkezi modülü",
@@ -105,6 +105,25 @@
     "heldout_exact_text_overlap_with_historical_training": 0,
     "rows_containing_banned_evaluation_context_terms": 0,
     "heldout_subject_or_operation_found_in_historical_texts": 0
+  },
+  "natural_views": {
+    "added_by_split": {
+      "test": 372,
+      "train": 1287,
+      "validation": 320
+    },
+    "dropped_by_split": {},
+    "generator_by_split": {
+      "test": [
+        "ytu-ce-cosmos/Turkish-Llama-8b-Instruct-v0.1"
+      ],
+      "train": [
+        "Qwen/Qwen3-8B"
+      ],
+      "validation": [
+        "Qwen/Qwen3-8B"
+      ]
+    }
   },
   "labels": "by_construction_pending_blind_human_annotation",
   "family_assignments": {
