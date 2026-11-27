@@ -39,23 +39,18 @@ Bu gece `logs/run_natural_rewrites_overnight.ps1` zinciri çalışıyor:
 
 Test ifadeleri, değerlendirilen modelin kendi üslubunu tanımaması (self-preference) için farklı bir model ailesinden gelir. İlerleme `logs/natural_rewrites_overnight.log` dosyasında, çıktılar `data/semantic_benchmark/expanded_v2/natural_rewrites/` altındadır.
 
-**Otomatik tamamlama:** `logs/finalize_after_rewrites.ps1` üretim bitince sırasıyla şunları yapar:
-1. Ham doğal cümleleri commit'leyip gönderir.
-2. v2'yi natural görünümüyle yeniden kurar (sızıntı denetimi dahil).
-3. Annotation paketlerini yeniden üretir; pilot değişmez.
-4. Fine-tuned E5 dahil geçici karşılaştırmayı tekrarlar.
-5. Test ve lint geçerse sonuçları commit'leyip gönderir.
+**Otomatik tamamlama** (`logs/finalize_after_rewrites.ps1`). Üç commit atar ve her birini gönderir:
 
-Bütün adımlar `logs/finalize_after_rewrites.log` dosyasına yazılır. Tahmini bitiş 27 Kasım akşamıdır.
+1. `Add raw natural rewrites for expansion v2`: ham doğal ifadeler.
+2. `Rebuild expansion v2 with natural views and regenerate annotation packets`: v2 + natural görünümü, sızıntı denetimi, yeni annotation paketleri. **Evde etiketleme için gereken budur.** Test ve ruff geçmezse bu commit atılmaz.
+3. `Rerun provisional expansion v2 benchmark with natural views`: fine-tuned E5 dahil geçici sonuçlar ve test şablon/doğal kırılımı. ~25 dk sürer; bilgisayar kapanırsa yalnız bu eksik kalır.
+
+Log: `logs/finalize_after_rewrites.log`. "PACKETS PUSHED" satırı 2. commit'in gönderildiğini gösterir.
 
 **Evde (GPU gerekmez):**
-1. `git pull` yap. Son commit "Rebuild expansion v2 with natural views…" ise her şey tamamlanmıştır.
-2. `scripts\prepare_expansion_v2_annotation.py` ile formları yeniden üret.
-3. Ana oturumları başlat.
-
-Son commit yalnız "Add raw natural rewrites…" ise türetilmiş adımlardan biri başarısız olmuştur. Bu durumda 2–4. adımlar evde CPU ile çalıştırılabilir; ham veri depodadır.
-
-**Pilot** bu akşam evde başlatılabilir: `pilot.html` formları gece üretiminden etkilenmez; bunu bir test garanti eder.
+1. `git pull` yap. 2. commit geldiyse `scripts\prepare_expansion_v2_annotation.py` ile formları üret ve ana oturumlara geç; pilot her durumda başlatılabilir.
+2. Yalnız 1. commit geldiyse build ve prepare evde CPU ile çalıştırılır; ham veri depodadır.
+3. 3. commit gelmediyse karşılaştırma evde `SKIP_FINETUNE=1` ile CPU'da tekrarlanabilir. Fine-tuned E5 sonraki Quadro gelişine kalır.
 
 ## Durum
 
