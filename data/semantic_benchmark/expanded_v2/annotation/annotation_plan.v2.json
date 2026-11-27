@@ -1,0 +1,142 @@
+{
+  "protocol_version": "2.0.0",
+  "created_on": "2026-11-27",
+  "seed": 20261128,
+  "annotators": [
+    "annotator_a",
+    "annotator_b"
+  ],
+  "design": "Prepare the blinded two-annotator packets for the expansion v2 candidate.\n\nLean design (decided 2026-11-27, two annotators):\n\n* validation/test: every family, 2 of 4 semantic profiles (seeded), both\n  wording views -> 384 + 384 rows; every held-out subject is kept;\n* training audit: 48 domain-stratified train families x 2 profiles x 2 views;\n* pilot: 40 train rows from families outside the audit, identical for A and B;\n* hidden repeats: 24 already-assigned rows re-shown in late sessions under a\n  new opaque id to measure intra-annotator consistency;\n* annotator B additionally receives the locked Human-60 under protocol 1.3.\n\nAnnotators only receive the offline HTML forms.  Task ids in packets are\nopaque (``v2x_NNNN``); the blinding key that maps them to split, family and\nwording view stays with the coordinator.\n",
+  "role_counts": {
+    "hidden_repeat": 24,
+    "pilot": 40,
+    "test_reference": 384,
+    "training_audit": 192,
+    "validation_reference": 384
+  },
+  "unique_main_tasks": 960,
+  "tasks_per_annotator_including_pilot_and_repeats": 1024,
+  "annotator_b_extra_human60_tasks": 60,
+  "sessions": {
+    "pilot": 40,
+    "session_01": 138,
+    "session_02": 137,
+    "session_03": 137,
+    "session_04": 137,
+    "session_05": 137,
+    "session_06": 149,
+    "session_07": 149
+  },
+  "blinding_key": "data/semantic_benchmark/expanded_v2/annotation/blinding_key.coordinator_only.jsonl",
+  "blinding_key_sha256": "e4f06ee96944104e5c74e041200430b904a5255c89103f2fd17d73239fc48c9a",
+  "packets": {
+    "annotator_a/pilot": {
+      "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_a.pilot.jsonl",
+      "packet_sha256": "b1d4224116610967e51f7b7d95d604e80dbd4a7311f799a5dfde0fd408216113",
+      "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_a/pilot.html",
+      "task_count": 40
+    },
+    "annotator_a/session_01": {
+      "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_a.session_01.jsonl",
+      "packet_sha256": "fb6502660f6b4c7491b803bf13180a5980a4595a80804c47d7cfe1a1d321cb78",
+      "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_a/session_01.html",
+      "task_count": 138
+    },
+    "annotator_a/session_02": {
+      "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_a.session_02.jsonl",
+      "packet_sha256": "f25abee5b0fdc06179145875ab06eb17f1b942a1a7403f4fc206b3af0c9e1db4",
+      "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_a/session_02.html",
+      "task_count": 137
+    },
+    "annotator_a/session_03": {
+      "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_a.session_03.jsonl",
+      "packet_sha256": "4d3334a80cb1b2335971f13ca76495fe97aceb6a73770514b9fa994c23b9c2f0",
+      "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_a/session_03.html",
+      "task_count": 137
+    },
+    "annotator_a/session_04": {
+      "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_a.session_04.jsonl",
+      "packet_sha256": "cb49eed7caafcdcb33ce07435d44ae4c8562008409e5b2ffefb436fb41555862",
+      "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_a/session_04.html",
+      "task_count": 137
+    },
+    "annotator_a/session_05": {
+      "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_a.session_05.jsonl",
+      "packet_sha256": "30e354675730aaa5b0c05327c77e2ed7db188613878b2feb96c8ca3da86051da",
+      "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_a/session_05.html",
+      "task_count": 137
+    },
+    "annotator_a/session_06": {
+      "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_a.session_06.jsonl",
+      "packet_sha256": "84717350db4f98640e437914682ca036599579172327b44dd872f94c7158ac74",
+      "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_a/session_06.html",
+      "task_count": 149
+    },
+    "annotator_a/session_07": {
+      "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_a.session_07.jsonl",
+      "packet_sha256": "c9d24c191ea6138d53c6b8dda6596c3312e1ae8cefdf810fb3339b9dd20d4c05",
+      "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_a/session_07.html",
+      "task_count": 149
+    },
+    "annotator_b/pilot": {
+      "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_b.pilot.jsonl",
+      "packet_sha256": "d08d1c2a294167cf701917c343b23684282991574312e496dd2c0ea0b5b498fd",
+      "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_b/pilot.html",
+      "task_count": 40
+    },
+    "annotator_b/session_01": {
+      "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_b.session_01.jsonl",
+      "packet_sha256": "e83337134feb8a46b1cc84149bb7617b740784ea702a02f5efc03fa10ff6f616",
+      "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_b/session_01.html",
+      "task_count": 138
+    },
+    "annotator_b/session_02": {
+      "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_b.session_02.jsonl",
+      "packet_sha256": "df368e344f26fc3a63eb6b9dd4721a20dfdd26a3e60811ed3762e7fdeeebe218",
+      "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_b/session_02.html",
+      "task_count": 137
+    },
+    "annotator_b/session_03": {
+      "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_b.session_03.jsonl",
+      "packet_sha256": "3ecf497a04003413a05d9412b606b958c42eb5346b570e7410b3af65cab30a2c",
+      "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_b/session_03.html",
+      "task_count": 137
+    },
+    "annotator_b/session_04": {
+      "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_b.session_04.jsonl",
+      "packet_sha256": "f2b24e1e2af4eb09a2c12e7bced50aa68d5b6bd1c32483622766488441e51f00",
+      "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_b/session_04.html",
+      "task_count": 137
+    },
+    "annotator_b/session_05": {
+      "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_b.session_05.jsonl",
+      "packet_sha256": "d1b19495d90a8fdeda024e2e170e6e85cac649c454b93cd7dc83db7758142d8c",
+      "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_b/session_05.html",
+      "task_count": 137
+    },
+    "annotator_b/session_06": {
+      "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_b.session_06.jsonl",
+      "packet_sha256": "76f4ac31783fbae546bb248d134e8ef1df46f00bdf8088355074c6e9990e8c3e",
+      "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_b/session_06.html",
+      "task_count": 149
+    },
+    "annotator_b/session_07": {
+      "packet": "data/semantic_benchmark/expanded_v2/annotation/packets/annotator_b.session_07.jsonl",
+      "packet_sha256": "69552d21097f2fa00fd9bd5285aa34b67672490959aabe8bede708cbdfbd03a0",
+      "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_b/session_07.html",
+      "task_count": 149
+    }
+  },
+  "human60_annotator_b": {
+    "packet": "data/semantic_benchmark/main/packets/annotator_b.evaluation.v1.3.jsonl",
+    "packet_sha256": "e647abafb9c0b4d237c8069672f061048363bd83ad93128d825d1c47fb01ef68",
+    "form_local_ignored_path": "artifacts/semantic_annotation/expanded_v2/annotator_b/human60_second_annotation.html",
+    "task_count": 60
+  },
+  "record_schema": "schemas/human_annotation_record.v2.schema.json",
+  "never_share_with_annotators": [
+    "blinding_key.coordinator_only.jsonl",
+    "candidates.construction_labels.jsonl",
+    "split_manifest.candidate.json"
+  ]
+}

@@ -40,6 +40,11 @@ logs/*
 checkpoints/*
 models/*
 
+# Blinded annotation: the alias->task key is coordinator-only and is regenerated
+# byte-identically by scripts/prepare_expansion_v2_annotation.py (sha256 is
+# recorded in annotation_plan.v2.json), so it never enters the public repo.
+data/semantic_benchmark/expanded_v2/annotation/blinding_key.coordinator_only.jsonl
+
 # Keep provenance/configuration files trackable
 !data/raw/.gitkeep
 !data/interim/.gitkeep

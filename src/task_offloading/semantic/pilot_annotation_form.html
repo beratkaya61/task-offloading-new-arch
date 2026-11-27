@@ -123,7 +123,7 @@
       const fields = {};
       const initial = APP.initial_responses[task.task_id] || {};
       FIELD_ORDER.forEach(name => fields[name] = {...freshField(name), ...(initial[name] || {})});
-      responses[task.task_id] = {started_at_utc: new Date().toISOString(), fields};
+      responses[task.task_id] = {started_at_utc: new Date().toISOString(), fields, naturalness: ""};
     });
     return {current: 0, responses};
   }
@@ -145,7 +145,7 @@
     if (!state.responses[task.task_id]) {
       const fields = {};
       FIELD_ORDER.forEach(name => fields[name] = freshField(name));
-      state.responses[task.task_id] = {started_at_utc: new Date().toISOString(), fields};
+      state.responses[task.task_id] = {started_at_utc: new Date().toISOString(), fields, naturalness: ""};
       saveState();
     }
     return state.responses[task.task_id];
@@ -217,6 +217,15 @@
     if (name === "energy_priority") card.appendChild(makeSelect("Öncelik", OPTIONS.energy, field.value, v => update(task, name, "value", v)));
     if (name === "divisibility") card.appendChild(makeSelect("Durum", OPTIONS.divisibility, field.value, v => update(task, name, "value", v)));
   }
+  const NATURALNESS = [["", "Seçiniz"], ["natural", "Doğal: bir kullanıcı/kurum böyle yazabilir"], ["acceptable", "Kabul edilebilir: biraz yapay ama anlaşılır"], ["unnatural", "Doğal değil: anlamsız, çelişkili cihaz-görev eşleşmesi veya bozuk Türkçe"]];
+  function renderNaturalness(task, response) {
+    const card = document.createElement("article"); card.className = "field";
+    const title = document.createElement("h3"); title.textContent = "Metin doğallığı";
+    const help = document.createElement("p"); help.textContent = "Etiketlerden bağımsız olarak, metnin gerçek bir görev açıklaması olarak ne kadar doğal olduğunu değerlendirin. Bilinçli çelişkili kısıtlar (ör. hem 'yalnız bulut' hem 'buluta gönderme yasak') doğallığı düşürmez; onlar 'Belirsiz' etiketiyle işaretlenir.";
+    card.append(title, help);
+    card.appendChild(makeSelect("Değerlendirme", NATURALNESS, response.naturalness || "", v => { ensureResponse(task).naturalness = v; saveState(); updateProgress(); }));
+    return card;
+  }
   function renderField(task, name, field) {
     const card = document.createElement("article"); card.className = "field";
     const title = document.createElement("h3"); title.textContent = META[name].title;
@@ -272,6 +281,7 @@
   function validateResponse(task, response) {
     const errors = [];
     if (!response) return ["Görev henüz açılmadı ve etiketlenmedi."];
+    if (APP.collect_naturalness && !response.naturalness) errors.push("Metin doğallığı: değerlendirme seçilmedi.");
     const visible = task.task_text + "\n" + (task.user_policy_text || "");
     FIELD_ORDER.forEach(name => {
       const f = response.fields[name]; const title = META[name].title;
@@ -332,7 +342,9 @@
     FIELD_ORDER.forEach(name => annotation[name] = fieldAnnotation(name, response.fields[name]));
     annotation.abstained_fields = FIELD_ORDER.filter(name => ["not_stated", "ambiguous"].includes(response.fields[name].status));
     annotation.overall_confidence = FIELD_ORDER.reduce((sum, name) => sum + Number(response.fields[name].confidence), 0) / FIELD_ORDER.length;
-    return {record_version: APP.record_version, protocol_version: APP.protocol_version, annotator_id: APP.annotator_id, task_id: task.task_id, task_content_sha256: task.task_content_sha256, started_at_utc: response.started_at_utc, submitted_at_utc: submitted, annotation};
+    const record = {record_version: APP.record_version, protocol_version: APP.protocol_version, annotator_id: APP.annotator_id, task_id: task.task_id, task_content_sha256: task.task_content_sha256, started_at_utc: response.started_at_utc, submitted_at_utc: submitted, annotation};
+    if (APP.collect_naturalness) record.naturalness = response.naturalness;
+    return record;
   }
   function canonical(value) {
     if (Array.isArray(value)) return value.map(canonical);
@@ -360,6 +372,7 @@
     policy.classList.toggle("hidden", !task.user_policy_text);
     const fields = document.getElementById("fields"); fields.replaceChildren();
     FIELD_ORDER.forEach(name => fields.appendChild(renderField(task, name, response.fields[name])));
+    if (APP.collect_naturalness) fields.appendChild(renderNaturalness(task, response));
     document.getElementById("previous").disabled = current === 0;
     document.getElementById("next").disabled = current === APP.tasks.length - 1;
     document.getElementById("errors").style.display = "none";

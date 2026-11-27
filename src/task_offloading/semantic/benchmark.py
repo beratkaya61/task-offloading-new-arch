@@ -576,7 +576,7 @@ def audit_submission(
             issues.append(f"submission record {index} language disagrees")
         issues.extend(_evidence_issues(annotation, source, task_id))
         issues.extend(_abstention_issues(annotation, task_id))
-        if record.get("protocol_version") in {"1.1.0", "1.2.0", "1.3.0"}:
+        if record.get("protocol_version") in {"1.1.0", "1.2.0", "1.3.0", "2.0.0"}:
             issues.extend(_protocol_1_1_issues(annotation, task_id))
 
     issues.extend(_schema_issues(semantic_records, semantic_schema, "annotation"))

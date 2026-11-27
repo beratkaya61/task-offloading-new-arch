@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://task-offloading-new-arch.local/schemas/human-annotation-record-v2.json",
+  "title": "Independent human annotation record v2 (semantic expansion protocol 2.0)",
+  "description": "Adds a required naturalness judgement and opaque blinded task ids; protocol 1.x records keep using human_annotation_record.schema.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_version",
+    "protocol_version",
+    "annotator_id",
+    "task_id",
+    "task_content_sha256",
+    "started_at_utc",
+    "submitted_at_utc",
+    "annotation",
+    "naturalness"
+  ],
+  "properties": {
+    "record_version": {"const": "1.0.0"},
+    "protocol_version": {"const": "2.0.0"},
+    "annotator_id": {"enum": ["annotator_a", "annotator_b"]},
+    "task_id": {"type": "string", "pattern": "^v2x_[0-9]{4}$"},
+    "task_content_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "started_at_utc": {"type": "string", "format": "date-time"},
+    "submitted_at_utc": {"type": "string", "format": "date-time"},
+    "annotation": {"type": "object"},
+    "naturalness": {"enum": ["natural", "acceptable", "unnatural"]}
+  }
+}

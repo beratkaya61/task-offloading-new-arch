@@ -143,8 +143,13 @@ def render_annotation_form(
     packet_sha256: str,
     initial_responses: Mapping[str, Any] | None = None,
     submission_slug: str | None = None,
+    collect_naturalness: bool = False,
 ) -> str:
-    """Render a deterministic offline form, optionally with an annotator draft."""
+    """Render a deterministic offline form, optionally with an annotator draft.
+
+    ``collect_naturalness`` adds a required per-task naturalness judgement
+    (natural / acceptable / unnatural) used by the expansion protocol 2.0.
+    """
 
     _validate_form_inputs(
         packet,
@@ -159,7 +164,7 @@ def render_annotation_form(
         submission_slug
     ):
         raise ValueError("submission_slug must be a safe lowercase filename stem")
-    payload = {
+    payload: dict[str, Any] = {
         "form_version": "1.2.0" if responses else "1.1.0",
         "record_version": "1.0.0",
         "packet_version": packet_version,
@@ -172,6 +177,10 @@ def render_annotation_form(
         "tasks": [dict(row) for row in packet],
         "initial_responses": responses,
     }
+    if collect_naturalness:
+        # Only added when requested so historical form bytes stay identical.
+        payload["collect_naturalness"] = True
+        payload["form_version"] = "2.0.0"
     serialized = json.dumps(
         payload,
         ensure_ascii=False,
