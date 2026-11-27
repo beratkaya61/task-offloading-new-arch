@@ -1,0 +1,50 @@
+{
+  "protocol_version": "2.0.0-candidate",
+  "created_on": "2026-11-27",
+  "supersedes": "1.0.0-candidate (expanded_v1: subjects/operations crossed splits and 244/600 families reused locked evaluation contexts)",
+  "status": "candidate_pool_requires_human_annotation_and_adjudication",
+  "seed": 20261127,
+  "contexts_file": "configs/semantic_expansion_contexts_v2.json",
+  "semantic_profiles_per_family": 4,
+  "wording_views_per_profile": 2,
+  "independent_unit": "subject_group",
+  "subject_split_per_domain": {
+    "validation": 4,
+    "test": 4
+  },
+  "historical_contexts": "development-only blueprint contexts kept in train; any context whose subject or operation occurs in a locked evaluation text is removed from every split",
+  "locked_external_evaluation_sets": [
+    "human60_original",
+    "human60_paraphrase",
+    "compositional600_canonical",
+    "compositional600_paraphrase",
+    "independent_paraphrase"
+  ],
+  "human_annotation": {
+    "independent_annotators": 2,
+    "adjudicator_on_disagreement": 1,
+    "blind_to_model_predictions": true,
+    "validation_scope": "all",
+    "test_scope": "all",
+    "training_audit_families": 48,
+    "training_audit_selection": "seeded_domain_stratified_whole_family"
+  },
+  "comparison_contract": {
+    "same_training_rows_for_all_supervised_models": true,
+    "same_validation_rows_for_all_model_selection": true,
+    "same_test_rows_for_all_final_evaluation": true,
+    "test_never_used_for_prompt_hyperparameter_epoch_or_threshold_selection": true,
+    "prompt_only_llm_is_a_separate_in_context_track": true,
+    "supervised_methods": [
+      "tfidf_logistic_regression",
+      "frozen_multilingual_e5_logistic_regression",
+      "finetuned_multilingual_e5",
+      "qwen3_8b_qlora"
+    ],
+    "prompt_only_methods": [
+      "qwen3_8b_0shot",
+      "qwen3_8b_4shot",
+      "qwen3_8b_8shot"
+    ]
+  }
+}

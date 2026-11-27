@@ -1,0 +1,41 @@
+{
+  "protocol_version": "1.0.0-candidate",
+  "created_on": "2026-11-27",
+  "status": "candidate_pool_requires_human_annotation_and_adjudication",
+  "seed": 20261127,
+  "domains": 8,
+  "scenario_families_per_domain": 75,
+  "semantic_profiles_per_family": 4,
+  "wording_views_per_profile": 2,
+  "family_split_per_domain": {
+    "train": 53,
+    "validation": 11,
+    "test": 11
+  },
+  "human_annotation": {
+    "independent_annotators": 2,
+    "adjudicator_on_disagreement": 1,
+    "blind_to_model_predictions": true,
+    "validation_scope": "all",
+    "test_scope": "all",
+    "training_audit_families": 48,
+    "training_audit_selection": "seeded_domain_stratified_whole_family"
+  },
+  "comparison_contract": {
+    "same_training_rows_for_all_supervised_models": true,
+    "same_validation_rows_for_all_model_selection": true,
+    "same_test_rows_for_all_final_evaluation": true,
+    "prompt_only_llm_is_a_separate_in_context_track": true,
+    "supervised_methods": [
+      "tfidf_logistic_regression",
+      "frozen_multilingual_e5_logistic_regression",
+      "finetuned_multilingual_e5",
+      "qwen3_8b_lora_or_qlora"
+    ],
+    "prompt_only_methods": [
+      "qwen3_8b_0shot",
+      "qwen3_8b_4shot",
+      "qwen3_8b_8shot"
+    ]
+  }
+}

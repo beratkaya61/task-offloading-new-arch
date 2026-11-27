@@ -79,15 +79,34 @@ def bootstrap_intervals(
     baseline: str,
     resamples: int = 1000,
     seed: int = 20261120,
+    clusters: Sequence[str] | None = None,
 ) -> dict[str, dict[str, Any]]:
-    """Point estimate, 95% percentile CI, and paired difference vs ``baseline``."""
+    """Point estimate, 95% percentile CI, and paired difference vs ``baseline``.
+
+    With ``clusters`` (one id per task) whole clusters are resampled, which is
+    required when several rows share a scenario and are not independent.
+    """
 
     sizes = {item.size for item in scores.values()}
     if len(sizes) != 1:
         raise ValueError("all models must be scored on the same tasks")
     size = sizes.pop()
     rng = np.random.default_rng(seed)
-    draws = [rng.integers(0, size, size) for _ in range(resamples)]
+    if clusters is None:
+        draws = [rng.integers(0, size, size) for _ in range(resamples)]
+    else:
+        if len(clusters) != size:
+            raise ValueError("clusters must provide one id per task")
+        members: dict[str, list[int]] = {}
+        for index, cluster in enumerate(clusters):
+            members.setdefault(str(cluster), []).append(index)
+        groups = [np.asarray(v) for _, v in sorted(members.items())]
+        draws = [
+            np.concatenate(
+                [groups[i] for i in rng.integers(0, len(groups), len(groups))]
+            )
+            for _ in range(resamples)
+        ]
     samples = {
         name: [item.metrics(index) for index in draws] for name, item in scores.items()
     }
