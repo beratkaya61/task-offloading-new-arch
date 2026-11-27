@@ -20,6 +20,7 @@ dependencies = [
   "transformers>=5.0,<6",
   "accelerate>=1.0,<2",
   "bitsandbytes>=0.48,<1",
+  "peft>=0.17,<1",
   "stable-baselines3>=2.4,<3",
   "sb3-contrib>=2.4,<3",
   "matplotlib>=3.9,<4",
@@ -62,5 +63,5 @@ packages = ["task_offloading"]
 warn_unreachable = true
 
 [[tool.mypy.overrides]]
-module = ["sentence_transformers", "sentence_transformers.*", "sklearn", "sklearn.*"]
+module = ["peft", "peft.*", "sentence_transformers", "sentence_transformers.*", "sklearn", "sklearn.*"]
 ignore_missing_imports = true
